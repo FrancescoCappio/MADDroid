@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Eat@Home</string>
+    
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="description">Description</string>
+    <string name="phone_number">Phone Number</string>
+
+    <string name="restaurant_address">Restaurant address</string>
+    <string name="restaurant_name">Restaurant Name</string>
+    <string name="username">Username</string>
+
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+
+    <string name="data_saved">Data saved</string>
+
+    <string name="profile_info">Profile info</string>
+</resources>
