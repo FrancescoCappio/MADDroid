@@ -181,20 +181,15 @@ public class MainActivity extends AppCompatActivity {
         String phone = etPhone.getText().toString();
         
         
-        if (!name.isEmpty())
-            editor.putString(NAME_KEY, name);
+        editor.putString(NAME_KEY, name);
         
-        if (!description.isEmpty())
-            editor.putString(DESCRIPTION_KEY, description);
+        editor.putString(DESCRIPTION_KEY, description);
         
-        if (!address.isEmpty())
-            editor.putString(ADDRESS_KEY, address);
+        editor.putString(ADDRESS_KEY, address);
         
-        if (!mail.isEmpty())
-            editor.putString(EMAIL_KEY, mail);
+        editor.putString(EMAIL_KEY, mail);
     
-        if (!phone.isEmpty())
-            editor.putString(PHONE_KEY, phone);
+        editor.putString(PHONE_KEY, phone);
         
         editor.apply();
     
