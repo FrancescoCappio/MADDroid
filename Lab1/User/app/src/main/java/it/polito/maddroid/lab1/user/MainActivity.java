@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String AVATAR_DIR = "images";
     //content provider authority
     private static final String AUTHORITY = "it.polito.maddroid.lab1.user.fileprovider";
-
-    private static double TABLET_THRESHOLD = 6.0f;
     
     private static int PHOTO_REQUEST_CODE = 128;
     
