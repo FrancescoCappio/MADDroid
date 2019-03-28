@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="20sp"
+            android:textSize="40sp"
             android:textColor="@android:color/black"
             android:layout_marginTop="20dp"
             android:textStyle="bold|italic"
@@ -37,8 +37,8 @@
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/avatar_iv_size"
-                android:layout_height="@dimen/avatar_iv_size"
+                android:layout_width="@dimen/avatar_iv_size_tablet"
+                android:layout_height="@dimen/avatar_iv_size_tablet"
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/placeholder_avatar"
@@ -54,8 +54,7 @@
             app:srcCompat="@drawable/ic_add_a_photo"
             app:layout_constraintEnd_toEndOf="@id/card_avatar"
             app:layout_constraintBottom_toBottomOf="@id/card_avatar"
-            app:elevation="@dimen/card_elevation"
-            app:fabSize="mini" />
+            app:elevation="@dimen/card_elevation"/>
 
 
         <android.support.v7.widget.CardView
@@ -144,7 +143,7 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_description"
+                    android:id="@+id/til_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -153,34 +152,36 @@
                     >
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:hint="@string/address"
+                        android:maxLines="2"
+                        android:inputType="textPostalAddress"
+                        android:scrollHorizontally="false"
+                        android:textColor="@android:color/white"
+                        />
+
+                </android.support.design.widget.TextInputLayout>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/til_address"
+                    >
+
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/et_description"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:hint="@string/description"
-                        android:maxLines="4"
-                        android:inputType="textMultiLine"
-                        android:scrollHorizontally="false"
-                        android:textColor="@android:color/white"
-                        />
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_bike"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_description"
-                    >
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_bike"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:hint="@string/bike"
-                        android:maxLines="2"
+                        android:maxLines="10"
                         android:inputType="textMultiLine"
                         android:scrollHorizontally="false"
                         android:textColor="@android:color/white"
@@ -198,9 +199,7 @@
             android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@+id/card_et_containers"
             android:visibility="invisible" />
-
     </android.support.constraint.ConstraintLayout>
 
 
 </ScrollView>
-

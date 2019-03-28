@@ -2,6 +2,7 @@
 <resources>
     <dimen name="margin">16dp</dimen>
     <dimen name="avatar_iv_size">150dp</dimen>
+    <dimen name="avatar_iv_size_tablet">300dp</dimen>
     <dimen name="cards_margin">40dp</dimen>
     <dimen name="cards_corner_radius">20dp</dimen>
     <dimen name="card_elevation">10dp</dimen>
