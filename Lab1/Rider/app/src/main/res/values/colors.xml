@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FC4A1A</color>
+    <color name="colorPrimaryDark">#B12500</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="prova"> #FFAA27</color>
+
+    <color name="fairgray">#B8B8B8</color>
+</resources>
