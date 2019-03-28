@@ -37,18 +37,19 @@ public class MainActivity extends AppCompatActivity {
     //shared prefs and constants
     private SharedPreferences sharedPreferences;
 
-    public static final String SHARED_PREFS = "Lab1_prefs_user" ;
+    public static final String SHARED_PREFS = "Lab1_prefs_rider" ;
 
     public static final String NAME_KEY = "NAME_KEY";
     public static final String EMAIL_KEY = "EMAIL_KEY";
     public static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     public static final String PHONE_KEY = "PHONE_KEY";
     public static final String BIKE_KEY = "BIKE_KEY";
+    public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
 
     //this path must be one of the paths specified in "file_paths.xml"
     private static final String AVATAR_DIR = "images";
     //content provider authority
-    private static final String AUTHORITY = "it.polito.maddroid.lab1.user.fileprovider";
+    private static final String AUTHORITY = "it.polito.maddroid.lab1.rider.fileprovider";
 
     private static int PHOTO_REQUEST_CODE = 128;
 
@@ -124,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_save);
 
-        setEditEnabled(false);
-
+        //enable/disable edit depending on the state
+        setEditEnabled(editMode);
 
         //add on click action to imageview
         ivAvatar.setOnClickListener(v -> startActivityToGetImage());
@@ -223,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         final List<ResolveInfo> listGalleries = packageManager.queryIntentActivities(filePickIntent, 0);
         for(ResolveInfo res : listGalleries) {
             final String packageName = res.activityInfo.packageName;
-            final Intent intent = new Intent(captureIntent);
+            final Intent intent = new Intent(filePickIntent);
             intent.setComponent(new ComponentName(packageName, res.activityInfo.name));
             intent.setPackage(packageName);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
@@ -344,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
         if (!bike.isEmpty()) {
             outState.putString(BIKE_KEY, phone);
         }
+        //save edit mode status
+        outState.putBoolean(EDIT_MODE_KEY, editMode);
     }
 
     @Override
@@ -376,5 +379,7 @@ public class MainActivity extends AppCompatActivity {
         if (!bike.isEmpty()) {
             etBike.setText(bike);
         }
+        //restore editMode
+        editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
     }
 }
