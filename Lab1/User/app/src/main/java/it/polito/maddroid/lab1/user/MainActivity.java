@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     public static final String PHONE_KEY = "PHONE_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
+    public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
     
     //this path must be one of the paths specified in "file_paths.xml"
     private static final String AVATAR_DIR = "images";
@@ -127,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_save);
         
-        setEditEnabled(false);
-        
+        //enable/disable edit depending on the state
+        setEditEnabled(editMode);
         
         //add on click action to imageview
         ivAvatar.setOnClickListener(v -> startActivityToGetImage());
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
         final List<ResolveInfo> listGalleries = packageManager.queryIntentActivities(filePickIntent, 0);
         for(ResolveInfo res : listGalleries) {
             final String packageName = res.activityInfo.packageName;
-            final Intent intent = new Intent(captureIntent);
+            final Intent intent = new Intent(filePickIntent);
             intent.setComponent(new ComponentName(packageName, res.activityInfo.name));
             intent.setPackage(packageName);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
@@ -348,6 +349,9 @@ public class MainActivity extends AppCompatActivity {
         if (!phone.isEmpty()) {
             outState.putString(PHONE_KEY, phone);
         }
+        
+        //save edit mode status
+        outState.putBoolean(EDIT_MODE_KEY, editMode);
     }
     
     @Override
@@ -379,5 +383,8 @@ public class MainActivity extends AppCompatActivity {
         if (!phone.isEmpty()) {
             etPhone.setText(phone);
         }
+        
+        //restore editMode
+        editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
     }
 }
