@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "it.polito.maddroid.lab1.user"
+        applicationId "it.polito.maddroid.lab1.rider"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
