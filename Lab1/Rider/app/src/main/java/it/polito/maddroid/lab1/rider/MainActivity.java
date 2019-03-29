@@ -22,7 +22,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -144,9 +145,41 @@ public class MainActivity extends AppCompatActivity {
             setEditEnabled(false);
 
             saveDataSharedPrefs();
+
+            saveAvatarImage();
         }
 
         return true;
+    }
+
+    private void saveAvatarImage() {
+        File main = getAvatarFile();
+        File tmp = getAvatarTmpFile();
+
+        Bitmap bitmap;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+        try {
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(tmp), null, options);
+
+            if (bitmap == null) {
+                Log.e(TAG, "NULL BITMAP");
+                return;
+            }
+            FileOutputStream fs = new FileOutputStream(main);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+            fs.flush();
+            fs.close();
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "File not found exception: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "IOexception: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     private void setEditEnabled(boolean enabled) {
@@ -154,11 +187,21 @@ public class MainActivity extends AppCompatActivity {
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
 
-        etPhone.setEnabled(enabled);
-        etMail.setEnabled(enabled);
-        etDescription.setEnabled(enabled);
-        etName.setEnabled(enabled);
-        etBike.setEnabled(enabled);
+        if (!enabled) {
+            etDescription.setFocusable(enabled);
+            etPhone.setFocusable(enabled);
+            etMail.setFocusable(enabled);
+            etName.setFocusable(enabled);
+            etBike.setFocusable(enabled);
+           
+        } else {
+            etDescription.setFocusableInTouchMode(enabled);
+            etPhone.setFocusableInTouchMode(enabled);
+            etMail.setFocusableInTouchMode(enabled);
+            etName.setFocusableInTouchMode(enabled);
+            etBike.setFocusableInTouchMode(enabled);
+        }
+        
         ivAvatar.setEnabled(enabled);
 
         if (enabled)
@@ -195,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startActivityToGetImage() {
-        File myImageFile = getAvatarFile();
+        File myImageFile = getAvatarTmpFile();
 
         final Uri outputFileUri = FileProvider.getUriForFile(getApplicationContext(),
                 AUTHORITY,
@@ -242,6 +285,15 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
     }
 
+    private File getAvatarTmpFile() {
+        // Determine Uri of camera image to save.
+        final File root = new File(getApplicationContext().getFilesDir() + File.separator + AVATAR_DIR + File.separator);
+        root.mkdirs();
+        final String fname = "avatar_tmp.jpg";
+
+        return new File(root, fname);
+    }
+
     private File getAvatarFile() {
         // Determine Uri of camera image to save.
         final File root = new File(getApplicationContext().getFilesDir() + File.separator + AVATAR_DIR + File.separator);
@@ -279,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
 
-                    FileOutputStream fs = new FileOutputStream(getAvatarFile());
+                    FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
                     fs.flush();
                     fs.close();
@@ -300,7 +352,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateAvatarImage() {
-        File img = getAvatarFile();
+        File img;
+        if (!editMode) {
+            img = getAvatarFile();
+        } else {
+            img = getAvatarTmpFile();
+        }
 
         if (!img.exists() || !img.isFile()) {
             Log.d(TAG, "Cannot load unexisting file as avatar");
@@ -343,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!bike.isEmpty()) {
-            outState.putString(BIKE_KEY, phone);
+            outState.putString(BIKE_KEY, bike);
         }
         //save edit mode status
         outState.putBoolean(EDIT_MODE_KEY, editMode);
