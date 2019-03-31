@@ -165,6 +165,16 @@
 
                 </android.support.design.widget.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/tv_description_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="144/200"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/til_address"
+
+                    />
+
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/til_description"
@@ -181,7 +191,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:hint="@string/description"
-                        android:maxLines="4"
+                        android:maxLength="@integer/description_max_length"
                         android:inputType="textMultiLine"
                         android:scrollHorizontally="false"
                         android:textColor="@android:color/white"
