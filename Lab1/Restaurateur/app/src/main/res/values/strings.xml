@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Eat@Home</string>
 
-    <string name="name">Name</string>
-    <string name="email">Email</string>
+    <string name="name">Restaurant\'s Name</string>
+    <string name="email">Restaurant\'s Email</string>
     <string name="address">Restaurant\'s address</string>
     <string name="description">Restaurant\'s description</string>
     <string name="phone_number">Restaurant\'s phone number</string>
@@ -12,5 +12,5 @@
 
     <string name="data_saved">Data saved</string>
 
-    <string name="profile_info">Restaurateur\'s info</string>
+    <string name="profile_info">Restaurant\'s info</string>
 </resources>
