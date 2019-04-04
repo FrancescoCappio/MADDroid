@@ -16,10 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="20sp"
+            android:textSize="45sp"
+            android:textStyle="bold|italic"
             android:textColor="@android:color/black"
             android:layout_marginTop="20dp"
-            android:textStyle="bold|italic"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -29,16 +29,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
-            android:layout_marginStart="@dimen/margin"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/card_et_containers"
             app:cardCornerRadius="@dimen/cards_corner_radius"
             app:cardElevation="@dimen/card_elevation">
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/avatar_iv_size"
-                android:layout_height="@dimen/avatar_iv_size"
+                android:layout_width="@dimen/avatar_iv_size_tablet"
+                android:layout_height="@dimen/avatar_iv_size_tablet"
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/placeholder_avatar"
@@ -54,27 +55,23 @@
             app:srcCompat="@drawable/ic_add_a_photo"
             app:layout_constraintEnd_toEndOf="@id/card_avatar"
             app:layout_constraintBottom_toBottomOf="@id/card_avatar"
-            app:elevation="@dimen/card_elevation"
-            app:fabSize="mini" />
+            app:elevation="@dimen/card_elevation"/>
 
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_et_containers"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_title"
-            app:layout_constraintStart_toEndOf="@id/card_avatar"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_avatar"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="@dimen/cards_corner_radius"
             app:cardElevation="@dimen/card_elevation"
             app:contentPadding="@dimen/margin"
-            android:layout_marginBottom="@dimen/margin"
-            >
 
+            >
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -217,8 +214,10 @@
             android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@+id/card_et_containers"
             android:visibility="invisible" />
+
     </android.support.constraint.ConstraintLayout>
 
 
-</ScrollView>
 
+
+</ScrollView>
