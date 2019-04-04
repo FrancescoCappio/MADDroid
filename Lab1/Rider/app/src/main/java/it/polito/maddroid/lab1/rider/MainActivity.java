@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.content.res.Resources;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
@@ -21,8 +22,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.FileInputStream;
+import android.text.Editable;
+import android.text.TextWatcher;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static int PHOTO_REQUEST_CODE = 128;
 
+    private int DESCRIPTION_MAX_LENGTH;
+
     private boolean editMode = false;
 
     private MenuItem menuEdit;
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etBike;
     private EditText etDescription;
     private ImageView ivAvatar;
+    private TextView tvDescriptionCount;
 
     private FloatingActionButton fabAddPhoto;
 
@@ -81,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         etMail = findViewById(R.id.et_mail);
         etBike = findViewById(R.id.et_bike);
         ivAvatar = findViewById(R.id.iv_avatar);
+        tvDescriptionCount = findViewById(R.id.tv_description_count);
         fabAddPhoto = findViewById(R.id.fab_add_photo);
 
         //set avatar image from file
@@ -114,6 +122,28 @@ public class MainActivity extends AppCompatActivity {
             etBike.setText(bike);
         }
         getSupportActionBar().setTitle(R.string.profile_info);
+        //get values from resources
+        Resources res = getResources();
+        DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
+
+        updateDescriptionCount();
+
+        etDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateDescriptionCount();
+            }
+        });
     }
 
     @Override
@@ -187,21 +217,12 @@ public class MainActivity extends AppCompatActivity {
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
 
-        if (!enabled) {
-            etDescription.setFocusable(enabled);
-            etPhone.setFocusable(enabled);
-            etMail.setFocusable(enabled);
-            etName.setFocusable(enabled);
-            etBike.setFocusable(enabled);
-           
-        } else {
-            etDescription.setFocusableInTouchMode(enabled);
-            etPhone.setFocusableInTouchMode(enabled);
-            etMail.setFocusableInTouchMode(enabled);
-            etName.setFocusableInTouchMode(enabled);
-            etBike.setFocusableInTouchMode(enabled);
-        }
-        
+        etDescription.setEnabled(enabled);
+        etPhone.setEnabled(enabled);
+        etMail.setEnabled(enabled);
+        etName.setEnabled(enabled);
+        etBike.setEnabled(enabled);
+
         ivAvatar.setEnabled(enabled);
 
         if (enabled)
@@ -438,5 +459,15 @@ public class MainActivity extends AppCompatActivity {
         }
         //restore editMode
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+        //set avatar image from file
+        updateAvatarImage();
+    }
+
+    private void updateDescriptionCount() {
+        int count = etDescription.getText().length();
+
+        String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
+
+        tvDescriptionCount.setText(cnt);
     }
 }
