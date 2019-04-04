@@ -472,22 +472,23 @@ public class MainActivity extends AppCompatActivity {
     private void saveAvatarImage() {
         File main = getAvatarFile();
         File tmp = getAvatarTmpFile();
-    
-        Bitmap bitmap;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         
         try {
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(tmp), null, options);
-    
-            if (bitmap == null) {
-                Log.e(TAG, "NULL BITMAP");
-                return;
+            FileInputStream fis = new FileInputStream(tmp);
+            
+            FileOutputStream fos = new FileOutputStream(main);
+            
+            byte[] buffer = new byte[4096];
+            while (true) {
+                int bytesRead = fis.read(buffer);
+                if (bytesRead == -1)
+                    break;
+                fos.write(buffer, 0, bytesRead);
             }
-            FileOutputStream fs = new FileOutputStream(main);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
-            fs.flush();
-            fs.close();
+            
+            fos.flush();
+            fos.close();
+            fis.close();
             
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File not found exception: " + e.getMessage());
@@ -496,6 +497,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "IOexception: " + e.getMessage());
             e.printStackTrace();
         }
+        
     }
     
     private void updateDescriptionCount() {
