@@ -5,4 +5,6 @@
     <dimen name="cards_margin">40dp</dimen>
     <dimen name="cards_corner_radius">20dp</dimen>
     <dimen name="card_elevation">10dp</dimen>
+    <dimen name="avatar_iv_size_tablet">300dp</dimen>
+
 </resources>
