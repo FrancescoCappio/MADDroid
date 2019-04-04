@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -15,12 +16,15 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -55,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     
     private static int PHOTO_REQUEST_CODE = 128;
     
+    private int DESCRIPTION_MAX_LENGTH;
+    
     private boolean editMode = false;
     
     private MenuItem menuEdit;
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etAddress;
     private EditText etDescription;
     private ImageView ivAvatar;
+    private TextView tvDescriptionCount;
     
     private FloatingActionButton fabAddPhoto;
 
@@ -83,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         etMail = findViewById(R.id.et_mail);
         
         ivAvatar = findViewById(R.id.iv_avatar);
+        tvDescriptionCount = findViewById(R.id.tv_description_count);
         fabAddPhoto = findViewById(R.id.fab_add_photo);
     
         //set avatar image from file
@@ -118,6 +126,29 @@ public class MainActivity extends AppCompatActivity {
         }
         
         getSupportActionBar().setTitle(R.string.profile_info);
+        
+        //get values from resources
+        Resources res = getResources();
+        DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
+        
+        updateDescriptionCount();
+        
+        etDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        
+            }
+    
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        
+            }
+    
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateDescriptionCount();
+            }
+        });
     }
     
     @Override
@@ -161,19 +192,11 @@ public class MainActivity extends AppCompatActivity {
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
         
-        if (!enabled) {
-            etDescription.setFocusable(enabled);
-            etPhone.setFocusable(enabled);
-            etMail.setFocusable(enabled);
-            etName.setFocusable(enabled);
-            etAddress.setFocusable(enabled);
-        } else {
-            etDescription.setFocusableInTouchMode(enabled);
-            etPhone.setFocusableInTouchMode(enabled);
-            etMail.setFocusableInTouchMode(enabled);
-            etName.setFocusableInTouchMode(enabled);
-            etAddress.setFocusableInTouchMode(enabled);
-        }
+        etDescription.setEnabled(enabled);
+        etPhone.setEnabled(enabled);
+        etMail.setEnabled(enabled);
+        etName.setEnabled(enabled);
+        etAddress.setEnabled(enabled);
         
         ivAvatar.setEnabled(enabled);
         
@@ -441,5 +464,13 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "IOexception: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    
+    private void updateDescriptionCount() {
+        int count = etDescription.getText().length();
+        
+        String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
+        
+        tvDescriptionCount.setText(cnt);
     }
 }
