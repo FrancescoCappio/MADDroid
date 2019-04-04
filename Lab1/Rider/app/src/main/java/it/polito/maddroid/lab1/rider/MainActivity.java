@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.content.res.Resources;
@@ -31,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,22 +188,23 @@ public class MainActivity extends AppCompatActivity {
     private void saveAvatarImage() {
         File main = getAvatarFile();
         File tmp = getAvatarTmpFile();
-
-        Bitmap bitmap;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
+        
         try {
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(tmp), null, options);
-
-            if (bitmap == null) {
-                Log.e(TAG, "NULL BITMAP");
-                return;
+            FileInputStream fis = new FileInputStream(tmp);
+            
+            FileOutputStream fos = new FileOutputStream(main);
+    
+            byte[] buffer = new byte[4096];
+            while (true) {
+                int bytesRead = fis.read(buffer);
+                if (bytesRead == -1)
+                    break;
+                fos.write(buffer, 0, bytesRead);
             }
-            FileOutputStream fs = new FileOutputStream(main);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
-            fs.flush();
-            fs.close();
+    
+            fos.flush();
+            fos.close();
+            fis.close();
 
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File not found exception: " + e.getMessage());
@@ -350,13 +354,30 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Result URI: " + selectedImageUri.toString());
 
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
-
+    
+                    // we need to copy the image into our directory, we try 2 methods to do this:
+                    // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
+                    // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
+                    InputStream is = getContentResolver().openInputStream(selectedImageUri);
                     FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+    
+                    if (is == null) {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+                    } else {
+                        byte[] buffer = new byte[4096];
+                        while (true) {
+                            int bytesRead = is.read(buffer);
+                            if (bytesRead == -1)
+                                break;
+                            fs.write(buffer, 0, bytesRead);
+                        }
+                    }
+                    
                     fs.flush();
                     fs.close();
-
+    
+                    //update shown image
                     updateAvatarImage();
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read bitmap");
@@ -366,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
+                //update shown image
                 updateAvatarImage();
             }
 
@@ -388,6 +410,17 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(img.getAbsolutePath(), options);
+    
+        try {
+            ExifInterface exif = new ExifInterface(img.getAbsolutePath());
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+        
+            bitmap = rotateBitmap(bitmap, orientation);
+        } catch (IOException e) {
+            Log.e(TAG, "Cannot obtain exif info to check image rotation");
+            e.printStackTrace();
+        }
 
         ivAvatar.setImageBitmap(bitmap);
     }
@@ -469,5 +502,49 @@ public class MainActivity extends AppCompatActivity {
         String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
 
         tvDescriptionCount.setText(cnt);
+    }
+    
+    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+        
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
