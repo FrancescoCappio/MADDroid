@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="100dp">
+    
+    <ImageView
+        android:id="@+id/iv_dish_photo"
+        android:layout_width="@dimen/daily_offer_image_size"
+        android:layout_height="@dimen/daily_offer_image_size"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_restaurant_black_24dp"/>
+
+    <TextView
+        android:id="@+id/tv_dish_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dish Name"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_toStartOf="@+id/tv_price"
+        android:layout_toEndOf="@id/iv_dish_photo"/>
+
+    <TextView
+        android:id="@+id/tv_dish_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dish Description very very long..."
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/iv_dish_photo"
+        android:layout_toStartOf="@+id/tv_price"
+        android:layout_below="@+id/tv_dish_name"/>
+
+
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5.50€"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"/>
+
+    <TextView
+        android:id="@+id/tv_quantity_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quantity: "
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/tv_quantity"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/tv_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"/>
+    
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        android:layout_alignParentBottom="true">
+        
+    </View>
+
+</RelativeLayout>
