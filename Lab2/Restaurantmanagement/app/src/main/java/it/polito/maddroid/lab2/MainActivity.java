@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setCheckedItem(R.id.nav_orders);
         
         selectItem(0);
+       // setContentView(R.layout.activity_order_detail_activity);
         
     }
     
@@ -117,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
             if (selectedId == 1) {
                 Intent i = new Intent(getApplicationContext(), DailyOfferDetailActivity.class);
+                startActivity(i);
+            }
+            if(selectedId == 0){
+                Intent i = new Intent(getApplicationContext(), OrderDetailActivity.class);
                 startActivity(i);
             }
             return true;

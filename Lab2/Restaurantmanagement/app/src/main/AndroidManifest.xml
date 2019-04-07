@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".DailyOfferDetailActivity"></activity>
+        <activity android:name=".OrderDetailActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
