@@ -1,7 +1,5 @@
 package it.polito.maddroid.lab2;
 
-
-import java.util.Date;
 import java.util.HashMap;
 
 
@@ -9,7 +7,8 @@ public class Order {
 
     private int id;
     
-    private String dateTime;
+    private int timeHour;
+    private int timeMinutes;
     
     //key = daily offer id
     //value = quantity
@@ -18,45 +17,24 @@ public class Order {
     private int customerId;
     
     private int riderId;
-
-
+    
+    Order(int id, int timeHour, int timeMinutes, int customerId, int riderId) {
+        this.id = id;
+        this.timeHour = timeHour;
+        this.timeMinutes = timeMinutes;
+        this.customerId = customerId;
+        this.riderId = riderId;
+    }
+    
     public int getId() {
         return id;
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public int getTimeHour() {
+        return timeHour;
     }
-
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public HashMap<Integer, Integer> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(HashMap<Integer, Integer> dishes) {
-        this.dishes = dishes;
-    }
-
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
-    public int getRiderId() {
-        return riderId;
-    }
-
-    public void setRiderId(int riderId) {
-        this.riderId = riderId;
+    
+    public int getTimeMinutes() {
+        return timeMinutes;
     }
 }

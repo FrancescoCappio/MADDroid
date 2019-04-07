@@ -4,17 +4,17 @@
     android:layout_height="100dp">
 
     <TextView
-        android:id="@+id/tv_PrenotationNumber"
+        android:id="@+id/tv_order_number_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginStart="15dp"
-        android:text="Prenotation Number:"
+        android:text="Order Number:"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/tv_Schedule_title"
+        android:id="@+id/tv_schedule_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Delivery Time:"
@@ -23,14 +23,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="15dp"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/tv_prenotation"
-        android:layout_below="@+id/tv_PrenotationNumber"/>
+        android:layout_toStartOf="@+id/tv_order_number"
+        android:layout_below="@+id/tv_order_number_title"/>
 
     <TextView
-        android:id="@+id/tv_prenotation"
+        android:id="@+id/tv_order_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/tv_PrenotationNumber"
+        android:layout_toEndOf="@id/tv_order_number_title"
         android:text="ciao "
         android:textColor="@android:color/black"
         android:textSize="20sp"
@@ -47,13 +47,13 @@
         android:text="xx:yy"
         android:textSize="20sp"
         android:textColor="@android:color/black"
-        android:layout_below="@id/tv_prenotation"
+        android:layout_below="@id/tv_order_number"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"
         android:layout_marginStart="15dp"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@id/tv_Schedule_title"
+        android:layout_toEndOf="@id/tv_schedule_title"
         />
 
 
