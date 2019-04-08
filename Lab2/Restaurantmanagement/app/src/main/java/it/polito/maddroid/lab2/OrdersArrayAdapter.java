@@ -17,10 +17,7 @@ import java.util.List;
 public class OrdersArrayAdapter extends BaseAdapter {
     private ArrayList<Order> orders;
     
-    int rowResourceId;
-    
     Context context;
-    
     
     public OrdersArrayAdapter(Context context, List<Order> objects) {
         this.context = context;
