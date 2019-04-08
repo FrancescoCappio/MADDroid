@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
             if (selectedId == 1) {
                 Intent i = new Intent(getApplicationContext(), DailyOfferDetailActivity.class);
+                i.putExtra("PageType","New");
                 startActivity(i);
             }
             return true;
