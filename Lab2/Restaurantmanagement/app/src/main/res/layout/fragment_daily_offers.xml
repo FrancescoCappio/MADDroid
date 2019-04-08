@@ -6,7 +6,7 @@
     tools:context=".DailyOffersFragment">
 
     <ListView
-        android:id="@+id/LVDailyOffer"
+        android:id="@+id/lv_daily_offer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/daily_offer_list_item"
