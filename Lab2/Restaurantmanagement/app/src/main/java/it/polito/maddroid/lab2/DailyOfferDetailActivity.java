@@ -96,7 +96,13 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             int offerId = i.getIntExtra(OFFER_ID_KEY, -1);
             currentOfferId = offerId;
         }
-
+    
+        // set title
+        getSupportActionBar().setTitle("New Dish");
+    
+        // add back button
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     
     @Override
@@ -129,25 +135,30 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         
-        if (item.getItemId() == R.id.menu_edit)
-            setEditEnabled(true);
-        else if (item.getItemId() == R.id.menu_save)
-        {
-            String Name =etName.getText().toString();
-            String Quantity=etQuantity.getText().toString();
-            String price = etPrice.getText().toString();
-            String description = etDescription .getText().toString();
-            
-            
-            if(pageType.equals(MODE_NEW)){
-                
-                DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
-                saveNewData(offer);
-                saveAvatarImage();
-                
-            } else if (pageType.equals("Edit")){
-                setEditEnabled(false);
-            }
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.menu_edit:
+                setEditEnabled(true);
+                break;
+            case R.id.menu_save:
+                String Name =etName.getText().toString();
+                String Quantity=etQuantity.getText().toString();
+                String price = etPrice.getText().toString();
+                String description = etDescription .getText().toString();
+    
+    
+                if(pageType.equals(MODE_NEW)){
+        
+                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+                    saveNewData(offer);
+                    saveAvatarImage();
+        
+                } else if (pageType.equals("Edit")){
+                    setEditEnabled(false);
+                }
+                break;
         }
         return true;
     }

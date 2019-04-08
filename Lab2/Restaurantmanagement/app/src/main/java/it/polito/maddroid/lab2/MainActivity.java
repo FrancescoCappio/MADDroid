@@ -3,6 +3,7 @@ package it.polito.maddroid.lab2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,6 +31,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     
     private int selectedId; //0 = orders; 1 = daily_offers
+    
+    private static final int ORDER_DETAIL_CODE = 123;
+    private static final int DAILY_OFFER_DETAIL_CODE = 124;
+    
+    private final static String TAG = "MainActivity";
+    
+    private OrdersFragment ordersFragment;
+    private DailyOffersFragment dailyOffersFragment;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setCheckedItem(R.id.nav_orders);
         
         selectItem(0);
+       // setContentView(R.layout.activity_order_detail_activity);
         
     }
     
@@ -58,12 +70,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         switch (position) {
             case 0:
-                fragment = new OrdersFragment();
+                ordersFragment = new OrdersFragment();
+                fragment = ordersFragment;
                 getSupportActionBar().setTitle(R.string.orders);
                 break;
                 
             case 1:
-                fragment = new DailyOffersFragment();
+                fragment = dailyOffersFragment;
+                dailyOffersFragment = new DailyOffersFragment();
                 getSupportActionBar().setTitle(R.string.daily_offers);
                 break;
             
@@ -120,6 +134,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 i.putExtra(DailyOfferDetailActivity.PAGE_TYPE_KEY,DailyOfferDetailActivity.MODE_NEW);
                 startActivity(i);
             }
+            if(selectedId == 0){
+                Intent i = new Intent(getApplicationContext(), OrderDetailActivity.class);
+                startActivityForResult(i,ORDER_DETAIL_CODE);
+            }
             return true;
         }
         
@@ -158,8 +176,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //
 //        }
         
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+        
+        if (data == null) {
+            Log.e(TAG, "Result data null");
+            return;
+        }
+        
+        switch (requestCode) {
+            case ORDER_DETAIL_CODE:
+                int timeMinutes = data.getIntExtra(OrderDetailActivity.TIME_MIN_KEY, 0);
+                int timeHour = data.getIntExtra(OrderDetailActivity.TIME_H_KEY, 0);
+                
+                String dish = data.getStringExtra(OrderDetailActivity.DISH_KEY);
+                String customer = data.getStringExtra(OrderDetailActivity.CUSTOMER_KEY);
+                String rider = data.getStringExtra(OrderDetailActivity.RIDER_KEY);
+                
+                String detail = dish + " " + customer + " " + rider;
+                
+                Order order = new Order(0, timeHour, timeMinutes, 0, 0);
+                
+                if (ordersFragment != null) {
+                    ordersFragment.addOrder(order);
+                }
+    
+                Toast.makeText(getApplicationContext(), detail, Toast.LENGTH_SHORT).show();
+        }
     }
 }
