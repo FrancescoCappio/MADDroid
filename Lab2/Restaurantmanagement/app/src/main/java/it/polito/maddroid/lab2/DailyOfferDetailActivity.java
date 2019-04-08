@@ -40,13 +40,18 @@ import com.google.gson.reflect.TypeToken;
 
 
 public class DailyOfferDetailActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DailyOfferDetail";
 
 
     private MenuItem menuEdit;
     private MenuItem menuSave;
     private boolean editMode = false;
-    private String pageType ="";
+    private String pageType;
+    
+    public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
+    public final static String MODE_NEW = "New";
+    public final static String MODE_SHOW = "Show";
+    public final static String OFFER_ID_KEY = "OFFER_ID_KEY";
 
     //views
     private EditText etName;
@@ -63,6 +68,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private static final String DATA_DIR = "data";
     //content provider authority
     private static final String AUTHORITY = "it.polito.maddroid.lab2.fileprovider";
+    
+    private int currentOfferId = -1;
 
     private static int PHOTO_REQUEST_CODE = 128;
     
@@ -78,8 +85,17 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         ivAvatar = findViewById(R.id.iv_avatar);
         tvDescriptionCount = findViewById(R.id.tv_description_count);
         fabAddPhoto = findViewById(R.id.fab_add_photo);
-
-
+    
+        Intent i  = getIntent();
+        pageType = i.getStringExtra(PAGE_TYPE_KEY);
+        
+        if (pageType.equals(MODE_NEW)) {
+            int newOfferId = getLastOfferId() +1;
+            currentOfferId = newOfferId;
+        } else {
+            int offerId = i.getIntExtra(OFFER_ID_KEY, -1);
+            currentOfferId = offerId;
+        }
 
     }
     
@@ -97,10 +113,9 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         //add on click action to imageview
         ivAvatar.setOnClickListener(v -> startActivityToGetImage());
 
-        Intent i  = getIntent();
-        pageType = i.getStringExtra("PageType");
+        
 
-        if(pageType.equals("New")) {
+        if(pageType.equals(MODE_NEW)) {
             getSupportActionBar().setTitle("New Dish");
             setEditEnabled(true);
         } else if (pageType.equals("Show")){
@@ -109,11 +124,11 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         }
         return true;
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-
+        
         if (item.getItemId() == R.id.menu_edit)
             setEditEnabled(true);
         else if (item.getItemId() == R.id.menu_save)
@@ -122,27 +137,26 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             String Quantity=etQuantity.getText().toString();
             String price = etPrice.getText().toString();
             String description = etDescription .getText().toString();
-
-
-        if(pageType.equals("New")){
-            int NewOfferId = getLastOfferId() +1;
-            DailyOffer offer = new DailyOffer(NewOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price),"ii");
-            saveNewData(offer);
-
-            }
-            else if (pageType.equals("Edit")){
-            setEditEnabled(false);
-            saveAvatarImage();
+            
+            
+            if(pageType.equals(MODE_NEW)){
+                
+                DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+                saveNewData(offer);
+                saveAvatarImage();
+                
+            } else if (pageType.equals("Edit")){
+                setEditEnabled(false);
             }
         }
         return true;
     }
 
     private int getLastOfferId(){
-        String DataRead = ReadJsonData();
+        String DataRead = readJsonData();
         int OfferId = 0;
         if (DataRead.isEmpty() || DataRead == null)
-            OfferId = 1 ;
+            OfferId = 0;
         else {
             Gson gson = new Gson();
             Type listType = new TypeToken<ArrayList<DailyOffer>>() {
@@ -152,19 +166,23 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             OfferId = lastOffer.getid();
         }
 
-
         return OfferId;
     }
 
     private void saveNewData(DailyOffer newData) {
 
         //Read data from JSON File
-        String DataRead = ReadJsonData();
+        String DataRead = readJsonData();
 
         //convert Json data to java object
         Gson gson = new Gson();
         Type listType = new TypeToken< ArrayList<DailyOffer> >(){}.getType();
         List<DailyOffer> history = gson.fromJson(DataRead, listType);
+        
+        if (history == null) {
+            //the file is empty
+            history = new ArrayList<>();
+        }
 
         //Add new row to data
         history.add(newData);
@@ -174,11 +192,11 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
 
         //save data to new json
         String json = new Gson().toJson(history);
-        SaveDatatoJson(json);
+        saveDatatoJson(json);
 
     }
 
-    private void SaveDatatoJson(String mJsonResponse) {
+    private void saveDatatoJson(String mJsonResponse) {
         try {
             final File root = new File(getApplicationContext().getFilesDir() + File.separator + DATA_DIR + File.separator);
             root.mkdirs();
@@ -192,13 +210,20 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         }
     }
 
-    public String ReadJsonData() {
+    public String readJsonData() {
         String mResponse ="";
         try {
             final File root = new File(getApplicationContext().getFilesDir() + File.separator + DATA_DIR + File.separator);
             root.mkdirs();
             final String fname = "DailoffersData.json";
-            FileInputStream is = new FileInputStream(new File(root, fname));
+            
+            File dst = new File(root, fname);
+            
+            if (!dst.exists()) {
+                return "";
+            }
+            
+            FileInputStream is = new FileInputStream(dst);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -213,7 +238,12 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     }
 
     private void saveAvatarImage() {
-        File main = getAvatarFile();
+        
+        if (currentOfferId == -1) {
+            Log.e(TAG, "Cannot save image without id");
+            return;
+        }
+        File main = getAvatarFile(currentOfferId);
         File tmp = getAvatarTmpFile();
 
         try {
@@ -373,11 +403,11 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         }
     }
 
-    private File getAvatarFile() {
+    private File getAvatarFile(int id) {
         // Determine Uri of camera image to save.
         final File root = new File(getApplicationContext().getFilesDir() + File.separator + AVATAR_DIR + File.separator);
         root.mkdirs();
-        final String fname = "avatar.jpg";
+        final String fname = "avatar_" + id + ".jpg";
 
         return new File(root, fname);
     }
@@ -392,9 +422,15 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     }
 
     private void updateAvatarImage() {
+        
+        if (currentOfferId == -1) {
+            Log.e(TAG, "Cannot show image with null id");
+            return;
+        }
+        
         File img;
         if (!editMode) {
-            img = getAvatarFile();
+            img = getAvatarFile(currentOfferId);
         } else {
             img = getAvatarTmpFile();
         }

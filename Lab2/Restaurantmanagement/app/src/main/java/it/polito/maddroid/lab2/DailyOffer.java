@@ -8,16 +8,14 @@ public class DailyOffer {
     private String description;
     private int quantity;
     private float price;
-    private String photoPath;
 
-    public DailyOffer(int DailyOfferid, String name,String description, int quantity,float price, String photoPath) {
+    public DailyOffer(int DailyOfferid, String name,String description, int quantity,float price) {
 
         this.DailyOfferid = DailyOfferid;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.photoPath = photoPath;
     }
 
     public int getid (){
