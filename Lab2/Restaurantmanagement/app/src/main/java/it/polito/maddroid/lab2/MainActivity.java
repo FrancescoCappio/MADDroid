@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
                 
             case 1:
-                fragment = dailyOffersFragment;
                 dailyOffersFragment = new DailyOffersFragment();
+                fragment = dailyOffersFragment;
                 getSupportActionBar().setTitle(R.string.daily_offers);
                 break;
             

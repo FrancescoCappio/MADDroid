@@ -7,13 +7,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,27 +22,20 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 
 public class DailyOfferDetailActivity extends AppCompatActivity {
     private static final String TAG = "DailyOfferDetail";
-
-
+    
     private MenuItem menuEdit;
     private MenuItem menuSave;
     private boolean editMode = false;
@@ -58,51 +51,62 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private EditText etQuantity;
     private EditText etPrice;
     private EditText etDescription;
-    private ImageView ivAvatar;
+    private ImageView ivDishPhoto;
     private TextView tvDescriptionCount;
     private FloatingActionButton fabAddPhoto;
-
-
-    //this path must be one of the paths specified in "file_paths.xml"
-    private static final String AVATAR_DIR = "images";
-    private static final String DATA_DIR = "data";
+    
     //content provider authority
     private static final String AUTHORITY = "it.polito.maddroid.lab2.fileprovider";
     
     private int currentOfferId = -1;
 
     private static int PHOTO_REQUEST_CODE = 128;
+    private static int PHOTO_CROP_CODE = 61;
+    
+    DataManager dataManager;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_daily_offer_detail_activty);
+        setContentView(R.layout.activity_daily_offer_detail_activity);
 
-        etName =findViewById(R.id.et_name);
+        //get references to views
+        etName = findViewById(R.id.et_name);
         etQuantity = findViewById(R.id.et_quantity);
         etPrice = findViewById(R.id.et_price);
         etDescription = findViewById(R.id.et_description);
-        ivAvatar = findViewById(R.id.iv_avatar);
+        ivDishPhoto = findViewById(R.id.iv_avatar);
         tvDescriptionCount = findViewById(R.id.tv_description_count);
         fabAddPhoto = findViewById(R.id.fab_add_photo);
     
+        //get reference to dataManager
+        dataManager = DataManager.getInstance(getApplicationContext());
+        
+        // obtain and check launch mode
         Intent i  = getIntent();
         pageType = i.getStringExtra(PAGE_TYPE_KEY);
         
         if (pageType.equals(MODE_NEW)) {
-            int newOfferId = getLastOfferId() +1;
-            currentOfferId = newOfferId;
+            currentOfferId = dataManager.getNextDailyOfferId();
         } else {
-            int offerId = i.getIntExtra(OFFER_ID_KEY, -1);
-            currentOfferId = offerId;
+            currentOfferId = i.getIntExtra(OFFER_ID_KEY, -1);
+            updateDishImage();
         }
     
         // set title
-        getSupportActionBar().setTitle("New Dish");
-    
-        // add back button
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            if (pageType.equals(MODE_NEW))
+                getSupportActionBar().setTitle(R.string.new_dish);
+            else
+                getSupportActionBar().setTitle(R.string.daily_offer_detail);
+            
+            // add back button
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        
+        
     }
     
     @Override
@@ -111,23 +115,14 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.save_menu, menu);
 
         menuEdit = menu.findItem(R.id.menu_edit);
-        menuSave = menu.findItem(R.id.menu_save);
+        menuSave = menu.findItem(R.id.menu_confirm);
 
         //enable/disable edit depending on the state
         setEditEnabled(editMode);
 
         //add on click action to imageview
-        ivAvatar.setOnClickListener(v -> startActivityToGetImage());
-
+        ivDishPhoto.setOnClickListener(v -> startActivityToGetImage());
         
-
-        if(pageType.equals(MODE_NEW)) {
-            getSupportActionBar().setTitle("New Dish");
-            setEditEnabled(true);
-        } else if (pageType.equals("Show")){
-            getSupportActionBar().setTitle("Information");
-            setEditEnabled(false);
-        }
         return true;
     }
     
@@ -142,7 +137,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             case R.id.menu_edit:
                 setEditEnabled(true);
                 break;
-            case R.id.menu_save:
+            case R.id.menu_confirm:
                 String Name =etName.getText().toString();
                 String Quantity=etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
@@ -150,10 +145,13 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     
     
                 if(pageType.equals(MODE_NEW)){
-        
+                    
                     DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
-                    saveNewData(offer);
-                    saveAvatarImage();
+                    
+                    // add offer to our list
+                    dataManager.addNewDailyOffer(getApplicationContext(), offer);
+                    // save image for the offer
+                    dataManager.saveDishImage(getApplicationContext(), currentOfferId);
         
                 } else if (pageType.equals("Edit")){
                     setEditEnabled(false);
@@ -161,127 +159,6 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
-
-    private int getLastOfferId(){
-        String DataRead = readJsonData();
-        int OfferId = 0;
-        if (DataRead.isEmpty() || DataRead == null)
-            OfferId = 0;
-        else {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<ArrayList<DailyOffer>>() {
-            }.getType();
-            List<DailyOffer> history = gson.fromJson(DataRead, listType);
-            DailyOffer lastOffer = history.get(history.size()-1);
-            OfferId = lastOffer.getid();
-        }
-
-        return OfferId;
-    }
-
-    private void saveNewData(DailyOffer newData) {
-
-        //Read data from JSON File
-        String DataRead = readJsonData();
-
-        //convert Json data to java object
-        Gson gson = new Gson();
-        Type listType = new TypeToken< ArrayList<DailyOffer> >(){}.getType();
-        List<DailyOffer> history = gson.fromJson(DataRead, listType);
-        
-        if (history == null) {
-            //the file is empty
-            history = new ArrayList<>();
-        }
-
-        //Add new row to data
-        history.add(newData);
-
-        //Sort the data by DailyOfferId
-        Collections.sort(history,new DailyOffer.Sortbyroll());
-
-        //save data to new json
-        String json = new Gson().toJson(history);
-        saveDatatoJson(json);
-
-    }
-
-    private void saveDatatoJson(String mJsonResponse) {
-        try {
-            final File root = new File(getApplicationContext().getFilesDir() + File.separator + DATA_DIR + File.separator);
-            root.mkdirs();
-            final String fname = "DailoffersData.json";
-            FileWriter file = new FileWriter(new File(root, fname));
-            file.write(mJsonResponse);
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String readJsonData() {
-        String mResponse ="";
-        try {
-            final File root = new File(getApplicationContext().getFilesDir() + File.separator + DATA_DIR + File.separator);
-            root.mkdirs();
-            final String fname = "DailoffersData.json";
-            
-            File dst = new File(root, fname);
-            
-            if (!dst.exists()) {
-                return "";
-            }
-            
-            FileInputStream is = new FileInputStream(dst);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            mResponse = new String(buffer);
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return mResponse;
-    }
-
-    private void saveAvatarImage() {
-        
-        if (currentOfferId == -1) {
-            Log.e(TAG, "Cannot save image without id");
-            return;
-        }
-        File main = getAvatarFile(currentOfferId);
-        File tmp = getAvatarTmpFile();
-
-        try {
-            FileInputStream fis = new FileInputStream(tmp);
-
-            FileOutputStream fos = new FileOutputStream(main);
-
-            byte[] buffer = new byte[4096];
-            while (true) {
-                int bytesRead = fis.read(buffer);
-                if (bytesRead == -1)
-                    break;
-                fos.write(buffer, 0, bytesRead);
-            }
-
-            fos.flush();
-            fos.close();
-            fis.close();
-
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found exception: " + e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e(TAG, "IOexception: " + e.getMessage());
-            e.printStackTrace();
-        }
-
     }
 
     private void setEditEnabled(boolean enabled) {
@@ -293,7 +170,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         etPrice.setEnabled(enabled);
         etQuantity.setEnabled(enabled);
         etName.setEnabled(enabled);
-        ivAvatar.setEnabled(enabled);
+        ivDishPhoto.setEnabled(enabled);
 
 
         if (enabled)
@@ -303,7 +180,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     }
 
     private void startActivityToGetImage() {
-        File myImageFile = getAvatarTmpFile();
+        File myImageFile = DataManager.getDishTmpFile(getApplicationContext());
 
         final Uri outputFileUri = FileProvider.getUriForFile(getApplicationContext(),
                 AUTHORITY,
@@ -349,6 +226,54 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
 
         startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
     }
+    
+    private void startActivityToCropImage() {
+        //final ArrayList<CropOption> cropOptions = new ArrayList<CropOption>();
+        
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        cropIntent.setType("image/*");
+        List<ResolveInfo> listCropApps = getPackageManager().queryIntentActivities(cropIntent, 0 );
+        int size = listCropApps.size();
+        final List<Intent> totIntents = new ArrayList<>();
+        if (size == 0) {
+            Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            for(ResolveInfo res : listCropApps) {
+                final String packageName = res.activityInfo.packageName;
+                final Intent intent = new Intent(cropIntent);
+                intent.setComponent(new ComponentName(packageName, res.activityInfo.name));
+                intent.setPackage(packageName);
+    
+                File myImageFile = DataManager.getDishTmpFile(getApplicationContext());
+    
+                final Uri outputFileUri = FileProvider.getUriForFile(getApplicationContext(),
+                        AUTHORITY,
+                        myImageFile);
+    
+    
+                intent.setData(outputFileUri);
+                intent.putExtra("crop", true);
+//                intent.putExtra("noFaceDetection", true);
+//                intent.putExtra("outputX", 400);
+//                intent.putExtra("outputY", 400);
+                intent.putExtra("aspectX", 1);
+                intent.putExtra("aspectY", 1);
+//                intent.putExtra("scale", true);
+                intent.putExtra("return-data", true);
+                
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                totIntents.add(intent);
+            }
+        }
+    
+        Intent lastIntent = totIntents.remove(totIntents.size() - 1);
+    
+        final Intent chooserIntent = Intent.createChooser(lastIntent, "Select Source");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, totIntents.toArray(new Parcelable[totIntents.size()]));
+    
+        startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -380,7 +305,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
                     // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
                     InputStream is = getContentResolver().openInputStream(selectedImageUri);
-                    FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
+                    FileOutputStream fs = new FileOutputStream(DataManager.getDishTmpFile(getApplicationContext()));
 
                     if (is == null) {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
@@ -398,41 +323,21 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     fs.flush();
                     fs.close();
 
-                    //update shown image
-                    updateAvatarImage();
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read bitmap");
                     e.printStackTrace();
+                    return;
                 }
 
 
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
-                //update shown image
-                updateAvatarImage();
             }
+            startActivityToCropImage();
         }
     }
 
-    private File getAvatarFile(int id) {
-        // Determine Uri of camera image to save.
-        final File root = new File(getApplicationContext().getFilesDir() + File.separator + AVATAR_DIR + File.separator);
-        root.mkdirs();
-        final String fname = "avatar_" + id + ".jpg";
-
-        return new File(root, fname);
-    }
-
-    private File getAvatarTmpFile() {
-        // Determine Uri of camera image to save.
-        final File root = new File(getApplicationContext().getFilesDir() + File.separator + AVATAR_DIR + File.separator);
-        root.mkdirs();
-        final String fname = "avatar_tmp.jpg";
-
-        return new File(root, fname);
-    }
-
-    private void updateAvatarImage() {
+    private void updateDishImage() {
         
         if (currentOfferId == -1) {
             Log.e(TAG, "Cannot show image with null id");
@@ -441,75 +346,35 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
         File img;
         if (!editMode) {
-            img = getAvatarFile(currentOfferId);
+            img = DataManager.getDishImageFile(getApplicationContext(), currentOfferId);
         } else {
-            img = getAvatarTmpFile();
+            img = DataManager.getDishTmpFile(getApplicationContext());
         }
 
         if (!img.exists() || !img.isFile()) {
             Log.d(TAG, "Cannot load unexisting file as avatar");
             return;
         }
-
+    
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(img.getAbsolutePath(), options);
-
-        try {
-            ExifInterface exif = new ExifInterface(img.getAbsolutePath());
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
-
-            bitmap = rotateBitmap(bitmap, orientation);
-        } catch (IOException e) {
-            Log.e(TAG, "Cannot obtain exif info to check image rotation");
-            e.printStackTrace();
+        
+        //only if we are in edit mode the image can be rotated
+        if (editMode) {
+            try {
+                ExifInterface exif = new ExifInterface(img.getAbsolutePath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        
+                bitmap = Utility.rotateBitmap(bitmap, orientation);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot obtain exif info to check image rotation");
+                e.printStackTrace();
+            }
         }
 
-        ivAvatar.setImageBitmap(bitmap);
+        ivDishPhoto.setImageBitmap(bitmap);
     }
 
-    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
-
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_NORMAL:
-                return bitmap;
-            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                matrix.setScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                matrix.setRotate(180);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_TRANSPOSE:
-                matrix.setRotate(90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_TRANSVERSE:
-                matrix.setRotate(-90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(-90);
-                break;
-            default:
-                return bitmap;
-        }
-        try {
-            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
-            return bmRotated;
-        }
-        catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+    
 }

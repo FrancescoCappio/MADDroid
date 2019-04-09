@@ -82,7 +82,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 finish();
                 break;
                 
-            case R.id.menu_save:
+            case R.id.menu_confirm:
                 Log.d(TAG, "Confirm pressed");
                 
                 //TODO: check that all the elements have been filled
