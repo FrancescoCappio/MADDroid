@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DailyOfferAdapter extends BaseAdapter {
@@ -21,8 +22,8 @@ public class DailyOfferAdapter extends BaseAdapter {
     
     private Context context;
     
-    public DailyOfferAdapter(ArrayList<DailyOffer> dailyOffers, Context context) {
-        this.dailyOffers = dailyOffers;
+    public DailyOfferAdapter(List<DailyOffer> dailyOffers, Context context) {
+        this.dailyOffers = new ArrayList<>(dailyOffers);
         this.context = context;
     }
     
@@ -75,6 +76,12 @@ public class DailyOfferAdapter extends BaseAdapter {
         tvQuantity.setText("" + dailyOffer.getQuantity());
         
         return rowView;
+    }
+    
+    
+    public void updateList(List<DailyOffer> dOffers) {
+        this.dailyOffers = new ArrayList<>(dOffers);
+        notifyDataSetChanged();
     }
     
     

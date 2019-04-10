@@ -89,13 +89,16 @@ public class OrderDetailActivity extends AppCompatActivity {
                 
                 String dish = etDish.getText().toString();
                 String customer = etCustomer.getText().toString();
+                int customerId = Integer.parseInt(customer);
                 String rider = etRider.getText().toString();
+                int riderId = Integer.parseInt(rider);
+               
+                DataManager dataManager = DataManager.getInstance(getApplicationContext());
                 
-                data.putExtra(RIDER_KEY, rider);
-                data.putExtra(TIME_MIN_KEY, timeMinutes);
-                data.putExtra(TIME_H_KEY, timeHour);
-                data.putExtra(CUSTOMER_KEY, customer);
-                data.putExtra(DISH_KEY, dish);
+                Order n = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
+                
+                dataManager.addNewOrder(getApplicationContext(), n);
+                
                 setResult(Activity.RESULT_OK, data);
                 finish();
                 break;

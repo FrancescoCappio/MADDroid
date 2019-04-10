@@ -4,12 +4,9 @@ package it.polito.maddroid.lab2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,8 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -33,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int selectedId; //0 = orders; 1 = daily_offers
     
     private static final int ORDER_DETAIL_CODE = 123;
-    private static final int DAILY_OFFER_DETAIL_CODE = 124;
+    public static final int DAILY_OFFER_DETAIL_CODE = 124;
     
     private final static String TAG = "MainActivity";
     
@@ -90,11 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
             
             navigationView.setCheckedItem(position);
-            
-//            mDrawerList.setItemChecked(position, true);
-//            mDrawerList.setSelection(position);
-//            setTitle(mNavigationDrawerItemTitles[position]);
-//            mDrawerLayout.closeDrawer(mDrawerList);
         
         } else {
             Log.e("MainActivity", "Error in creating fragment");
@@ -103,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -132,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (selectedId == 1) {
                 Intent i = new Intent(getApplicationContext(), DailyOfferDetailActivity.class);
                 i.putExtra(DailyOfferDetailActivity.PAGE_TYPE_KEY,DailyOfferDetailActivity.MODE_NEW);
-                startActivity(i);
+                startActivityForResult(i, DAILY_OFFER_DETAIL_CODE);
             }
             if(selectedId == 0){
                 Intent i = new Intent(getApplicationContext(), OrderDetailActivity.class);
@@ -156,25 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_orders) {
             selectItem(0);
         }
-//
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        }
-//        else if (id == R.id.nav_gallery) {
-//
-//        }
-//        else if (id == R.id.nav_slideshow) {
-//
-//        }
-//        else if (id == R.id.nav_manage) {
-//
-//        }
-//        else if (id == R.id.nav_share) {
-//
-//        }
-//        else if (id == R.id.nav_send) {
-//
-//        }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -197,22 +168,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         switch (requestCode) {
             case ORDER_DETAIL_CODE:
-                int timeMinutes = data.getIntExtra(OrderDetailActivity.TIME_MIN_KEY, 0);
-                int timeHour = data.getIntExtra(OrderDetailActivity.TIME_H_KEY, 0);
+                if (ordersFragment != null)
+                    ordersFragment.notifyUpdate();
                 
-                String dish = data.getStringExtra(OrderDetailActivity.DISH_KEY);
-                String customer = data.getStringExtra(OrderDetailActivity.CUSTOMER_KEY);
-                String rider = data.getStringExtra(OrderDetailActivity.RIDER_KEY);
                 
-                String detail = dish + " " + customer + " " + rider;
-                
-                Order order = new Order(0, timeHour, timeMinutes, 0, 0);
-                
-                if (ordersFragment != null) {
-                    ordersFragment.addOrder(order);
+            case DAILY_OFFER_DETAIL_CODE:
+                if (dailyOffersFragment != null) {
+                    dailyOffersFragment.notifyUpdate();
                 }
-    
-                Toast.makeText(getApplicationContext(), detail, Toast.LENGTH_SHORT).show();
         }
     }
 }
