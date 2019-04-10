@@ -8,16 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class OrdersFragment extends Fragment {
     
-    private ArrayList<Order> orders;
+    private List<Order> orders;
     
     private ListView lvOrders;
     
-    OrdersArrayAdapter ordersAdapter;
+    OrdersAdapter ordersAdapter;
     
     public OrdersFragment() {
         // Required empty public constructor
@@ -36,19 +36,19 @@ public class OrdersFragment extends Fragment {
         
         lvOrders = view.findViewById(R.id.lv_orders);
         
-        orders = new ArrayList<>();
+        orders = DataManager.getInstance(getContext()).getOrders();
         
-        ordersAdapter = new OrdersArrayAdapter(getContext(), orders);
+        ordersAdapter = new OrdersAdapter(getContext(), orders);
         
         lvOrders.setAdapter(ordersAdapter);
         
         return view;
     }
     
-    public void addOrder(Order o) {
-        orders.add(o);
-        ordersAdapter.addOrder(o);
-        ordersAdapter.notifyDataSetChanged();
+    public void notifyUpdate() {
+        orders = DataManager.getInstance(getContext()).getOrders();
+        ordersAdapter.updateOrders(orders);
     }
+    
     
 }

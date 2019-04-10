@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class OrdersArrayAdapter extends BaseAdapter {
+public class OrdersAdapter extends BaseAdapter {
     private ArrayList<Order> orders;
     
     Context context;
     
-    public OrdersArrayAdapter(Context context, List<Order> objects) {
+    public OrdersAdapter(Context context, List<Order> objects) {
         this.context = context;
         orders = new ArrayList<>(objects);
     }
@@ -62,8 +62,9 @@ public class OrdersArrayAdapter extends BaseAdapter {
         return rowView;
     }
     
-    public void addOrder(Order o) {
-        orders.add(o);
+    public void updateOrders(List<Order> orders) {
+        this.orders = new ArrayList<>(orders);
+        notifyDataSetChanged();
     }
     
 }

@@ -22,8 +22,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -88,8 +86,19 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
         if (pageType.equals(MODE_NEW)) {
             currentOfferId = dataManager.getNextDailyOfferId();
+            editMode = true;
         } else {
             currentOfferId = i.getIntExtra(OFFER_ID_KEY, -1);
+            editMode = false;
+            
+            
+            DailyOffer dailyOffer = dataManager.getDailyOfferWithId(currentOfferId);
+            
+            etName.setText(dailyOffer.getName());
+            etDescription.setText(dailyOffer.getDescription());
+            etQuantity.setText(dailyOffer.getQuantity()+"");
+            etPrice.setText(dailyOffer.getPrice()+"");
+            
             updateDishImage();
         }
     
@@ -129,17 +138,20 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
+    
+        Intent data = new Intent();
         
         switch(item.getItemId()) {
             case android.R.id.home:
+                setResult(RESULT_CANCELED, data);
                 finish();
                 break;
             case R.id.menu_edit:
                 setEditEnabled(true);
                 break;
             case R.id.menu_confirm:
-                String Name =etName.getText().toString();
-                String Quantity=etQuantity.getText().toString();
+                String Name = etName.getText().toString();
+                String Quantity = etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
     
@@ -153,9 +165,19 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     // save image for the offer
                     dataManager.saveDishImage(getApplicationContext(), currentOfferId);
         
-                } else if (pageType.equals("Edit")){
-                    setEditEnabled(false);
+                } else {
+                    
+                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+    
+                    // add offer to our list
+                    dataManager.setDailyOfferWithId(getApplicationContext(), offer);
+                    // save image for the offer
+                    dataManager.saveDishImage(getApplicationContext(), currentOfferId);
+                    
                 }
+                
+                setResult(RESULT_OK, data);
+                finish();
                 break;
         }
         return true;
@@ -227,53 +249,6 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
     }
     
-    private void startActivityToCropImage() {
-        //final ArrayList<CropOption> cropOptions = new ArrayList<CropOption>();
-        
-        Intent cropIntent = new Intent("com.android.camera.action.CROP");
-        cropIntent.setType("image/*");
-        List<ResolveInfo> listCropApps = getPackageManager().queryIntentActivities(cropIntent, 0 );
-        int size = listCropApps.size();
-        final List<Intent> totIntents = new ArrayList<>();
-        if (size == 0) {
-            Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            for(ResolveInfo res : listCropApps) {
-                final String packageName = res.activityInfo.packageName;
-                final Intent intent = new Intent(cropIntent);
-                intent.setComponent(new ComponentName(packageName, res.activityInfo.name));
-                intent.setPackage(packageName);
-    
-                File myImageFile = DataManager.getDishTmpFile(getApplicationContext());
-    
-                final Uri outputFileUri = FileProvider.getUriForFile(getApplicationContext(),
-                        AUTHORITY,
-                        myImageFile);
-    
-    
-                intent.setData(outputFileUri);
-                intent.putExtra("crop", true);
-//                intent.putExtra("noFaceDetection", true);
-//                intent.putExtra("outputX", 400);
-//                intent.putExtra("outputY", 400);
-                intent.putExtra("aspectX", 1);
-                intent.putExtra("aspectY", 1);
-//                intent.putExtra("scale", true);
-                intent.putExtra("return-data", true);
-                
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-                totIntents.add(intent);
-            }
-        }
-    
-        Intent lastIntent = totIntents.remove(totIntents.size() - 1);
-    
-        final Intent chooserIntent = Intent.createChooser(lastIntent, "Select Source");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, totIntents.toArray(new Parcelable[totIntents.size()]));
-    
-        startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -333,7 +308,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
             }
-            startActivityToCropImage();
+            updateDishImage();
         }
     }
 

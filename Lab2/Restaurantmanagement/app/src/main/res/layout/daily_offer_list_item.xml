@@ -10,6 +10,7 @@
         android:layout_height="@dimen/daily_offer_image_size"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_restaurant_black_24dp"/>
 
     <TextView

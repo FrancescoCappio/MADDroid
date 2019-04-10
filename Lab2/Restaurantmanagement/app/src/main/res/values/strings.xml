@@ -4,7 +4,7 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="quantity">Quantity</string>
-    <string name="customer">Customer</string>
+    <string name="customer_id">Customer Id</string>
     <string name="dish"> Dish</string>
     <string name="rider_id">Rider\'s id</string>
     <string name="price">Price</string>
