@@ -1,6 +1,5 @@
 package it.polito.maddroid.lab2;
 
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +21,11 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,9 +63,10 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private int currentOfferId = -1;
 
     private static int PHOTO_REQUEST_CODE = 128;
-    private static int PHOTO_CROP_CODE = 61;
     
     DataManager dataManager;
+    
+    private boolean saveImage = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +168,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     // add offer to our list
                     dataManager.addNewDailyOffer(getApplicationContext(), offer);
                     // save image for the offer
-                    dataManager.saveDishImage(getApplicationContext(), currentOfferId);
+                    if (saveImage)
+                        dataManager.saveDishImage(getApplicationContext(), currentOfferId);
         
                 } else {
                     
@@ -172,7 +178,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     // add offer to our list
                     dataManager.setDailyOfferWithId(getApplicationContext(), offer);
                     // save image for the offer
-                    dataManager.saveDishImage(getApplicationContext(), currentOfferId);
+                    if (saveImage)
+                        dataManager.saveDishImage(getApplicationContext(), currentOfferId);
                     
                 }
                 
@@ -249,6 +256,20 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         startActivityForResult(chooserIntent, PHOTO_REQUEST_CODE);
     }
     
+    private void startActivityToCropImage() {
+        File myImageFile = DataManager.getDishTmpFile(getApplicationContext());
+    
+        final Uri outputFileUri = FileProvider.getUriForFile(getApplicationContext(),
+                AUTHORITY,
+                myImageFile);
+    
+        CropImage.activity(outputFileUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(this);
+        
+    }
+    
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -258,60 +279,80 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         }
 
         if (requestCode == PHOTO_REQUEST_CODE) {
-            final boolean isCamera;
-            if (data == null || data.getData() == null) {
-                isCamera = true;
-            } else {
-                isCamera = false;
+            manageCameraResult(data);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            Uri resultUri = result.getUri();
+            Log.d(TAG, "Result uri: " + resultUri);
+            try {
+                copyImageToTmpLocation(resultUri);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot read bitmap");
+                e.printStackTrace();
             }
-
-            Uri selectedImageUri;
-            if (!isCamera) {
-                selectedImageUri = data.getData();
-
-                if (selectedImageUri == null) {
-                    Log.e(TAG, "Selectedimageuri is null");
-                    return;
-                }
-                Log.d(TAG, "Result URI: " + selectedImageUri.toString());
-
-                try {
-                    // we need to copy the image into our directory, we try 2 methods to do this:
-                    // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
-                    // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
-                    InputStream is = getContentResolver().openInputStream(selectedImageUri);
-                    FileOutputStream fs = new FileOutputStream(DataManager.getDishTmpFile(getApplicationContext()));
-
-                    if (is == null) {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
-                    } else {
-                        byte[] buffer = new byte[4096];
-                        while (true) {
-                            int bytesRead = is.read(buffer);
-                            if (bytesRead == -1)
-                                break;
-                            fs.write(buffer, 0, bytesRead);
-                        }
-                    }
-
-                    fs.flush();
-                    fs.close();
-
-                } catch (IOException e) {
-                    Log.e(TAG, "Cannot read bitmap");
-                    e.printStackTrace();
-                    return;
-                }
-
-
-            } else {
-                Log.d(TAG, "Image successfully captured with camera");
-            }
+            saveImage = true;
             updateDishImage();
         }
     }
+    
+    private void manageCameraResult(Intent data) {
+        final boolean isCamera;
+        if (data == null || data.getData() == null) {
+            isCamera = true;
+        } else {
+            isCamera = false;
+        }
+        
+        Uri selectedImageUri;
+        if (!isCamera) {
+            selectedImageUri = data.getData();
 
+            if (selectedImageUri == null) {
+                Log.e(TAG, "Selectedimageuri is null");
+                return;
+            }
+            Log.d(TAG, "Result URI: " + selectedImageUri.toString());
+
+            try {
+                // we need to copy the image into our directory, we try 2 methods to do this:
+                // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
+                // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
+                copyImageToTmpLocation(selectedImageUri);
+    
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot read bitmap");
+                e.printStackTrace();
+                return;
+            }
+
+
+        } else {
+            Log.d(TAG, "Image successfully captured with camera");
+        }
+        startActivityToCropImage();
+    }
+    
+    private void copyImageToTmpLocation(Uri selectedImageUri) throws IOException {
+        InputStream is = getContentResolver().openInputStream(selectedImageUri);
+        FileOutputStream fs = new FileOutputStream(DataManager.getDishTmpFile(getApplicationContext()));
+        
+        if (is == null) {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+        } else {
+            byte[] buffer = new byte[4096];
+            while (true) {
+                int bytesRead = is.read(buffer);
+                if (bytesRead == -1)
+                    break;
+                fs.write(buffer, 0, bytesRead);
+            }
+        }
+        
+        fs.flush();
+        fs.close();
+    }
+    
     private void updateDishImage() {
         
         if (currentOfferId == -1) {
@@ -331,24 +372,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             return;
         }
     
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(img.getAbsolutePath(), options);
-        
-        //only if we are in edit mode the image can be rotated
-        if (editMode) {
-            try {
-                ExifInterface exif = new ExifInterface(img.getAbsolutePath());
-                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-        
-                bitmap = Utility.rotateBitmap(bitmap, orientation);
-            } catch (IOException e) {
-                Log.e(TAG, "Cannot obtain exif info to check image rotation");
-                e.printStackTrace();
-            }
-        }
-
-        ivDishPhoto.setImageBitmap(bitmap);
+        Glide.with(getApplicationContext()).load(img).into(ivDishPhoto);
     }
 
     
