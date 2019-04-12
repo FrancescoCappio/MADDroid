@@ -44,41 +44,32 @@ public class OrdersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_orders, container, false);
-        expandableListView = (ExpandableListView) view.findViewById(R.id.expandableListView);
+        
+        expandableListView = view.findViewById(R.id.expandableListView);
         expandableListDetail = getMapFromList(DataManager.getInstance(getContext()).getOrders());
-        expandableListTitle = new ArrayList<Order>(DataManager.getInstance(getContext()).getOrders());
+        expandableListTitle = new ArrayList<>(DataManager.getInstance(getContext()).getOrders());
         expandableListAdapter = new CustomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
-        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int itemType = ExpandableListView.getPackedPositionType(id);
-                Log.d("stampa Order fragment", String.valueOf(position));
-                if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+        
+        expandableListView.setOnItemLongClickListener((parent, view1, position, id) -> {
+            int itemType = ExpandableListView.getPackedPositionType(id);
+            Log.d("stampa Order fragment", String.valueOf(position));
+            if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 
 
-                } else if(itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-                    Intent i = new Intent(getContext(), OrderDetailActivity.class);
-                    i.putExtra(OrderDetailActivity.PAGE_TYPE_KEY, OrderDetailActivity.MODE_SHOW);
-                    i.putExtra(OrderDetailActivity.ORDER_ID_KEY, position);
-                    startActivityForResult(i, MainActivity.ORDER_DETAIL_CODE);
+            } else if(itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                Intent i = new Intent(getContext(), OrderDetailActivity.class);
+                i.putExtra(OrderDetailActivity.PAGE_TYPE_KEY, OrderDetailActivity.MODE_SHOW);
+                i.putExtra(OrderDetailActivity.ORDER_ID_KEY, expandableListTitle.get(position).getId());
+                startActivityForResult(i, MainActivity.ORDER_DETAIL_CODE);
 
-                } else {
-                    // null item; we don't consume the click
-                    return false;
-                }
-            return true;
+            } else {
+                // null item; we don't consume the click
+                return false;
             }
-                                                       });
-        /*
-        lvOrders = view.findViewById(R.id.expandableListView);
-        
-        orders = DataManager.getInstance(getContext()).getOrders();
-        
-        ordersAdapter = new OrdersAdapter(getContext(), orders);
-        
-        lvOrders.setAdapter(ordersAdapter);
-        */
+        return true;
+        });
+
         return view;
     }
 
@@ -110,7 +101,5 @@ public class OrdersFragment extends Fragment {
         expandableListAdapter.notifyUpadateOrder(expandableListTitle,expandableListDetail);
         return;
     }
-
-
     
 }

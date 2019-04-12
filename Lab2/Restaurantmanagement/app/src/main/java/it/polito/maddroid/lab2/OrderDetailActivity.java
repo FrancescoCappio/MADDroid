@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -37,10 +38,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     private  int currentOrderId;
     
     private EditText etTime;
-    private EditText etDish;
     private EditText etCustomer;
     private EditText etRider;
     private EditText etPriceTot;
+    private Button btChooseDishes;
     
     private int timeHour;
     private int timeMinutes;
@@ -62,7 +63,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         // get references to views
         etTime = findViewById(R.id.et_time);
-        etDish = findViewById(R.id.et_dish);
         etCustomer = findViewById(R.id.et_customer);
         etRider = findViewById(R.id.et_idRider);
         etPriceTot = findViewById(R.id.et_priceTot);
@@ -70,21 +70,12 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         etTime.setFocusable(false);
         etTime.setClickable(true);
-        etTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePickerDialog();
-            }
-        });
+        etTime.setOnClickListener(v -> showTimePickerDialog());
 
-        ImageButton imageButton = findViewById(R.id.ib_add_Dish1);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
-                startActivityForResult(i,ORDER_CHOOSE_DISHES);
-            }
-
+        btChooseDishes = findViewById(R.id.ib_choose_dishes);
+        btChooseDishes.setOnClickListener(arg0 -> {
+            Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
+            startActivityForResult(i,ORDER_CHOOSE_DISHES);
         });
     
         dataManager = DataManager.getInstance(getApplicationContext());
@@ -93,22 +84,21 @@ public class OrderDetailActivity extends AppCompatActivity {
         pageType = i.getStringExtra(PAGE_TYPE_KEY);
         Log.d("stampa Order Detail ", pageType);
         if (pageType.equals(MODE_NEW)) {
-            currentOfferId = dataManager.getNextOrderId();
+            currentOrderId = dataManager.getNextOrderId();
             editMode = true;
         } else {
-            Log.d("stampa Order Detail", String.valueOf(currentOfferId));
-            currentOfferId = i.getIntExtra(this.ORDER_ID_KEY, -1);
-            Log.d("stampa Order Detail", String.valueOf(currentOfferId));
+            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
+            currentOrderId = i.getIntExtra(this.ORDER_ID_KEY, -1);
+            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
             editMode = false;
         
             StringBuilder s = new StringBuilder(5) ;
-            Order order= dataManager.getOrderWithId(currentOfferId);
+            Order order= dataManager.getOrderWithId(currentOrderId);
         
             Log.d("Order Detail Activity", "qui arriva");
             etRider.setText(""+order.getRiderId());
             etCustomer.setText(""+order.getCustomerId());
             etPriceTot.setText("da terminare");
-            etDish.setText("da terminare");
             //todo attenzione a come si stampano i minuti tipo 02 03 etc
             DecimalFormat formatter = new DecimalFormat("00");
             String shour = formatter.format(order.getTimeHour());
@@ -122,7 +112,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             if (pageType.equals(MODE_NEW))
                 getSupportActionBar().setTitle(R.string.new_order);
             else
-                getSupportActionBar().setTitle(R.string.order_detail);
+                getSupportActionBar().setTitle(R.string.detail);
         
             // add back button
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -177,7 +167,6 @@ public class OrderDetailActivity extends AppCompatActivity {
                 
                 //TODO: check that all the elements have been filled
                 
-                String dish = etDish.getText().toString();
                 String customer = etCustomer.getText().toString();
                 int customerId = Integer.parseInt(customer);
                 String rider = etRider.getText().toString();

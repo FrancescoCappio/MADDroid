@@ -105,7 +105,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             if (pageType.equals(MODE_NEW))
                 getSupportActionBar().setTitle(R.string.new_dish);
             else
-                getSupportActionBar().setTitle(R.string.daily_offer_detail);
+                getSupportActionBar().setTitle(R.string.detail);
             
             // add back button
             getSupportActionBar().setHomeButtonEnabled(true);
