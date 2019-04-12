@@ -19,6 +19,7 @@
     <string name="action_confirm">Confirm</string>
     <string name="new_dish">New dish</string>
     <string name="daily_offer_detail">Daily offer detail</string>
+    <string name="choose_dishes">Choose Dishes</string>
 
     <string name="save">Save</string>
     <string name="edit">Edit</string>

@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            
             if (selectedId == 1) {
                 Intent i = new Intent(getApplicationContext(), DailyOfferDetailActivity.class);
                 i.putExtra(DailyOfferDetailActivity.PAGE_TYPE_KEY,DailyOfferDetailActivity.MODE_NEW);

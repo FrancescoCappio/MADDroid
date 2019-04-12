@@ -2,6 +2,7 @@ package it.polito.maddroid.lab2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,13 +11,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
     
     private static final String TAG = "OrderDetailActivity";
+
+    private static final int ORDER_CHOOSE_DISHES = 123;
     
     public static final String TIME_MIN_KEY = "TIME_MIN_KEY";
     public static final String TIME_H_KEY = "TIME_H_KEY";
@@ -61,6 +66,39 @@ public class OrderDetailActivity extends AppCompatActivity {
                 showTimePickerDialog();
             }
         });
+
+        ImageButton imageButton = findViewById(R.id.ib_add_Dish1);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
+                startActivityForResult(i,ORDER_CHOOSE_DISHES);
+            }
+
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+
+        if (data == null) {
+            Log.e(TAG, "Result data null");
+            return;
+        }
+
+        switch (requestCode) {
+            case ORDER_CHOOSE_DISHES:
+                List<DailyOffer> list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
+                for(DailyOffer ii :list){
+
+                }
+        }
     }
 
     @Override

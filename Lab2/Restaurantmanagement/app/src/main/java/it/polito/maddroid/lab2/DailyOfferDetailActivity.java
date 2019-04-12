@@ -1,5 +1,7 @@
 package it.polito.maddroid.lab2;
 
+
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -93,17 +95,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             editMode = true;
         } else {
             currentOfferId = i.getIntExtra(OFFER_ID_KEY, -1);
-            editMode = false;
-            
-            
-            DailyOffer dailyOffer = dataManager.getDailyOfferWithId(currentOfferId);
-            
-            etName.setText(dailyOffer.getName());
-            etDescription.setText(dailyOffer.getDescription());
-            etQuantity.setText(dailyOffer.getQuantity()+"");
-            etPrice.setText(dailyOffer.getPrice()+"");
-            
             updateDishImage();
+            updateDishData();
         }
     
         // set title
@@ -121,7 +114,17 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
         
     }
-    
+
+    private void updateDishData() {
+        
+        DailyOffer currentDailyoffer = dataManager.getDailyOfferWithId(currentOfferId);
+        etName.setText(currentDailyoffer.getName());
+        etQuantity.setText(""+currentDailyoffer.getQuantity());
+        etPrice.setText(""+currentDailyoffer.getPrice());
+        etDescription.setText(currentDailyoffer.getDescription());
+        //tvDescriptionCount = findViewById(R.id.tv_description_count);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -142,12 +145,9 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-    
-        Intent data = new Intent();
         
         switch(item.getItemId()) {
             case android.R.id.home:
-                setResult(RESULT_CANCELED, data);
                 finish();
                 break;
             case R.id.menu_edit:
@@ -158,6 +158,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 String Quantity = etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
+                Intent data = new Intent();
     
     
                 if(pageType.equals(MODE_NEW)){
