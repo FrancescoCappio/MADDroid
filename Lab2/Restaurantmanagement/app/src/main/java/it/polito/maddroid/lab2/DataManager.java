@@ -309,8 +309,7 @@ public class DataManager {
 
     public Order getOrderWithId(int id) {
         //TODO make a copy of this object
-        Log.d("stampa getOrderWithId", String.valueOf(id) + " "+ String.valueOf(orders.size()));
-        return orders.get(id);
+        return new Order(orders.get(id));
     }
     
     public void setDailyOfferWithId(Context context, DailyOffer dailyOffer) {

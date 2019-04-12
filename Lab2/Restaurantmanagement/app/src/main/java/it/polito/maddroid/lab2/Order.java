@@ -5,7 +5,20 @@ import java.util.Objects;
 
 
 public class Order {
-
+    
+    public Order(Order o) {
+        this.id = o.id;
+        this.customerId = o.customerId;
+        this.riderId = o.riderId;
+        this.dishes = new HashMap<>();
+        
+        this.timeHour = o.timeHour;
+        this.timeMinutes = o.timeMinutes;
+        
+        for (int i: o.dishes.keySet())
+            this.dishes.put(i, o.dishes.get(i));
+    }
+    
     private int id;
 
     private int timeHour;
