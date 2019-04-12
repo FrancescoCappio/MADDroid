@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,8 +19,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DataManager {
@@ -35,8 +39,13 @@ public class DataManager {
     // instance for singleton pattern
     private static DataManager instance;
     
-    private List<DailyOffer> dailyOffers;
-    private List<Order> orders;
+    private HashMap<Integer, DailyOffer> dailyOffers;
+    private HashMap<Integer, Order> orders;
+    
+    private int dailyOfferMaxId = -1;
+    private int orderMaxId = -1;
+    
+    private static final int IMAGE_SIDE = 500;
     
     private DataManager(Context context) {
         // we need to load the data so that we do not load them multiple times
@@ -45,20 +54,32 @@ public class DataManager {
         // load daily offers
         String dailyOffersData = readJsonData(context, DAILY_OFFERS_JSON);
     
+        dailyOffers = new HashMap<>();
         if (dailyOffersData != null && !dailyOffersData.isEmpty()) {
             Type listType = new TypeToken<ArrayList<DailyOffer>>() {}.getType();
-            dailyOffers = gson.fromJson(dailyOffersData, listType);
-        } else {
-            dailyOffers = new ArrayList<>();
+            
+            List<DailyOffer> dOffers = gson.fromJson(dailyOffersData, listType);
+            
+            for (DailyOffer dailyOffer : dOffers) {
+                if (dailyOffer.getId() > dailyOfferMaxId)
+                    dailyOfferMaxId = dailyOffer.getId();
+                dailyOffers.put(dailyOffer.getId(), dailyOffer);
+            }
         }
         
         // load orders
         String ordersData = readJsonData(context, ORDERS_JSON);
+    
+        orders = new HashMap<>();
         if (ordersData != null && !ordersData.isEmpty()) {
             Type listType = new TypeToken<ArrayList<Order>>() {}.getType();
-            orders = gson.fromJson(ordersData, listType);
-        } else {
-            orders = new ArrayList<>();
+            List<Order> jorders = gson.fromJson(ordersData, listType);
+            
+            for (Order o : jorders) {
+                if (o.getId() > orderMaxId)
+                    orderMaxId = o.getId();
+                orders.put(o.getId(), o);
+            }
         }
         
     }
@@ -106,25 +127,25 @@ public class DataManager {
     }
     
     public List<DailyOffer> getDailyOffers() {
-        return dailyOffers;
+        Collection<DailyOffer> dao = dailyOffers.values();
+        List<DailyOffer> list = new ArrayList<>(dao);
+        Collections.sort(list, (o1, o2) ->  o1.getId() - o2.getId());
+        return list;
     }
     
     public List<Order> getOrders() {
-        return orders;
+        Collection<Order> dao = orders.values();
+        List<Order> list = new ArrayList<>(dao);
+        Collections.sort(list, (o1, o2) ->  o1.getId() - o2.getId());
+        return list;
     }
     
     public int getNextDailyOfferId() {
-        if (dailyOffers.isEmpty())
-            return 1;
-        DailyOffer dailyOffer = dailyOffers.get(dailyOffers.size()-1);
-        return dailyOffer.getId() + 1;
+        return dailyOfferMaxId + 1;
     }
     
     public int getNextOrderId() {
-        if (orders.isEmpty())
-            return 1;
-        Order o = orders.get(orders.size()-1);
-        return o.getId() + 1;
+        return orderMaxId + 1;
     }
     
     private void saveDataToFile(Context context, String filename, String json) {
@@ -160,13 +181,21 @@ public class DataManager {
     public void addNewDailyOffer(Context context, DailyOffer newData) {
         
         // Add new row to data
-        dailyOffers.add(newData);
+        dailyOffers.put(newData.getId(), newData);
         
-        // Sort the data by DailyOfferId
-        Collections.sort(dailyOffers, (o1, o2) -> {return o1.getId() - o2.getId();});
+        if (newData.getId() > dailyOfferMaxId)
+            dailyOfferMaxId = newData.getId();
+    
+        saveDailyOffers(context);
+    }
+    
+    private void saveDailyOffers(Context context) {
+        Collection<DailyOffer> dao = dailyOffers.values();
+        
+        List<DailyOffer> l = new ArrayList<>(dao);
         
         // obtain json string
-        String json = new Gson().toJson(dailyOffers);
+        String json = new Gson().toJson(l);
         
         // save json to file
         saveDataToFile(context, DAILY_OFFERS_JSON, json);
@@ -175,13 +204,22 @@ public class DataManager {
     public void addNewOrder(Context context, Order newData) {
         
         // Add new row to data
-        orders.add(newData);
+        orders.put(newData.getId(), newData);
+    
+        if (newData.getId() > orderMaxId)
+            orderMaxId = newData.getId();
+    
+        saveOrders(context);
+    }
+    
+    private void saveOrders(Context context) {
+        Collection<Order> dao = orders.values();
         
         // Sort the data by DailyOfferId
-        Collections.sort(orders, (o1, o2) -> o1.getId() - o2.getId());
+        List<Order> l = new ArrayList<>(dao);
         
         // obtain json string
-        String json = new Gson().toJson(orders);
+        String json = new Gson().toJson(l);
         
         // save json to file
         saveDataToFile(context, ORDERS_JSON, json);
@@ -220,38 +258,24 @@ public class DataManager {
             ExifInterface exif = new ExifInterface(tmp.getAbsolutePath());
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_UNDEFINED);
+    
+            //load bitmap
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(tmp.getAbsolutePath(), options);
             
             if (orientation != 1) {
-                //load bitmap
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(tmp.getAbsolutePath(), options);
-                
                 //rotate bitmap
                 bitmap = Utility.rotateBitmap(bitmap, orientation);
-                
-                //save rotated bitmap
-                FileOutputStream fos = new FileOutputStream(main);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fos);
-                fos.flush();
-                fos.close();
-            } else {
-                FileInputStream fis = new FileInputStream(tmp);
-    
-                FileOutputStream fos = new FileOutputStream(main);
-    
-                byte[] buffer = new byte[4096];
-                while (true) {
-                    int bytesRead = fis.read(buffer);
-                    if (bytesRead == -1)
-                        break;
-                    fos.write(buffer, 0, bytesRead);
-                }
-    
-                fos.flush();
-                fos.close();
-                fis.close();
             }
+            
+            bitmap = Bitmap.createScaledBitmap(bitmap, IMAGE_SIDE, IMAGE_SIDE,false);
+            
+            //save rotated bitmap
+            FileOutputStream fos = new FileOutputStream(main);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fos);
+            fos.flush();
+            fos.close();
             
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File not found exception: " + e.getMessage());
@@ -285,5 +309,14 @@ public class DataManager {
         Bitmap bitmap = BitmapFactory.decodeFile(img.getAbsolutePath(), options);
         
         return bitmap;
+    }
+    
+    public DailyOffer getDailyOfferWithId(int id) {
+        return dailyOffers.get(id);
+    }
+    
+    public void setDailyOfferWithId(Context context, DailyOffer dailyOffer) {
+        dailyOffers.put(dailyOffer.getId(), dailyOffer);
+        saveDailyOffers(context);
     }
 }

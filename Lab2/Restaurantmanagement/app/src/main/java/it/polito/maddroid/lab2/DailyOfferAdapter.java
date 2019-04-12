@@ -10,7 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DailyOfferAdapter extends BaseAdapter {
@@ -21,8 +24,8 @@ public class DailyOfferAdapter extends BaseAdapter {
     
     private Context context;
     
-    public DailyOfferAdapter(ArrayList<DailyOffer> dailyOffers, Context context) {
-        this.dailyOffers = dailyOffers;
+    public DailyOfferAdapter(List<DailyOffer> dailyOffers, Context context) {
+        this.dailyOffers = new ArrayList<>(dailyOffers);
         this.context = context;
     }
     
@@ -58,14 +61,9 @@ public class DailyOfferAdapter extends BaseAdapter {
         TextView tvQuantity = rowView.findViewById(R.id.tv_quantity);
         
         DailyOffer dailyOffer = dailyOffers.get(position);
-        
-        
-        Bitmap img = DataManager.getInstance(context).getDishBitmap(context, dailyOffer.getId());
-        
-        if (img != null) {
-            ivDishPhoto.setImageBitmap(img);
-        }
-        
+    
+        Glide.with(context).load(DataManager.getDishImageFile(context,dailyOffer.getId())).centerCrop().into(ivDishPhoto);
+
         tvDishName.setText(dailyOffer.getName());
         
         tvDishDescription.setText(dailyOffer.getDescription());
@@ -75,6 +73,12 @@ public class DailyOfferAdapter extends BaseAdapter {
         tvQuantity.setText("" + dailyOffer.getQuantity());
         
         return rowView;
+    }
+    
+    
+    public void updateList(List<DailyOffer> dOffers) {
+        this.dailyOffers = new ArrayList<>(dOffers);
+        notifyDataSetChanged();
     }
     
     
