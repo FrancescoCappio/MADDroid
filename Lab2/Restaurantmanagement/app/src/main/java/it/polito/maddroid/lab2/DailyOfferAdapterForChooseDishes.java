@@ -54,6 +54,8 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         ImageView ivDishPhoto = rowView.findViewById(R.id.iv_dish_photo);
 
         TextView tvDishName = rowView.findViewById(R.id.tv_dish_name);
+        
+        TextView tvDishDescription = rowView.findViewById(R.id.tv_dish_description);
 
         TextView tvDishQuantity = rowView.findViewById(R.id.tv_quantity_dishes);
 
@@ -73,6 +75,8 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         }
 
         tvDishName.setText(dailyOffer.getName());
+        
+        tvDishDescription.setText(dailyOffer.getDescription());
 
         tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
 
