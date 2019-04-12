@@ -130,14 +130,22 @@ public class DataManager {
         Collection<DailyOffer> dao = dailyOffers.values();
         List<DailyOffer> list = new ArrayList<>(dao);
         Collections.sort(list, (o1, o2) ->  o1.getId() - o2.getId());
-        return list;
+        
+        List<DailyOffer> dailyOfferList = new ArrayList<>();
+        for (DailyOffer dailyOffer : list)
+            dailyOfferList.add(new DailyOffer(dailyOffer));
+        return dailyOfferList;
     }
     
     public List<Order> getOrders() {
         Collection<Order> dao = orders.values();
         List<Order> list = new ArrayList<>(dao);
         Collections.sort(list, (o1, o2) ->  o1.getId() - o2.getId());
-        return list;
+    
+        List<Order> orderArrayList = new ArrayList<>();
+        for (Order order : list)
+            orderArrayList.add(new Order(order));
+        return orderArrayList;
     }
     
     public int getNextDailyOfferId() {
@@ -302,14 +310,20 @@ public class DataManager {
     }
     
     public DailyOffer getDailyOfferWithId(int id) {
-        //TODO make a copy of this object
-
-        return dailyOffers.get(id);
+        DailyOffer dailyOffer = dailyOffers.get(id);
+        if (dailyOffer != null)
+            return new DailyOffer(dailyOffer);
+        else
+            return null;
     }
 
     public Order getOrderWithId(int id) {
-        //TODO make a copy of this object
-        return new Order(orders.get(id));
+        Order order = orders.get(id);
+        
+        if (order != null)
+            return new Order(order);
+        else
+            return null;
     }
     
     public void setDailyOfferWithId(Context context, DailyOffer dailyOffer) {

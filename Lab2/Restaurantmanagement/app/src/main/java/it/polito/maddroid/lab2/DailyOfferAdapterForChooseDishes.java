@@ -78,21 +78,21 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         
         tvDishDescription.setText(dailyOffer.getDescription());
 
-        tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
+        tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
 
-        tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
+        tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
         
         imageMinus.setOnClickListener(v -> {
             dailyOffer.removeFromQuantity();
-            tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
-            tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
+            tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
+            tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
             dishQuantityListener.quantityUpdated();
         });
         
         imagePlus.setOnClickListener(v -> {
             dailyOffer.addToQuantity();
-            tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
-            tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
+            tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
+            tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
             dishQuantityListener.quantityUpdated();
         });
         
