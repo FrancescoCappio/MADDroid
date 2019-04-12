@@ -49,20 +49,12 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
         dailyOffers = DataManager.getInstance(getApplicationContext()).getDailyOffers();
 
-        adapter = new DailyOfferAdapterForChooseDishes(new ArrayList<>(dailyOffers), getApplicationContext());
+        adapter = new DailyOfferAdapterForChooseDishes(new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
 
         lvChooseDishes.setAdapter(adapter);
 
-        adapter.registerDataSetObserver(observer);
     }
-
-    DataSetObserver observer = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            setTotalCost();
-        }
-    };
+    
 
     public void setTotalCost(){
         double dishCostTotal = 0;

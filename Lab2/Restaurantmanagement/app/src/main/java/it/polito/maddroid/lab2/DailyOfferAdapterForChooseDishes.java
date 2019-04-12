@@ -21,11 +21,13 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
     private ArrayList<DailyOffer> dailyOffers;
 
     private Context context;
+    
+    DishQuantityListener dishQuantityListener;
 
-
-    public DailyOfferAdapterForChooseDishes(ArrayList<DailyOffer> dailyOffers, Context context) {
+    public DailyOfferAdapterForChooseDishes(ArrayList<DailyOffer> dailyOffers, DishQuantityListener listener, Context context) {
         this.dailyOffers = dailyOffers;
         this.context = context;
+        this.dishQuantityListener = listener;
     }
 
     @Override
@@ -75,26 +77,27 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
 
         tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
-
-//        imageMinus.setImageResource(R.drawable.ic_remove_circle_outline_24dp);
-//
-//        imagePlus.setImageResource(R.drawable.ic_add_circle_outline_24dp);
-
+        
         imageMinus.setOnClickListener(v -> {
             dailyOffer.removeFromQuantity();
             tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
             tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
-            notifyDataSetChanged();
+            dishQuantityListener.quantityUpdated();
         });
         
         imagePlus.setOnClickListener(v -> {
             dailyOffer.addToQuantity();
             tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
             tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
-            notifyDataSetChanged();
+            dishQuantityListener.quantityUpdated();
         });
-
+        
         return rowView;
+    }
+    
+    
+    public static interface DishQuantityListener {
+        public void quantityUpdated();
     }
 
 
