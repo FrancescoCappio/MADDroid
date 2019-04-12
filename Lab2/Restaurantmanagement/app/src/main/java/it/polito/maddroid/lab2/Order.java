@@ -15,8 +15,9 @@ public class Order {
         this.timeHour = o.timeHour;
         this.timeMinutes = o.timeMinutes;
         
-        for (int i: o.dishes.keySet())
-            this.dishes.put(i, o.dishes.get(i));
+        if (o.dishes != null)
+            for (int i: o.dishes.keySet())
+                this.dishes.put(i, o.dishes.get(i));
     }
     
     private int id;
