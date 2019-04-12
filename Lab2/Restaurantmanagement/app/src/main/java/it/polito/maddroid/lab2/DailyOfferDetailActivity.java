@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -23,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -371,8 +370,11 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             Log.d(TAG, "Cannot load unexisting file as avatar");
             return;
         }
-    
-        Glide.with(getApplicationContext()).load(img).into(ivDishPhoto);
+        
+        Glide.with(getApplicationContext())
+                .load(img)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(ivDishPhoto);
     }
 
     
