@@ -2,7 +2,6 @@ package it.polito.maddroid.lab2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,7 +58,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     public void setTotalCost(){
         double dishCostTotal = 0;
         for(DailyOffer order : dailyOffers){
-            dishCostTotal += order.getQuantityChose() * order.getPrice();
+            dishCostTotal += order.getQuantityChosen() * order.getPrice();
         }
 
         tvTotalcost.setText(""+ dishCostTotal  + " \u20AC");
