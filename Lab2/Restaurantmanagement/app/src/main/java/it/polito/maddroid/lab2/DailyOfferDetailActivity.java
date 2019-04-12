@@ -154,21 +154,18 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 String Quantity = etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
-    
-    
+                DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+
+
                 if(pageType.equals(MODE_NEW)){
-                    
-                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
-                    
+
                     // add offer to our list
                     dataManager.addNewDailyOffer(getApplicationContext(), offer);
                     // save image for the offer
                     dataManager.saveDishImage(getApplicationContext(), currentOfferId);
         
                 } else {
-                    
-                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
-    
+
                     // add offer to our list
                     dataManager.setDailyOfferWithId(getApplicationContext(), offer);
                     // save image for the offer

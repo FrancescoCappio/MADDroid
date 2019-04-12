@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private int selectedId; //0 = orders; 1 = daily_offers
     
-    private static final int ORDER_DETAIL_CODE = 123;
+    public static final int ORDER_DETAIL_CODE = 123;
     public static final int DAILY_OFFER_DETAIL_CODE = 124;
     
     private final static String TAG = "MainActivity";
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             if(selectedId == 0){
                 Intent i = new Intent(getApplicationContext(), OrderDetailActivity.class);
+                i.putExtra(OrderDetailActivity.PAGE_TYPE_KEY,OrderDetailActivity.MODE_NEW);
                 startActivityForResult(i,ORDER_DETAIL_CODE);
             }
             return true;

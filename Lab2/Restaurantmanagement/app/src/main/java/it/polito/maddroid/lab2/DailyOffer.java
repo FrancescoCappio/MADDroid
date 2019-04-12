@@ -1,9 +1,16 @@
 package it.polito.maddroid.lab2;
 
+import java.util.Comparator;
+
 public class DailyOffer {
     private int DailyOfferid;
     private String name;
     private String description;
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     private int quantity;
     private float price;
 
@@ -16,10 +23,9 @@ public class DailyOffer {
         this.quantity = quantity;
     }
 
-    public int getId(){
+    public int getId (){
         return this.DailyOfferid;
     }
-    
     public String getName (){
         return this.name;
     }
@@ -35,5 +41,16 @@ public class DailyOffer {
     public Float getPrice (){
         return this.price;
     }
-    
+
+
+    static class Sortbyroll implements Comparator<DailyOffer>
+    {
+        // Used for sorting in ascending order of
+        // roll number
+        public int compare(DailyOffer a, DailyOffer b)
+        {
+            return a.DailyOfferid - b.DailyOfferid;
+        }
+    }
+
 }

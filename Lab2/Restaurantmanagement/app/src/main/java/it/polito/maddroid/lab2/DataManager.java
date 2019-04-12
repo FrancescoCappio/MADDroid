@@ -314,11 +314,24 @@ public class DataManager {
     }
     
     public DailyOffer getDailyOfferWithId(int id) {
+        //TODO make a copy of this object
+
         return dailyOffers.get(id);
+    }
+
+    public Order getOrderWithId(int id) {
+        //TODO make a copy of this object
+        Log.d("stampa getOrderWithId", String.valueOf(id) + " "+ String.valueOf(orders.size()));
+        return orders.get(id);
     }
     
     public void setDailyOfferWithId(Context context, DailyOffer dailyOffer) {
         dailyOffers.put(dailyOffer.getId(), dailyOffer);
         saveDailyOffers(context);
+    }
+
+    public void setOrderWithID(Context applicationContext, Order o) {
+        orders.put(o.getId(), o);
+        saveOrders(applicationContext);
     }
 }

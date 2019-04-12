@@ -43,7 +43,7 @@ public class OrdersAdapter extends BaseAdapter {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-    
+        
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.order_list_item, parent, false);
