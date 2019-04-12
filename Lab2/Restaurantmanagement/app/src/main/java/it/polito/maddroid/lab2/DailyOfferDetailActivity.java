@@ -66,7 +66,6 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private static int PHOTO_REQUEST_CODE = 128;
     
     DataManager dataManager;
-    List<DailyOffer> dailyOffers= null;
     
     private boolean saveImage = false;
     
@@ -117,13 +116,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     }
 
     private void updateDishData() {
-        dailyOffers = dataManager.getDailyOffers();
-        DailyOffer currentDailyoffer = null;
-        for (DailyOffer i : dailyOffers){
-            if(i.getId() == currentOfferId){
-                currentDailyoffer = i ;
-            }
-        }
+        
+        DailyOffer currentDailyoffer = dataManager.getDailyOfferWithId(currentOfferId);
         etName.setText(currentDailyoffer.getName());
         etQuantity.setText(""+currentDailyoffer.getQuantity());
         etPrice.setText(""+currentDailyoffer.getPrice());
