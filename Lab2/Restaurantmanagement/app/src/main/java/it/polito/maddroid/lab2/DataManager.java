@@ -45,6 +45,8 @@ public class DataManager {
     private int dailyOfferMaxId = -1;
     private int orderMaxId = -1;
     
+    private static final int IMAGE_SIDE = 500;
+    
     private DataManager(Context context) {
         // we need to load the data so that we do not load them multiple times
         Gson gson = new Gson();
@@ -246,38 +248,24 @@ public class DataManager {
             ExifInterface exif = new ExifInterface(tmp.getAbsolutePath());
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_UNDEFINED);
+    
+            //load bitmap
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(tmp.getAbsolutePath(), options);
             
             if (orientation != 1) {
-                //load bitmap
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(tmp.getAbsolutePath(), options);
-                
                 //rotate bitmap
                 bitmap = Utility.rotateBitmap(bitmap, orientation);
-                
-                //save rotated bitmap
-                FileOutputStream fos = new FileOutputStream(main);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fos);
-                fos.flush();
-                fos.close();
-            } else {
-                FileInputStream fis = new FileInputStream(tmp);
-    
-                FileOutputStream fos = new FileOutputStream(main);
-    
-                byte[] buffer = new byte[4096];
-                while (true) {
-                    int bytesRead = fis.read(buffer);
-                    if (bytesRead == -1)
-                        break;
-                    fos.write(buffer, 0, bytesRead);
-                }
-    
-                fos.flush();
-                fos.close();
-                fis.close();
             }
+            
+            bitmap = Bitmap.createScaledBitmap(bitmap, IMAGE_SIDE, IMAGE_SIDE,false);
+            
+            //save rotated bitmap
+            FileOutputStream fos = new FileOutputStream(main);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fos);
+            fos.flush();
+            fos.close();
             
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File not found exception: " + e.getMessage());
