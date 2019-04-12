@@ -2,6 +2,7 @@ package it.polito.maddroid.lab2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,13 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
     
     private static final String TAG = "OrderDetailActivity";
+
+    private static final int ORDER_CHOOSE_DISHES = 123;
     
     public static final String TIME_MIN_KEY = "TIME_MIN_KEY";
     public static final String TIME_H_KEY = "TIME_H_KEY";
@@ -28,9 +33,9 @@ public class OrderDetailActivity extends AppCompatActivity {
     public final static String MODE_NEW = "New";
     public final static String MODE_SHOW = "Show";
     public final static String ORDER_ID_KEY = "ORDER_ID_KEY";
-
-    private  int currentOfferId;
-
+    
+    private  int currentOrderId;
+    
     private EditText etTime;
     private EditText etDish;
     private EditText etCustomer;
@@ -51,9 +56,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail_activity);
 
-        // set activity title
-        getSupportActionBar().setTitle("New Order");
-    
         // add back button
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -75,8 +77,18 @@ public class OrderDetailActivity extends AppCompatActivity {
             }
         });
 
-        dataManager = DataManager.getInstance(getApplicationContext());
+        ImageButton imageButton = findViewById(R.id.ib_add_Dish1);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
+                startActivityForResult(i,ORDER_CHOOSE_DISHES);
+            }
 
+        });
+    
+        dataManager = DataManager.getInstance(getApplicationContext());
+    
         Intent i  = getIntent();
         pageType = i.getStringExtra(PAGE_TYPE_KEY);
         Log.d("stampa Order Detail ", pageType);
@@ -88,10 +100,10 @@ public class OrderDetailActivity extends AppCompatActivity {
             currentOfferId = i.getIntExtra(this.ORDER_ID_KEY, -1);
             Log.d("stampa Order Detail", String.valueOf(currentOfferId));
             editMode = false;
-
+        
             StringBuilder s = new StringBuilder(5) ;
             Order order= dataManager.getOrderWithId(currentOfferId);
-
+        
             Log.d("Order Detail Activity", "qui arriva");
             etRider.setText(""+order.getRiderId());
             etCustomer.setText(""+order.getCustomerId());
@@ -102,19 +114,42 @@ public class OrderDetailActivity extends AppCompatActivity {
             String shour = formatter.format(order.getTimeHour());
             String sminutes = formatter.format(order.getTimeMinutes());
             etTime.setText(""+shour+":"+sminutes);
-
+        
         }
-
+    
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             if (pageType.equals(MODE_NEW))
                 getSupportActionBar().setTitle(R.string.new_order);
             else
                 getSupportActionBar().setTitle(R.string.order_detail);
-
+        
             // add back button
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+
+        if (data == null) {
+            Log.e(TAG, "Result data null");
+            return;
+        }
+
+        switch (requestCode) {
+            case ORDER_CHOOSE_DISHES:
+                List<DailyOffer> list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
+                for(DailyOffer ii :list){
+
+                }
         }
     }
 
@@ -157,13 +192,9 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                 if (pageType.equals(MODE_NEW)) {
                     dataManager.addNewOrder(getApplicationContext(), o);
-                }
-                else if(pageType.equals(MODE_SHOW)){
+                } else if(pageType.equals(MODE_SHOW)) {
                     dataManager.setOrderWithID(getApplicationContext(), o);
-
                 }
-
-
                 
                 setResult(Activity.RESULT_OK, data);
                 finish();
@@ -176,12 +207,12 @@ public class OrderDetailActivity extends AppCompatActivity {
     void setTime(int hour, int minutes) {
         timeHour = hour;
         timeMinutes = minutes;
-        String s;
+    
         DecimalFormat formatter = new DecimalFormat("00");
         String shour = formatter.format(hour);
         String sminutes = formatter.format(minutes);
-        s = ""+shour+":"+sminutes;
-        etTime.setText(s.toString());
+        
+        etTime.setText(shour + ":" + sminutes);
     }
     
     public void showTimePickerDialog() {

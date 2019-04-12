@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,14 +61,9 @@ public class DailyOfferAdapter extends BaseAdapter {
         TextView tvQuantity = rowView.findViewById(R.id.tv_quantity);
         
         DailyOffer dailyOffer = dailyOffers.get(position);
-        
-        
-        Bitmap img = DataManager.getInstance(context).getDishBitmap(context, dailyOffer.getId());
-        
-        if (img != null) {
-            ivDishPhoto.setImageBitmap(img);
-        }
-        
+    
+        Glide.with(context).load(DataManager.getDishImageFile(context,dailyOffer.getId())).centerCrop().into(ivDishPhoto);
+
         tvDishName.setText(dailyOffer.getName());
         
         tvDishDescription.setText(dailyOffer.getDescription());
