@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
 
-    private static final String TAG = "DailyOfferAdapterForChooseDishes";
+    private static final String TAG = "DailyOfferAdapterChooseDishes";
 
     private ArrayList<DailyOffer> dailyOffers;
 
@@ -57,9 +57,9 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
 
         TextView tvCurrentCost = rowView.findViewById(R.id.tv_Current_dish_cost);
 
-        ImageButton imageMinus = rowView.findViewById(R.id.ib_add_Dish);
+        ImageButton imageMinus = rowView.findViewById(R.id.ib_remove_Dish);
 
-        ImageButton imagePlus = rowView.findViewById(R.id.ib_remove_Dish);
+        ImageButton imagePlus = rowView.findViewById(R.id.ib_add_Dish);
 
         DailyOffer dailyOffer = dailyOffers.get(position);
 
@@ -76,27 +76,22 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
 
         tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
 
-        imageMinus.setImageResource(R.drawable.ic_remove_circle_outline_24dp);
+//        imageMinus.setImageResource(R.drawable.ic_remove_circle_outline_24dp);
+//
+//        imagePlus.setImageResource(R.drawable.ic_add_circle_outline_24dp);
 
-        imagePlus.setImageResource(R.drawable.ic_add_circle_outline_24dp);
-
-        imageMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dailyOffer.removeFromQuantity();
-                tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
-                tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
-                notifyDataSetChanged();
-            }
+        imageMinus.setOnClickListener(v -> {
+            dailyOffer.removeFromQuantity();
+            tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
+            tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
+            notifyDataSetChanged();
         });
-        imagePlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dailyOffer.addToQuantity();
-                tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
-                tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
-                notifyDataSetChanged();
-            }
+        
+        imagePlus.setOnClickListener(v -> {
+            dailyOffer.addToQuantity();
+            tvDishQuantity.setText("" + dailyOffer.getQuantityChose());
+            tvCurrentCost.setText("" + (dailyOffer.getQuantityChose() * dailyOffer.getPrice())+ " \u20AC");
+            notifyDataSetChanged();
         });
 
         return rowView;

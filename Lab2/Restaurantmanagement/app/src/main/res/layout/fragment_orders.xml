@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".OrdersFragment">
 
-    <ListView
-        android:id="@+id/lv_orders"
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/order_list_item"
-        >
-    </ListView>
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp" />
 
 </FrameLayout>

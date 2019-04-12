@@ -1,8 +1,6 @@
 package it.polito.maddroid.lab2;
 
-import java.io.Serializable;
-
-public class DailyOffer implements Serializable {
+public class DailyOffer {
     private int DailyOfferid;
     private String name;
     private String description;
@@ -19,8 +17,7 @@ public class DailyOffer implements Serializable {
         this.quantity = quantity;
         this.quantityChose = 0;
     }
-
-
+    
     public int getId(){
         return this.DailyOfferid;
     }
@@ -28,6 +25,7 @@ public class DailyOffer implements Serializable {
     public String getName (){
         return this.name;
     }
+    
     public void setName (String name){
         this.name = name;
     }
@@ -35,11 +33,13 @@ public class DailyOffer implements Serializable {
     public String getDescription (){
         return this.description;
     }
+    
     public void setDescription(String description){
         this.description = description;
     }
 
     public int getQuantity (){ return this.quantity; }
+    
     public void setQuantity(int quantity){
         this.quantity = quantity;
     }

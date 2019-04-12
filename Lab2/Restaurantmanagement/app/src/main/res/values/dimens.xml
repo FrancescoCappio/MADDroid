@@ -8,6 +8,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_elevation">10dp</dimen>
     <dimen name="cards_corner_radius">25dp</dimen>
-    <dimen name="daily_offer_image_size">90dp</dimen>
+    <dimen name="daily_offer_image_size">70dp</dimen>
     <dimen name="daily_offer_image_size_phone">150dp</dimen>
 </resources>
