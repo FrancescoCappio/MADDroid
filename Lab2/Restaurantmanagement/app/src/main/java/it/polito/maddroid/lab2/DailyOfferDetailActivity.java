@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab2;
 
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,6 +65,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private static int PHOTO_CROP_CODE = 61;
     
     DataManager dataManager;
+    List<DailyOffer> dailyOffers= null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         } else {
             currentOfferId = i.getIntExtra(OFFER_ID_KEY, -1);
             updateDishImage();
+            updateDishData();
         }
     
         // set title
@@ -108,7 +111,22 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
         
     }
-    
+
+    private void updateDishData() {
+        dailyOffers = dataManager.getDailyOffers();
+        DailyOffer currentDailyoffer = null;
+        for (DailyOffer i : dailyOffers){
+            if(i.getId() == currentOfferId){
+                currentDailyoffer = i ;
+            }
+        }
+        etName.setText(currentDailyoffer.getName());
+        etQuantity.setText(""+currentDailyoffer.getQuantity());
+        etPrice.setText(""+currentDailyoffer.getPrice());
+        etDescription.setText(currentDailyoffer.getDescription());
+        //tvDescriptionCount = findViewById(R.id.tv_description_count);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -118,7 +136,12 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         menuSave = menu.findItem(R.id.menu_confirm);
 
         //enable/disable edit depending on the state
-        setEditEnabled(editMode);
+        if(pageType.equals(MODE_NEW))
+            setEditEnabled(!editMode);
+        else
+            setEditEnabled(editMode);
+
+
 
         //add on click action to imageview
         ivDishPhoto.setOnClickListener(v -> startActivityToGetImage());
@@ -142,6 +165,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 String Quantity=etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
+                Intent data = new Intent();
     
     
                 if(pageType.equals(MODE_NEW)){
@@ -152,9 +176,23 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                     dataManager.addNewDailyOffer(getApplicationContext(), offer);
                     // save image for the offer
                     dataManager.saveDishImage(getApplicationContext(), currentOfferId);
+                    setResult(Activity.RESULT_OK, data);
+                    finish();
         
-                } else if (pageType.equals("Edit")){
+                } else {
+                    for (DailyOffer i : dailyOffers){
+                        if(i.getId() == currentOfferId){
+                            i.setName(Name);
+                            i.setDescription(description);
+                            i.setPrice(Float.parseFloat(price));
+                            i.setQuantity(Integer.parseInt(Quantity));
+                        }
+                    }
+                    dataManager.updateDailyOffer(getApplicationContext(),dailyOffers);
                     setEditEnabled(false);
+                    Toast.makeText(getApplicationContext(), Name +" is updated", Toast.LENGTH_SHORT).show();
+                    setResult(Activity.RESULT_OK, data);
+                    finish();
                 }
                 break;
         }

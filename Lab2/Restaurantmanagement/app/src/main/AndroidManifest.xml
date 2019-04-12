@@ -9,8 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DailyOfferDetailActivity"></activity>
-        <activity android:name=".OrderDetailActivity"></activity>
+        <activity android:name=".OrderChooseDishesActivity"></activity>
+        <activity android:name=".OrderChooseDishes" />
+        <activity android:name=".DailyOfferDetailActivity" />
+        <activity android:name=".OrderDetailActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -21,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="it.polito.maddroid.lab2.fileprovider"
@@ -28,7 +31,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 

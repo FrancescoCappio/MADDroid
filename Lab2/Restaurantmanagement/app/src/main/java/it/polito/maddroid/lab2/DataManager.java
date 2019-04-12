@@ -146,6 +146,16 @@ public class DataManager {
             e.printStackTrace();
         }
     }
+
+    public void updateDailyOffer(Context context, List<DailyOffer> updatedData ){
+
+        // obtain json string
+        String json = new Gson().toJson(updatedData);
+
+        // save json to file
+        saveDataToFile(context, DAILY_OFFERS_JSON, json);
+
+    }
     
     public void addNewDailyOffer(Context context, DailyOffer newData) {
         
