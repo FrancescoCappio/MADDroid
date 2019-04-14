@@ -4,6 +4,7 @@ package it.polito.maddroid.lab2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class OrdersFragment extends Fragment {
+    public static final String TAG = "OrdersFragment";
+    
     ExpandableListView expandableListView;
     OrdersExpandableListAdapter expandableListAdapter;
     ArrayList<Order> expandableListTitle;
     HashMap<Order, List<DailyOffer>> expandableListDetail;
-    HashMap<Integer, Integer> mappaPosizioni;
-
-
-    private int PosCorr=0;
-
     
     private List<Order> orders;
-    
     private ExpandableListView lvOrders;
-
     
     public OrdersFragment() {
         // Required empty public constructor
@@ -51,22 +49,10 @@ public class OrdersFragment extends Fragment {
         expandableListAdapter = new OrdersExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
 
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-
-                //mappaPosizioni.put(expandableListTitle.get(groupPosition).getId(), groupPosition);
-            }
+        expandableListView.setOnGroupExpandListener(groupPosition -> {
         });
 
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-
-
-            }
+        expandableListView.setOnGroupCollapseListener(groupPosition -> {
         });
         expandableListView.setOnItemLongClickListener((parent, view1, position, id) -> {
             int groupPos = ExpandableListView.getPackedPositionGroup(id);
@@ -104,12 +90,24 @@ public class OrdersFragment extends Fragment {
                 dishesList.add(dailyOffer);
             }
             orderMap.put(o, dishesList);
-
-
+            
         }
 
         return  orderMap;
-
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+        
+        if (requestCode == MainActivity.ORDER_DETAIL_CODE) {
+            notifyUpdate();
+        }
     }
     
     public void notifyUpdate() {
