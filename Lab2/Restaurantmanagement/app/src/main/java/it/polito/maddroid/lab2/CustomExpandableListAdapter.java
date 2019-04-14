@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,8 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         TextView description = (TextView) convertView.findViewById(R.id.tv_dish_description);
         TextView price = (TextView) convertView.findViewById(R.id.tv_price);
         TextView quantity = (TextView) convertView.findViewById(R.id.tv_quantity);
-        float sum = expandedListText.getPrice() * expandedListText.getQuantityChose();
+        //Log.d("Custom...", ""+expandedListText.getQuantityChosen());
+        float sum = expandedListText.getPrice() * (int)expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId());
         //TextView qnt = (TextView) convertView.findViewById(R.id.tv_quantity);
         if(dishName != null)
             dishName.setText(expandedListText.getName());
@@ -66,7 +68,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             price.setText(""+sum);
         //TODO: set the quantity
         if(quantity != null)
-            quantity.setText(""+expandedListText.getQuantityChose());
+            quantity.setText(""+expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId()));
         dishName.setTypeface(null,Typeface.BOLD);
         description.setTypeface(null,Typeface.BOLD);
         price.setTypeface(null, Typeface.BOLD);

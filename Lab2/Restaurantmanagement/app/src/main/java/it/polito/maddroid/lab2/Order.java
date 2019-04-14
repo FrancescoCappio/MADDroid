@@ -95,12 +95,8 @@ public class Order {
         return dishes;
     }
 
-    public void addToMap(List<DailyOffer> list, Context context) {
-        for (DailyOffer list1 : list)
-        {
-            if(list1.getQuantityChose()>0)
-            this.dishes.put(list1.getId(), list1.getQuantityChose());
-        }
+    public void addToMap(HashMap<Integer, Integer> list, Context context) {
+        this.dishes = list;
         setTotPrice(context);
         return;
     }

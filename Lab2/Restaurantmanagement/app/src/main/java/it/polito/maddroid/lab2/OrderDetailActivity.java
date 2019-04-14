@@ -44,7 +44,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private EditText etRider;
     private EditText etPriceTot;
     private Button btChooseDishes;
-    private List<DailyOffer> list;
+    private HashMap<Integer, Integer> mapDishes;
     private HashMap<Long, Integer> groupIdPosition;
     
     private int timeHour;
@@ -139,7 +139,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case ORDER_CHOOSE_DISHES:
-                list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
+                mapDishes= (HashMap<Integer, Integer>) data.getSerializableExtra("dishesChose");
                 break;
         }
     }
@@ -177,7 +177,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 
                 Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
 
-                o.addToMap(list, getApplicationContext());
+                o.addToMap(mapDishes, getApplicationContext());
 
                 Intent i  = getIntent();
                 pageType = i.getStringExtra(PAGE_TYPE_KEY);

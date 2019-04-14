@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderChooseDishesActivity extends AppCompatActivity {
 
@@ -24,6 +26,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
     DataManager dataManager;
     private ListView lvChooseDishes;
+    private HashMap<Integer, Integer> mapDishes;
 
     DailyOfferAdapterForChooseDishes adapter;
 
@@ -48,7 +51,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
         dailyOffers = DataManager.getInstance(getApplicationContext()).getDailyOffers();
 
-        adapter = new DailyOfferAdapterForChooseDishes(new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        adapter = new DailyOfferAdapterForChooseDishes(new HashMap<>(), new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
 
         lvChooseDishes.setAdapter(adapter);
 
@@ -57,8 +60,8 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
     public void setTotalCost(){
         double dishCostTotal = 0;
-        for(DailyOffer order : dailyOffers){
-            dishCostTotal += order.getQuantityChosen() * order.getPrice();
+        for(Map.Entry<Integer, Integer> entry : adapter.getMapDishes().entrySet()){
+            dishCostTotal += entry.getValue() * DataManager.getInstance(getApplicationContext()).getDailyOfferWithId(entry.getKey()).getPrice();
         }
 
         tvTotalcost.setText(""+ dishCostTotal  + " \u20AC");
@@ -79,9 +82,8 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-
         Intent data = new Intent();
-
+        mapDishes = new HashMap<>();
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(RESULT_CANCELED, data);
@@ -90,7 +92,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
             case R.id.menu_confirm:
                 Log.d(TAG, "Confirm pressed");
-                data.putExtra("dishesChose",(Serializable) dailyOffers);
+                mapDishes = adapter.getMapDishes();
                 setResult(Activity.RESULT_OK, data);
                 finish();
                 break;

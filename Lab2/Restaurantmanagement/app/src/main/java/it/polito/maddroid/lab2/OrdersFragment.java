@@ -108,7 +108,6 @@ public class OrdersFragment extends Fragment {
             for ( Map.Entry<Integer, Integer> entry : dishes.entrySet())
             {
                 DailyOffer dailyOffer = dataManager.getDailyOfferWithId(entry.getKey());
-                dailyOffer.setQuantity(entry.getValue());
                 dishesList.add(dailyOffer);
             }
             orderMap.put(o, dishesList);

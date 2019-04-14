@@ -2,6 +2,7 @@ package it.polito.maddroid.lab2;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
@@ -19,15 +22,16 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
     private static final String TAG = "DailyOfferAdapterChooseDishes";
 
     private ArrayList<DailyOffer> dailyOffers;
-
+    private int count = 0;
     private Context context;
-    
+    private HashMap<Integer, Integer> mapDishes;
     DishQuantityListener dishQuantityListener;
 
-    public DailyOfferAdapterForChooseDishes(ArrayList<DailyOffer> dailyOffers, DishQuantityListener listener, Context context) {
+    public DailyOfferAdapterForChooseDishes(HashMap<Integer, Integer> mapDishes, ArrayList<DailyOffer> dailyOffers, DishQuantityListener listener, Context context) {
         this.dailyOffers = dailyOffers;
         this.context = context;
         this.dishQuantityListener = listener;
+        this.mapDishes = mapDishes;
     }
 
     @Override
@@ -50,6 +54,7 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.choose_dishes_list_item, parent, false);
+
 
         ImageView ivDishPhoto = rowView.findViewById(R.id.iv_dish_photo);
 
@@ -78,24 +83,27 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
         
         tvDishDescription.setText(dailyOffer.getDescription());
 
-        tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
+        tvDishQuantity.setText("" + count);
 
-        tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
-        
+        tvCurrentCost.setText("" + (count * dailyOffer.getPrice())+ " \u20AC");
+        //count usato per contare il numero di dailyoffer ordinati
         imageMinus.setOnClickListener(v -> {
-            dailyOffer.removeFromQuantity();
-            tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
-            tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
+            count = dailyOffer.removeFromQuantity(count);
+            tvDishQuantity.setText("" + count);
+            tvCurrentCost.setText("" + (count * dailyOffer.getPrice())+ " \u20AC");
             dishQuantityListener.quantityUpdated();
+            //volevo mettere in questa mappa id del dailyoffer e count
+            this.mapDishes.put(dailyOffer.getId(), count);
         });
         
         imagePlus.setOnClickListener(v -> {
-            dailyOffer.addToQuantity();
-            tvDishQuantity.setText("" + dailyOffer.getQuantityChosen());
-            tvCurrentCost.setText("" + (dailyOffer.getQuantityChosen() * dailyOffer.getPrice())+ " \u20AC");
+            count = dailyOffer.addToQuantity(count);
+            tvDishQuantity.setText("" + count);
+            tvCurrentCost.setText("" + (count * dailyOffer.getPrice())+ " \u20AC");
             dishQuantityListener.quantityUpdated();
+            this.mapDishes.put(dailyOffer.getId(), count);
         });
-        
+
         return rowView;
     }
     
@@ -103,6 +111,11 @@ public class DailyOfferAdapterForChooseDishes extends BaseAdapter {
     public static interface DishQuantityListener {
         public void quantityUpdated();
     }
+
+    public HashMap<Integer, Integer> getMapDishes() {
+        return mapDishes;
+    }
+
 
 
 }
