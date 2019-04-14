@@ -10,14 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
@@ -59,7 +56,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_detail_activity);
+        setContentView(R.layout.activity_order_detail);
 
         // add back button
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -139,7 +136,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case ORDER_CHOOSE_DISHES:
-                mapDishes= (HashMap<Integer, Integer>) data.getSerializableExtra("dishesChose");
+                mapDishes= (HashMap<Integer, Integer>) data.getSerializableExtra(OrderChooseDishesActivity.ORDER_CHOOSE_DISHES_KEY);
                 break;
         }
     }
@@ -177,7 +174,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 
                 Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
 
-                o.addToMap(mapDishes, getApplicationContext());
+                o.setDishesMap(mapDishes, getApplicationContext());
 
                 Intent i  = getIntent();
                 pageType = i.getStringExtra(PAGE_TYPE_KEY);

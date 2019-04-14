@@ -4,27 +4,20 @@ package it.polito.maddroid.lab2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.widget.ExpandableListView.getPackedPositionGroup;
-
 
 public class OrdersFragment extends Fragment {
     ExpandableListView expandableListView;
-    CustomExpandableListAdapter expandableListAdapter;
+    OrdersExpandableListAdapter expandableListAdapter;
     ArrayList<Order> expandableListTitle;
     HashMap<Order, List<DailyOffer>> expandableListDetail;
     HashMap<Integer, Integer> mappaPosizioni;
@@ -55,7 +48,7 @@ public class OrdersFragment extends Fragment {
         expandableListView = view.findViewById(R.id.expandableListView);
         expandableListDetail = getMapFromList(DataManager.getInstance(getContext()).getOrders());
         expandableListTitle = new ArrayList<>(DataManager.getInstance(getContext()).getOrders());
-        expandableListAdapter = new CustomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+        expandableListAdapter = new OrdersExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

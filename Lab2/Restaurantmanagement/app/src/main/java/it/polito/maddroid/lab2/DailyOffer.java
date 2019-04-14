@@ -56,30 +56,30 @@ public class DailyOffer {
     public Float getPrice (){
         return this.price;
     }
+    
     public void setPrice(float price){
         this.price = price;
     }
 
-    
-
-    public int addToQuantity(int count){
-        if(this.quantityLeft > 0)
+    public boolean decreaseQuantityLeftByOne(){
+        if(quantityLeft > 0)
         {
-            count ++;
             quantityLeft--;
+            return true;
         }
-        return count;
+        return false;
     }
 
-    public int removeFromQuantity(int count){
-        if(count > 0){
-            count--;
-            this.quantityLeft++;
+    public boolean increaseQuantityLeftByOne(){
+        
+        if (quantityLeft < quantity) {
+            quantityLeft++;
+            return true;
         }
-        return count;
+        
+        return false;
     }
-
-
+    
     public int getQuantityLeft() {
         return quantityLeft;
     }

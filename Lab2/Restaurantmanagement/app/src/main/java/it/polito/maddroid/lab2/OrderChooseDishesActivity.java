@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +25,14 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
     DataManager dataManager;
     private ListView lvChooseDishes;
-    private HashMap<Integer, Integer> mapDishes;
 
-    DailyOfferAdapterForChooseDishes adapter;
+    ChooseDishesAdapter adapter;
 
     TextView tvTotalcost ;
 
     List<DailyOffer> dailyOffers;
+    
+    public static final String ORDER_CHOOSE_DISHES_KEY = "dishesChose";
 
 
     @Override
@@ -51,7 +51,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
         dailyOffers = DataManager.getInstance(getApplicationContext()).getDailyOffers();
 
-        adapter = new DailyOfferAdapterForChooseDishes(new HashMap<>(), new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        adapter = new ChooseDishesAdapter(new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
 
         lvChooseDishes.setAdapter(adapter);
 
@@ -83,7 +83,6 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         Intent data = new Intent();
-        mapDishes = new HashMap<>();
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(RESULT_CANCELED, data);
@@ -92,8 +91,11 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
             case R.id.menu_confirm:
                 Log.d(TAG, "Confirm pressed");
-                mapDishes = adapter.getMapDishes();
+                Map<Integer,Integer> mapDishes = adapter.getMapDishes();
+                data.putExtra(ORDER_CHOOSE_DISHES_KEY, (Serializable) mapDishes);
                 setResult(Activity.RESULT_OK, data);
+                //save dishes request
+                adapter.confirmDishesRequest();
                 finish();
                 break;
         }

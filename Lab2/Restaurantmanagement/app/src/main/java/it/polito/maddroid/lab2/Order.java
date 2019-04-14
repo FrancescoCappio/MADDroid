@@ -95,7 +95,7 @@ public class Order {
         return dishes;
     }
 
-    public void addToMap(HashMap<Integer, Integer> list, Context context) {
+    public void setDishesMap(HashMap<Integer, Integer> list, Context context) {
         this.dishes = list;
         setTotPrice(context);
         return;
