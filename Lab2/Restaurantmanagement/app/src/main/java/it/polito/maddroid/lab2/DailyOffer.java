@@ -1,25 +1,34 @@
 package it.polito.maddroid.lab2;
 
 public class DailyOffer {
-    private int DailyOfferid;
+    private int id;
     private String name;
     private String description;
     private int quantity;
     private float price;
-    private int quantityChose ;
+    private int quantityChosen;
 
     public DailyOffer(int DailyOfferid, String name,String description, int quantity,float price) {
 
-        this.DailyOfferid = DailyOfferid;
+        this.id = DailyOfferid;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.quantityChose = 0;
+        this.quantityChosen = 0;
+    }
+    
+    public DailyOffer(DailyOffer dailyOffer) {
+        this.id = dailyOffer.id;
+        this.name = dailyOffer.name;
+        this.description = dailyOffer.description;
+        this.price = dailyOffer.price;
+        this.quantity = dailyOffer.quantity;
+        this.quantityChosen = 0;
     }
     
     public int getId(){
-        return this.DailyOfferid;
+        return this.id;
     }
     
     public String getName (){
@@ -51,18 +60,19 @@ public class DailyOffer {
         this.price = price;
     }
 
-    public int getQuantityChose(){return this.quantityChose;}
-    public void setQuantityChose(int quantityChose){
-        this.quantityChose = quantityChose;
+    public int getQuantityChosen(){return this.quantityChosen;}
+    
+    public void setQuantityChosen(int quantityChosen){
+        this.quantityChosen = quantityChosen;
     }
 
     public void addToQuantity(){
-        this.quantityChose++;
+        this.quantityChosen++;
     }
 
     public void removeFromQuantity(){
-        if(this.quantityChose > 0){
-            this.quantityChose--;
+        if(this.quantityChosen > 0){
+            this.quantityChosen--;
         }
     }
 }
