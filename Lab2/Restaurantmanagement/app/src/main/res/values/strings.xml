@@ -8,7 +8,8 @@
     <string name="dish"> Dish</string>
     <string name="rider_id">Rider\'s id</string>
     <string name="price">Price</string>
-    <string name="priceTot">Total Price</string>
+    <string name="totCost">Total cost</string>
+    <string name="total">Total</string>
     <string name="time">Time</string>
     <string name="daily_offers">Daily Offers</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

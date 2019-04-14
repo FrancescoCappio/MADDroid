@@ -10,6 +10,15 @@ import java.util.Objects;
 
 public class Order {
     
+    Order(int id, int timeHour, int timeMinutes, int customerId, int riderId) {
+        this.id = id;
+        this.timeHour = timeHour;
+        this.timeMinutes = timeMinutes;
+        this.customerId = customerId;
+        this.riderId = riderId;
+        this.dishes = new HashMap<Integer, Integer>();
+    }
+    
     public Order(Order o) {
         this.id = o.id;
         this.customerId = o.customerId;
@@ -54,15 +63,6 @@ public class Order {
         this.riderId = riderId;
     }
 
-    Order(int id, int timeHour, int timeMinutes, int customerId, int riderId) {
-        this.id = id;
-        this.timeHour = timeHour;
-        this.timeMinutes = timeMinutes;
-        this.customerId = customerId;
-        this.riderId = riderId;
-        this.dishes = new HashMap<Integer, Integer>();
-    }
-
     public int getId() {
         return id;
     }
@@ -87,11 +87,10 @@ public class Order {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
+    
     public HashMap<Integer, Integer> getDishes() {
         if(dishes == null)
-            dishes = new HashMap<Integer, Integer>();
+            dishes = new HashMap<>();
         return dishes;
     }
 
@@ -100,9 +99,10 @@ public class Order {
         setTotPrice(context);
         return;
     }
-
-
-    public float getTotPrice() {
+    
+    public float getTotPrice(Context context) {
+        if (totPrice == 0)
+            setTotPrice(context);
         return totPrice;
     }
 

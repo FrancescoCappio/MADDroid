@@ -32,8 +32,10 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
     List<DailyOffer> dailyOffers;
     
-    public static final String ORDER_CHOOSE_DISHES_KEY = "dishesChose";
+    public static final String ORDER_CHOOSE_DISHES_KEY = "ORDER_CHOOSE_DISHES_KEY";
+    public static final String TOTAL_COST_KEY = "TOTAL_COST_KEY";
 
+    private float dishCostTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     
 
     public void setTotalCost(){
-        double dishCostTotal = 0;
+        dishCostTotal = 0;
         for(Map.Entry<Integer, Integer> entry : adapter.getMapDishes().entrySet()){
             dishCostTotal += entry.getValue() * DataManager.getInstance(getApplicationContext()).getDailyOfferWithId(entry.getKey()).getPrice();
         }
@@ -93,6 +95,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
                 Log.d(TAG, "Confirm pressed");
                 Map<Integer,Integer> mapDishes = adapter.getMapDishes();
                 data.putExtra(ORDER_CHOOSE_DISHES_KEY, (Serializable) mapDishes);
+                data.putExtra(TOTAL_COST_KEY, dishCostTotal);
                 setResult(Activity.RESULT_OK, data);
                 //save dishes request
                 adapter.confirmDishesRequest();

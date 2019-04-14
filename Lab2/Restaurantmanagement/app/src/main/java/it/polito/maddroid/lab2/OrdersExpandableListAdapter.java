@@ -18,7 +18,7 @@ public class OrdersExpandableListAdapter extends BaseExpandableListAdapter {
     private List<Order> expandableListTitle;
     private HashMap<Order, List<DailyOffer>> expandableListDetail;
     
-    private int childMinimumHeight = 0;
+    private int childMinimumHeight;
 
     public OrdersExpandableListAdapter(Context context, List<Order> expandableListTitle,
                                        HashMap<Order, List<DailyOffer>> expandableListDetail) {
@@ -45,7 +45,6 @@ public class OrdersExpandableListAdapter extends BaseExpandableListAdapter {
             return -1;
     }
 
-    //TODO: fare la foto
     @Override
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
@@ -78,7 +77,6 @@ public class OrdersExpandableListAdapter extends BaseExpandableListAdapter {
         if(price != null)
             price.setText(""+sum);
         
-        //TODO: set the quantity
         if(quantity != null)
             quantity.setText(""+expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId()));
         
