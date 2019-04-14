@@ -14,22 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
 
-    public static final String ORDER_ID_KEY2 ="ORDER_ID_KEY2";
     private static final String TAG = "OrderDetailActivity";
 
     private static final int ORDER_CHOOSE_DISHES = 123;
     
-    public static final String TIME_MIN_KEY = "TIME_MIN_KEY";
-    public static final String TIME_H_KEY = "TIME_H_KEY";
-    public static final String DISH_KEY = "DISH_KEY";
-    public static final String CUSTOMER_KEY = "CUSTOMER_KEY";
-    public static final String RIDER_KEY = "RIDER_KEY";
     public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
     public final static String MODE_NEW = "New";
     public final static String MODE_SHOW = "Show";
@@ -74,16 +69,12 @@ public class OrderDetailActivity extends AppCompatActivity {
         etTime.setOnClickListener(v -> showTimePickerDialog());
 
         btChooseDishes = findViewById(R.id.ib_choose_dishes);
-        btChooseDishes.setOnClickListener(arg0 -> {
-            Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
-            startActivityForResult(i,ORDER_CHOOSE_DISHES);
-        });
-    
+        
         dataManager = DataManager.getInstance(getApplicationContext());
     
         Intent i  = getIntent();
         pageType = i.getStringExtra(PAGE_TYPE_KEY);
-        Log.d("stampa Order Detail ", pageType);
+        
         if (pageType.equals(MODE_NEW)) {
             currentOrderId = dataManager.getNextOrderId();
             editMode = true;
@@ -110,6 +101,17 @@ public class OrderDetailActivity extends AppCompatActivity {
             etTime.setText(""+shour+":"+sminutes);
         
         }
+    
+        btChooseDishes.setOnClickListener(arg0 -> {
+            Intent intent = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
+            if (pageType.equals(MODE_NEW)) {
+                intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_NEW);
+            } else {
+                intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_SHOW);
+                intent.putExtra(OrderChooseDishesActivity.ORDER_CHOOSE_DISHES_KEY, mapDishes);
+            }
+            startActivityForResult(intent,ORDER_CHOOSE_DISHES);
+        });
     
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

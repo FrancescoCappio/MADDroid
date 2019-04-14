@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,9 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     
     public static final String ORDER_CHOOSE_DISHES_KEY = "ORDER_CHOOSE_DISHES_KEY";
     public static final String TOTAL_COST_KEY = "TOTAL_COST_KEY";
+    public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
+    public final static String MODE_NEW = "New";
+    public final static String MODE_SHOW = "Show";
 
     private float dishCostTotal;
 
@@ -52,8 +56,17 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
         lvChooseDishes = findViewById(R.id.lv_choose_dishes);
 
         dailyOffers = DataManager.getInstance(getApplicationContext()).getDailyOffers();
-
-        adapter = new ChooseDishesAdapter(new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        
+        Intent i = getIntent();
+        
+        String pageType = i.getStringExtra(PAGE_TYPE_KEY);
+        
+        if (pageType.equals(MODE_NEW))
+            adapter = new ChooseDishesAdapter(new HashMap<>(), new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        else {
+            Map<Integer,Integer> map = (Map<Integer, Integer>) i.getSerializableExtra(ORDER_CHOOSE_DISHES_KEY);
+            adapter = new ChooseDishesAdapter(map, new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        }
 
         lvChooseDishes.setAdapter(adapter);
 

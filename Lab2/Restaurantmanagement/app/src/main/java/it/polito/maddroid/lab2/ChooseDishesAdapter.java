@@ -26,14 +26,17 @@ public class ChooseDishesAdapter extends BaseAdapter {
     private HashMap<Integer, Integer> mapDishes;
     DishQuantityListener dishQuantityListener;
 
-    public ChooseDishesAdapter(ArrayList<DailyOffer> dailyOffers, DishQuantityListener listener, Context context) {
+    public ChooseDishesAdapter(Map<Integer,Integer> dishes, ArrayList<DailyOffer> dailyOffers, DishQuantityListener listener, Context context) {
         this.dailyOffers = dailyOffers;
         this.context = context;
         this.dishQuantityListener = listener;
         this.mapDishes = new HashMap<>();
         
         for (DailyOffer d : dailyOffers) {
-            mapDishes.put(d.getId(), 0);
+            if (dishes.containsKey(d.getId()))
+                mapDishes.put(d.getId(), dishes.get(d.getId()));
+            else
+                mapDishes.put(d.getId(), 0);
         }
     }
 
