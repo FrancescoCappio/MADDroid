@@ -95,11 +95,10 @@ public class OrderDetailActivity extends AppCompatActivity {
             mapDishes = order.getDishes();
             
             // notice format for minutes and hours
-            DecimalFormat formatter = new DecimalFormat("00");
-            String shour = formatter.format(order.getTimeHour());
-            String sminutes = formatter.format(order.getTimeMinutes());
-            etTime.setText(""+shour+":"+sminutes);
-        
+            timeHour = order.getTimeHour();
+            timeMinutes = order.getTimeMinutes();
+            
+            writeTime();
         }
     
         btChooseDishes.setOnClickListener(arg0 -> {
@@ -202,16 +201,19 @@ public class OrderDetailActivity extends AppCompatActivity {
                
                 DataManager dataManager = DataManager.getInstance(getApplicationContext());
                 
-                Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
-
-                o.setDishesMap(mapDishes, getApplicationContext());
-
-                Intent i  = getIntent();
-                pageType = i.getStringExtra(PAGE_TYPE_KEY);
-
                 if (pageType.equals(MODE_NEW)) {
+                    Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
+                    o.setDishesMap(mapDishes, getApplicationContext());
                     dataManager.addNewOrder(getApplicationContext(), o);
                 } else if(pageType.equals(MODE_SHOW)) {
+                    Order o = dataManager.getOrderWithId(currentOrderId);
+                    
+                    o.setCustomerId(customerId);
+                    o.setRiderId(riderId);
+                    o.setTimeHour(timeHour);
+                    o.setTimeMinutes(timeMinutes);
+                    o.setDishesMap(mapDishes, getApplicationContext());
+                    
                     dataManager.setOrderWithID(getApplicationContext(), o);
                 }
                 
@@ -226,11 +228,13 @@ public class OrderDetailActivity extends AppCompatActivity {
     void setTime(int hour, int minutes) {
         timeHour = hour;
         timeMinutes = minutes;
+        writeTime();
+    }
     
+    private void writeTime() {
         DecimalFormat formatter = new DecimalFormat("00");
-        String shour = formatter.format(hour);
-        String sminutes = formatter.format(minutes);
-        
+        String shour = formatter.format(timeHour);
+        String sminutes = formatter.format(timeHour);
         etTime.setText(shour + ":" + sminutes);
     }
     

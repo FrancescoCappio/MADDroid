@@ -74,7 +74,15 @@ public class Order {
     public int getTimeMinutes() {
         return timeMinutes;
     }
-
+    
+    public void setTimeHour(int timeHour) {
+        this.timeHour = timeHour;
+    }
+    
+    public void setTimeMinutes(int timeMinutes) {
+        this.timeMinutes = timeMinutes;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
