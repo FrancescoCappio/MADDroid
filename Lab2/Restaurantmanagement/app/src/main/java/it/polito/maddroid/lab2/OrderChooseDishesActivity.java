@@ -66,6 +66,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
         else {
             Map<Integer,Integer> map = (Map<Integer, Integer>) i.getSerializableExtra(ORDER_CHOOSE_DISHES_KEY);
             adapter = new ChooseDishesAdapter(map, new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+            setTotalCost();
         }
 
         lvChooseDishes.setAdapter(adapter);
