@@ -12,11 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.widget.ExpandableListView.getPackedPositionGroup;
 
 
 public class OrdersFragment extends Fragment {
@@ -24,6 +27,10 @@ public class OrdersFragment extends Fragment {
     CustomExpandableListAdapter expandableListAdapter;
     ArrayList<Order> expandableListTitle;
     HashMap<Order, List<DailyOffer>> expandableListDetail;
+    HashMap<Integer, Integer> mappaPosizioni;
+
+
+    private int PosCorr=0;
 
     
     private List<Order> orders;
@@ -50,17 +57,35 @@ public class OrdersFragment extends Fragment {
         expandableListTitle = new ArrayList<>(DataManager.getInstance(getContext()).getOrders());
         expandableListAdapter = new CustomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
-        
+
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+
+                //mappaPosizioni.put(expandableListTitle.get(groupPosition).getId(), groupPosition);
+            }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+
+
+            }
+        });
         expandableListView.setOnItemLongClickListener((parent, view1, position, id) -> {
+            int groupPos = ExpandableListView.getPackedPositionGroup(id);
             int itemType = ExpandableListView.getPackedPositionType(id);
-            Log.d("stampa Order fragment", String.valueOf(position));
+
             if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 
 
             } else if(itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
                 Intent i = new Intent(getContext(), OrderDetailActivity.class);
                 i.putExtra(OrderDetailActivity.PAGE_TYPE_KEY, OrderDetailActivity.MODE_SHOW);
-                i.putExtra(OrderDetailActivity.ORDER_ID_KEY, expandableListTitle.get(position).getId());
+                i.putExtra(OrderDetailActivity.ORDER_ID_KEY, groupPos);
                 startActivityForResult(i, MainActivity.ORDER_DETAIL_CODE);
 
             } else {

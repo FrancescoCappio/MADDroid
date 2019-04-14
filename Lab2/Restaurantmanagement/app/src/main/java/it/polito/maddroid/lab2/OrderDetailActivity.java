@@ -16,11 +16,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
-    
+
+    public static final String ORDER_ID_KEY2 ="ORDER_ID_KEY2";
     private static final String TAG = "OrderDetailActivity";
 
     private static final int ORDER_CHOOSE_DISHES = 123;
@@ -42,6 +44,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     private EditText etRider;
     private EditText etPriceTot;
     private Button btChooseDishes;
+    private List<DailyOffer> list;
+    private HashMap<Long, Integer> groupIdPosition;
     
     private int timeHour;
     private int timeMinutes;
@@ -87,9 +91,8 @@ public class OrderDetailActivity extends AppCompatActivity {
             currentOrderId = dataManager.getNextOrderId();
             editMode = true;
         } else {
-            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
             currentOrderId = i.getIntExtra(this.ORDER_ID_KEY, -1);
-            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
+            long id = i.getIntExtra(this.ORDER_ID_KEY, -1);
             editMode = false;
         
             StringBuilder s = new StringBuilder(5) ;
@@ -136,10 +139,8 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case ORDER_CHOOSE_DISHES:
-                List<DailyOffer> list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
-                for(DailyOffer ii :list){
-
-                }
+                list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
+                break;
         }
     }
 
@@ -175,6 +176,8 @@ public class OrderDetailActivity extends AppCompatActivity {
                 DataManager dataManager = DataManager.getInstance(getApplicationContext());
                 
                 Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
+
+                o.addToMap(list, getApplicationContext());
 
                 Intent i  = getIntent();
                 pageType = i.getStringExtra(PAGE_TYPE_KEY);

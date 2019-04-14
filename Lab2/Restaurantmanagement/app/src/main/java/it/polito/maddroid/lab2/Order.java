@@ -1,13 +1,17 @@
 package it.polito.maddroid.lab2;
 
+import android.content.Context;
+
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
 public class Order {
 
     private int id;
-
+    private float totPrice;
     private int timeHour;
     private int timeMinutes;
 
@@ -76,4 +80,28 @@ public class Order {
             dishes = new HashMap<Integer, Integer>();
         return dishes;
     }
+
+    public void addToMap(List<DailyOffer> list, Context context) {
+        for (DailyOffer list1 : list)
+        {
+            if(list1.getQuantityChose()>0)
+            this.dishes.put(list1.getId(), list1.getQuantityChose());
+        }
+        setTotPrice(context);
+        return;
+    }
+
+
+    public float getTotPrice() {
+        return totPrice;
+    }
+
+    private void setTotPrice(Context context) {
+        DataManager dataManager = DataManager.getInstance(context);
+        for(Map.Entry< Integer, Integer> entry : dishes.entrySet()){
+            this.totPrice = this.totPrice + dataManager.getDailyOfferWithId(entry.getKey()).getPrice()*entry.getValue();
+        }
+
+    }
+
 }

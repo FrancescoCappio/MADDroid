@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import it.polito.maddroid.lab2.Order;
-
 import static java.lang.String.format;
 
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
@@ -37,7 +35,10 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int listPosition, int expandedListPosition) {
-        return expandedListPosition;
+        if (this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).get(expandedListPosition) != null)
+            return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).get(expandedListPosition).getId();
+        else
+            return -1;
     }
 
     //TODO: fare la foto
@@ -54,18 +55,22 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         TextView dishName = (TextView) convertView.findViewById(R.id.tv_dish_name);
         TextView description = (TextView) convertView.findViewById(R.id.tv_dish_description);
         TextView price = (TextView) convertView.findViewById(R.id.tv_price);
+        TextView quantity = (TextView) convertView.findViewById(R.id.tv_quantity);
+        float sum = expandedListText.getPrice() * expandedListText.getQuantityChose();
         //TextView qnt = (TextView) convertView.findViewById(R.id.tv_quantity);
         if(dishName != null)
             dishName.setText(expandedListText.getName());
         if(description != null)
             description.setText(expandedListText.getDescription());
         if(price != null)
-            price.setText(expandedListText.getPrice().toString());
+            price.setText(""+sum);
         //TODO: set the quantity
-//        if(qnt != null)
-//            qnt.setText(expandedListText.getPrice().toString());
-
-
+        if(quantity != null)
+            quantity.setText(""+expandedListText.getQuantityChose());
+        dishName.setTypeface(null,Typeface.BOLD);
+        description.setTypeface(null,Typeface.BOLD);
+        price.setTypeface(null, Typeface.BOLD);
+        quantity.setTypeface(null, Typeface.BOLD);
 
         return convertView;
     }
@@ -80,8 +85,8 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Object getGroup(int listPosition) {
-        return this.expandableListTitle.get(listPosition);
+    public Object getGroup(int groupPosition) {
+        return this.expandableListTitle.get(groupPosition);
     }
 
     @Override
