@@ -2,6 +2,7 @@ package it.polito.maddroid.lab2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,18 +60,28 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
         
         Intent i = getIntent();
         
-        String pageType = i.getStringExtra(PAGE_TYPE_KEY);
+        Bundle b;
+        
+        if (savedInstanceState == null)
+            b = i.getExtras();
+        else
+            b = savedInstanceState;
+        
+        String pageType = b.getString(PAGE_TYPE_KEY);
         
         if (pageType.equals(MODE_NEW))
             adapter = new ChooseDishesAdapter(new HashMap<>(), new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
         else {
-            Map<Integer,Integer> map = (Map<Integer, Integer>) i.getSerializableExtra(ORDER_CHOOSE_DISHES_KEY);
+            Map<Integer,Integer> map = (Map<Integer, Integer>) b.getSerializable(ORDER_CHOOSE_DISHES_KEY);
             adapter = new ChooseDishesAdapter(map, new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
         }
     
         setTotalCost();
         lvChooseDishes.setAdapter(adapter);
-
+    
+        // add back button
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     
 
@@ -89,12 +100,24 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_confirm);
-
+        MenuItem menuDelete = menu.findItem(R.id.menu_delete);
+        
+        menuDelete.setVisible(false);
         menuEdit.setVisible(false);
         menuSave.setVisible(true);
         return true;
     }
-
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putString(PAGE_TYPE_KEY, MODE_SHOW);
+        
+        Map<Integer,Integer> map = adapter.getMapDishes();
+        outState.putSerializable(ORDER_CHOOSE_DISHES_KEY, (Serializable) map);
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);

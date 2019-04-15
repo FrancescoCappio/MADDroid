@@ -29,11 +29,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     public static final int ORDER_DETAIL_CODE = 123;
     public static final int DAILY_OFFER_DETAIL_CODE = 124;
+
     
     private final static String TAG = "MainActivity";
+    private static String STATE_SELECTED_POSITION = "state_selected_position";
     
     private OrdersFragment ordersFragment;
     private DailyOffersFragment dailyOffersFragment;
+    private int CurrentSelectedPosition;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +71,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ordersFragment = new OrdersFragment();
                 fragment = ordersFragment;
                 getSupportActionBar().setTitle(R.string.orders);
+                CurrentSelectedPosition = 0;
                 break;
                 
             case 1:
                 dailyOffersFragment = new DailyOffersFragment();
                 fragment = dailyOffersFragment;
                 getSupportActionBar().setTitle(R.string.daily_offers);
+                CurrentSelectedPosition = 1;
                 break;
             
             default:
@@ -177,5 +182,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     dailyOffersFragment.notifyUpdate();
                 }
         }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, CurrentSelectedPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        CurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        selectItem(CurrentSelectedPosition);
     }
 }
