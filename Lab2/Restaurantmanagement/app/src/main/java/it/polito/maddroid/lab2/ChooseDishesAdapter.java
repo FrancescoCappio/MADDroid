@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,11 @@ public class ChooseDishesAdapter extends BaseAdapter {
         tvDishName.setText(dailyOffer.getName());
         tvDishDescription.setText(dailyOffer.getDescription());
         tvDishQuantity.setText("" + mapDishes.get(dailyOffer.getId()));
-        tvCurrentCost.setText("" + (mapDishes.get(dailyOffer.getId()) * dailyOffer.getPrice())+ " \u20AC");
+    
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+        
+        tvCurrentCost.setText(String.format("%.02f", mapDishes.get(dailyOffer.getId()) * dailyOffer.getPrice())+ " \u20AC");
         
         if (dailyOffer.getQuantityLeft() == 0) {
             rowView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_disabled));
@@ -100,7 +105,7 @@ public class ChooseDishesAdapter extends BaseAdapter {
                 mapDishes.put(dailyOffer.getId(),cnt);
     
                 tvDishQuantity.setText("" + cnt);
-                tvCurrentCost.setText("" + (cnt * dailyOffer.getPrice())+ " \u20AC");
+                tvCurrentCost.setText(String.format("%.02f", cnt * dailyOffer.getPrice())+ " \u20AC");
     
                 dishQuantityListener.quantityUpdated();
                 
@@ -117,7 +122,7 @@ public class ChooseDishesAdapter extends BaseAdapter {
                 mapDishes.put(dailyOffer.getId(), cnt);
     
                 tvDishQuantity.setText("" + cnt);
-                tvCurrentCost.setText("" + (cnt * dailyOffer.getPrice())+ " \u20AC");
+                tvCurrentCost.setText(String.format("%.02f", cnt * dailyOffer.getPrice())+ " \u20AC");
                 
                 dishQuantityListener.quantityUpdated();
             }

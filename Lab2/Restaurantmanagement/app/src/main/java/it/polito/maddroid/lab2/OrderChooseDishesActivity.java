@@ -79,8 +79,8 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
         for(Map.Entry<Integer, Integer> entry : adapter.getMapDishes().entrySet()){
             dishCostTotal += entry.getValue() * DataManager.getInstance(getApplicationContext()).getDailyOfferWithId(entry.getKey()).getPrice();
         }
-
-        tvTotalcost.setText(""+ dishCostTotal  + " \u20AC");
+        
+        tvTotalcost.setText(String.format("%.02f", dishCostTotal) + " €");
     }
 
     @Override

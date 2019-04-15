@@ -1,7 +1,6 @@
 package it.polito.maddroid.lab2;
 
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -72,7 +71,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_daily_offer_detail_activity);
+        setContentView(R.layout.activity_daily_offer_detail);
 
         //get references to views
         etName = findViewById(R.id.et_name);

@@ -60,29 +60,28 @@ public class OrdersExpandableListAdapter extends BaseExpandableListAdapter {
             convertView.setMinimumHeight(childMinimumHeight);
         }
         
-        TextView dishName = convertView.findViewById(R.id.tv_dish_name);
-        TextView description = convertView.findViewById(R.id.tv_dish_description);
-        TextView price = convertView.findViewById(R.id.tv_price);
-        TextView quantity = convertView.findViewById(R.id.tv_quantity);
-        
+        TextView tvDishName = convertView.findViewById(R.id.tv_dish_name);
+        TextView tvDescription = convertView.findViewById(R.id.tv_dish_description);
+        TextView tvPrice = convertView.findViewById(R.id.tv_price);
+        TextView tvQuantity = convertView.findViewById(R.id.tv_quantity);
         
         float sum = expandedListText.getPrice() * (int)expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId());
 
-        if(dishName != null)
-            dishName.setText(expandedListText.getName());
+        if(tvDishName != null)
+            tvDishName.setText(expandedListText.getName());
         
-        if(description != null)
-            description.setText(expandedListText.getDescription());
+        if(tvDescription != null)
+            tvDescription.setText(expandedListText.getDescription());
         
-        if(price != null)
-            price.setText(""+sum);
+        if(tvPrice != null)
+            tvPrice.setText(String.format("%.02f", sum) + " €");
         
-        if(quantity != null)
-            quantity.setText(""+expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId()));
+        if(tvQuantity != null)
+            tvQuantity.setText(""+expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId()));
         
-        dishName.setTypeface(null,Typeface.BOLD);
-        price.setTypeface(null, Typeface.BOLD);
-        quantity.setTypeface(null, Typeface.BOLD);
+        tvDishName.setTypeface(null,Typeface.BOLD);
+        tvPrice.setTypeface(null, Typeface.BOLD);
+        tvQuantity.setTypeface(null, Typeface.BOLD);
 
         return convertView;
     }
