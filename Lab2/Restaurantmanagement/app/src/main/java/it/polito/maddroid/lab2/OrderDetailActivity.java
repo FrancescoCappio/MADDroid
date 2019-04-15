@@ -44,6 +44,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private MenuItem menuEdit;
     private MenuItem menuSave;
+    private MenuItem menuDelete;
     private boolean editMode = false;
     private String pageType;
 
@@ -155,6 +156,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_confirm);
+        menuDelete = menu.findItem(R.id.menu_delete);
     
         //enable/disable edit depending on the state
         setEditEnabled(editMode);
@@ -166,6 +168,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         editMode = enabled;
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
+        menuDelete.setVisible(enabled);
         
         etTime.setEnabled(enabled);
         etCustomer.setEnabled(enabled);
@@ -187,6 +190,12 @@ public class OrderDetailActivity extends AppCompatActivity {
                 
             case R.id.menu_edit:
                 setEditEnabled(true);
+                break;
+    
+            case R.id.menu_delete:
+                DataManager.getInstance(this).deleteOrderWithId(this, currentOrderId);
+                setResult(Activity.RESULT_OK, data);
+                finish();
                 break;
                 
             case R.id.menu_confirm:
@@ -234,7 +243,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void writeTime() {
         DecimalFormat formatter = new DecimalFormat("00");
         String shour = formatter.format(timeHour);
-        String sminutes = formatter.format(timeHour);
+        String sminutes = formatter.format(timeMinutes);
         etTime.setText(shour + ":" + sminutes);
     }
     

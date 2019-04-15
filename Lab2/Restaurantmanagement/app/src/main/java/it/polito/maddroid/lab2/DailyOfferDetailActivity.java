@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab2;
 
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -43,6 +44,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     
     private MenuItem menuEdit;
     private MenuItem menuSave;
+    private MenuItem menuDelete;
     private boolean editMode = false;
     private String pageType;
     
@@ -59,6 +61,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     public static final String PRICE_KEY = "PRICE_KEY";
     public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
     public static final String CURRENT_OFFER_ID = "CURRENT_OFFER_ID";
+    public static final String SAVE_IMAGE_KEY = "SAVE_IMAGE_KEY";
+    
 
     //views
     private EditText etName;
@@ -166,6 +170,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
 
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_confirm);
+        menuDelete = menu.findItem(R.id.menu_delete);
 
         //enable/disable edit depending on the state
         setEditEnabled(editMode);
@@ -179,6 +184,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
+    
+        Intent data = new Intent();
         
         switch(item.getItemId()) {
             case android.R.id.home:
@@ -187,14 +194,19 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             case R.id.menu_edit:
                 setEditEnabled(true);
                 break;
+                
+            case R.id.menu_delete:
+                DataManager.getInstance(this).deleteDailyOfferWithId(this, currentOfferId);
+                setResult(Activity.RESULT_OK, data);
+                finish();
+                break;
+                
             case R.id.menu_confirm:
                 String Name = etName.getText().toString();
                 String Quantity = etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
-                Intent data = new Intent();
-    
-    
+
                 if(pageType.equals(MODE_NEW)){
                     
                     DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
@@ -228,6 +240,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         editMode = enabled;
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
+        menuDelete.setVisible(enabled);
 
         etDescription.setEnabled(enabled);
         etPrice.setEnabled(enabled);
@@ -450,6 +463,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         outState.putBoolean(EDIT_MODE_KEY, editMode);
         //save CURRENT ID
         outState.putInt(CURRENT_OFFER_ID,currentID);
+        // if to save image or not
+        outState.putBoolean(SAVE_IMAGE_KEY,saveImage);
     }
 
     @Override
@@ -480,7 +495,9 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         //restore editMode
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
         currentOfferId = savedInstanceState.getInt(CURRENT_OFFER_ID);
+        
+        //restore info on image save
+        saveImage = savedInstanceState.getBoolean(SAVE_IMAGE_KEY);
 
-        updateDishImage();
     }
 }

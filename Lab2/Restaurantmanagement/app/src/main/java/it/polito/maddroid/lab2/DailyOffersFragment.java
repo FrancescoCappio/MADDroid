@@ -61,7 +61,8 @@ public class DailyOffersFragment extends Fragment {
     
     public void notifyUpdate() {
         List<DailyOffer> dailyOffers = DataManager.getInstance(getContext()).getDailyOffers();
-        adapter.updateList(dailyOffers);
+        if (adapter != null)
+            adapter.updateList(dailyOffers);
     }
     
     @Override

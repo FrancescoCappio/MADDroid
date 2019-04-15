@@ -140,7 +140,13 @@ public class DataManager {
     public List<Order> getOrders() {
         Collection<Order> dao = orders.values();
         List<Order> list = new ArrayList<>(dao);
-        Collections.sort(list, (o1, o2) ->  o1.getId() - o2.getId());
+        Collections.sort(list, (o1, o2) ->  {
+            
+            if (o1.getTimeHour() != o2.getTimeHour())
+                return o1.getTimeHour() - o2.getTimeHour();
+            
+            return o1.getTimeMinutes() - o2.getTimeMinutes();
+        });
     
         List<Order> orderArrayList = new ArrayList<>();
         for (Order order : list)
@@ -283,6 +289,17 @@ public class DataManager {
             e.printStackTrace();
         }
         
+    }
+    
+    public void deleteDailyOfferWithId(Context context, int id) {
+        dailyOffers.remove(id);
+        saveDailyOffers(context);
+        //TODO: also delete the photo!
+    }
+    
+    public void deleteOrderWithId(Context context, int id) {
+        orders.remove(id);
+        saveOrders(context);
     }
     
     public static File getDishTmpFile(Context context) {
