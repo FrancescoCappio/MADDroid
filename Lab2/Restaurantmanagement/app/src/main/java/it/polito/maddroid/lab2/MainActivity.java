@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setCheckedItem(R.id.nav_orders);
         
         selectItem(0);
-       // setContentView(R.layout.activity_order_detail_activity);
+       // setContentView(R.layout.activity_order_detail);
         
     }
     

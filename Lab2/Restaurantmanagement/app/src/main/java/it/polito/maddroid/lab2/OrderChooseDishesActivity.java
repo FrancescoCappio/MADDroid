@@ -2,7 +2,6 @@ package it.polito.maddroid.lab2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +12,9 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderChooseDishesActivity extends AppCompatActivity {
 
@@ -26,12 +27,19 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     DataManager dataManager;
     private ListView lvChooseDishes;
 
-    DailyOfferAdapterForChooseDishes adapter;
+    ChooseDishesAdapter adapter;
 
     TextView tvTotalcost ;
 
     List<DailyOffer> dailyOffers;
+    
+    public static final String ORDER_CHOOSE_DISHES_KEY = "ORDER_CHOOSE_DISHES_KEY";
+    public static final String TOTAL_COST_KEY = "TOTAL_COST_KEY";
+    public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
+    public final static String MODE_NEW = "New";
+    public final static String MODE_SHOW = "Show";
 
+    private float dishCostTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,29 +56,31 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
         lvChooseDishes = findViewById(R.id.lv_choose_dishes);
 
         dailyOffers = DataManager.getInstance(getApplicationContext()).getDailyOffers();
-
-        adapter = new DailyOfferAdapterForChooseDishes(new ArrayList<>(dailyOffers), getApplicationContext());
-
+        
+        Intent i = getIntent();
+        
+        String pageType = i.getStringExtra(PAGE_TYPE_KEY);
+        
+        if (pageType.equals(MODE_NEW))
+            adapter = new ChooseDishesAdapter(new HashMap<>(), new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        else {
+            Map<Integer,Integer> map = (Map<Integer, Integer>) i.getSerializableExtra(ORDER_CHOOSE_DISHES_KEY);
+            adapter = new ChooseDishesAdapter(map, new ArrayList<>(dailyOffers), () -> setTotalCost(), getApplicationContext());
+        }
+    
+        setTotalCost();
         lvChooseDishes.setAdapter(adapter);
 
-        adapter.registerDataSetObserver(observer);
     }
-
-    DataSetObserver observer = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            setTotalCost();
-        }
-    };
+    
 
     public void setTotalCost(){
-        double dishCostTotal = 0;
-        for(DailyOffer order : dailyOffers){
-            dishCostTotal += order.getQuantityChose() * order.getPrice();
+        dishCostTotal = 0;
+        for(Map.Entry<Integer, Integer> entry : adapter.getMapDishes().entrySet()){
+            dishCostTotal += entry.getValue() * DataManager.getInstance(getApplicationContext()).getDailyOfferWithId(entry.getKey()).getPrice();
         }
-
-        tvTotalcost.setText(""+ dishCostTotal  + " \u20AC");
+        
+        tvTotalcost.setText(String.format("%.02f", dishCostTotal) + " €");
     }
 
     @Override
@@ -88,9 +98,7 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-
         Intent data = new Intent();
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(RESULT_CANCELED, data);
@@ -99,8 +107,12 @@ public class OrderChooseDishesActivity extends AppCompatActivity {
 
             case R.id.menu_confirm:
                 Log.d(TAG, "Confirm pressed");
-                data.putExtra("dishesChose",(Serializable) dailyOffers);
+                Map<Integer,Integer> mapDishes = adapter.getMapDishes();
+                data.putExtra(ORDER_CHOOSE_DISHES_KEY, (Serializable) mapDishes);
+                data.putExtra(TOTAL_COST_KEY, dishCostTotal);
                 setResult(Activity.RESULT_OK, data);
+                //save dishes request
+                adapter.confirmDishesRequest();
                 finish();
                 break;
         }

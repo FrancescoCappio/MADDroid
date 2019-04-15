@@ -25,24 +25,27 @@
         android:paddingStart="15dp"
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
+        android:weightSum="2"
         >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Total Cost:"
+            android:text="Total cost:  "
             android:textSize="20sp"
             android:layout_weight="1"
             android:textStyle="bold"
+            android:textAlignment="textEnd"
             />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tv_total_cost"
             android:layout_weight="1"
             android:textSize="20sp"
-            android:text="0"
+            android:textStyle="bold"
+            android:text="0 €"
             />
     </LinearLayout>
 

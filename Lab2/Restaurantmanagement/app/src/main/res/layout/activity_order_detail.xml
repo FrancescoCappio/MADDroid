@@ -55,33 +55,12 @@
 
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_totprice"
-                    android:layout_width="match_parent"
+                    android:id="@+id/til_customer"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/til_idRider"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/til_time"
-                    >
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_priceTot"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:hint="@string/priceTot"
-                        android:inputType="numberDecimal"
-                        android:textColor="@android:color/white"
-                        android:singleLine="true"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_customer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_totprice"
                     >
 
                     <android.support.design.widget.TextInputEditText
@@ -101,11 +80,11 @@
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/til_idRider"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_customer"
+                    app:layout_constraintStart_toEndOf="@id/til_customer"
+                    app:layout_constraintTop_toBottomOf="@+id/til_time"
                     >
 
                     <android.support.design.widget.TextInputEditText
@@ -121,14 +100,28 @@
 
                 </android.support.design.widget.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/tv_total_cost"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Total cost"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorAccent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/til_customer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/ib_choose_dishes"/>
+
                 <Button
+                    android:background="@color/colorAccent"
                     android:id="@+id/ib_choose_dishes"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="@string/choose_dishes"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tv_total_cost"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_idRider"/>
+                    app:layout_constraintTop_toBottomOf="@id/til_idRider" />
 
             </android.support.constraint.ConstraintLayout>
 

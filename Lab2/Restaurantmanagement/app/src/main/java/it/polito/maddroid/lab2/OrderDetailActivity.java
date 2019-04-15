@@ -10,26 +10,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.TextView;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.List;
+import java.util.HashMap;
 
 
 public class OrderDetailActivity extends AppCompatActivity {
-    
+
     private static final String TAG = "OrderDetailActivity";
 
     private static final int ORDER_CHOOSE_DISHES = 123;
     
-    public static final String TIME_MIN_KEY = "TIME_MIN_KEY";
-    public static final String TIME_H_KEY = "TIME_H_KEY";
-    public static final String DISH_KEY = "DISH_KEY";
-    public static final String CUSTOMER_KEY = "CUSTOMER_KEY";
-    public static final String RIDER_KEY = "RIDER_KEY";
     public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
     public final static String MODE_NEW = "New";
     public final static String MODE_SHOW = "Show";
@@ -40,8 +35,9 @@ public class OrderDetailActivity extends AppCompatActivity {
     private EditText etTime;
     private EditText etCustomer;
     private EditText etRider;
-    private EditText etPriceTot;
+    private TextView tvTotCost;
     private Button btChooseDishes;
+    private HashMap<Integer, Integer> mapDishes;
     
     private int timeHour;
     private int timeMinutes;
@@ -55,7 +51,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_detail_activity);
+        setContentView(R.layout.activity_order_detail);
 
         // add back button
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -65,7 +61,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         etTime = findViewById(R.id.et_time);
         etCustomer = findViewById(R.id.et_customer);
         etRider = findViewById(R.id.et_idRider);
-        etPriceTot = findViewById(R.id.et_priceTot);
+        tvTotCost = findViewById(R.id.tv_total_cost);
         
         
         etTime.setFocusable(false);
@@ -73,39 +69,48 @@ public class OrderDetailActivity extends AppCompatActivity {
         etTime.setOnClickListener(v -> showTimePickerDialog());
 
         btChooseDishes = findViewById(R.id.ib_choose_dishes);
-        btChooseDishes.setOnClickListener(arg0 -> {
-            Intent i = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
-            startActivityForResult(i,ORDER_CHOOSE_DISHES);
-        });
-    
+        
         dataManager = DataManager.getInstance(getApplicationContext());
     
         Intent i  = getIntent();
         pageType = i.getStringExtra(PAGE_TYPE_KEY);
-        Log.d("stampa Order Detail ", pageType);
+        
         if (pageType.equals(MODE_NEW)) {
             currentOrderId = dataManager.getNextOrderId();
             editMode = true;
         } else {
-            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
+            // we need to load the order from the file system
+            
             currentOrderId = i.getIntExtra(this.ORDER_ID_KEY, -1);
-            Log.d("stampa Order Detail", String.valueOf(currentOrderId));
+            
             editMode = false;
         
-            StringBuilder s = new StringBuilder(5) ;
-            Order order= dataManager.getOrderWithId(currentOrderId);
+            Order order = dataManager.getOrderWithId(currentOrderId);
         
-            Log.d("Order Detail Activity", "qui arriva");
             etRider.setText(""+order.getRiderId());
             etCustomer.setText(""+order.getCustomerId());
-            etPriceTot.setText("da terminare");
-            //todo attenzione a come si stampano i minuti tipo 02 03 etc
-            DecimalFormat formatter = new DecimalFormat("00");
-            String shour = formatter.format(order.getTimeHour());
-            String sminutes = formatter.format(order.getTimeMinutes());
-            etTime.setText(""+shour+":"+sminutes);
-        
+            
+            setTotalCost(order.getTotPrice(getApplicationContext()));
+            
+            mapDishes = order.getDishes();
+            
+            // notice format for minutes and hours
+            timeHour = order.getTimeHour();
+            timeMinutes = order.getTimeMinutes();
+            
+            writeTime();
         }
+    
+        btChooseDishes.setOnClickListener(arg0 -> {
+            Intent intent = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
+            if (pageType.equals(MODE_NEW)) {
+                intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_NEW);
+            } else {
+                intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_SHOW);
+                intent.putExtra(OrderChooseDishesActivity.ORDER_CHOOSE_DISHES_KEY, mapDishes);
+            }
+            startActivityForResult(intent,ORDER_CHOOSE_DISHES);
+        });
     
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -136,10 +141,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case ORDER_CHOOSE_DISHES:
-                List<DailyOffer> list = (List<DailyOffer>) data.getSerializableExtra("dishesChose");
-                for(DailyOffer ii :list){
-
-                }
+                mapDishes = (HashMap<Integer, Integer>) data.getSerializableExtra(OrderChooseDishesActivity.ORDER_CHOOSE_DISHES_KEY);
+                float totalCost = data.getFloatExtra(OrderChooseDishesActivity.TOTAL_COST_KEY, 0);
+                setTotalCost(totalCost);
+                break;
         }
     }
 
@@ -147,7 +152,25 @@ public class OrderDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.save_menu, menu);
+    
+        menuEdit = menu.findItem(R.id.menu_edit);
+        menuSave = menu.findItem(R.id.menu_confirm);
+    
+        //enable/disable edit depending on the state
+        setEditEnabled(editMode);
+        
         return true;
+    }
+    
+    private void setEditEnabled(boolean enabled) {
+        editMode = enabled;
+        menuEdit.setVisible(!enabled);
+        menuSave.setVisible(enabled);
+        
+        etTime.setEnabled(enabled);
+        etCustomer.setEnabled(enabled);
+        etRider.setEnabled(enabled);
+        btChooseDishes.setEnabled(enabled);
     }
     
     @Override
@@ -162,6 +185,10 @@ public class OrderDetailActivity extends AppCompatActivity {
                 finish();
                 break;
                 
+            case R.id.menu_edit:
+                setEditEnabled(true);
+                break;
+                
             case R.id.menu_confirm:
                 Log.d(TAG, "Confirm pressed");
                 
@@ -174,14 +201,19 @@ public class OrderDetailActivity extends AppCompatActivity {
                
                 DataManager dataManager = DataManager.getInstance(getApplicationContext());
                 
-                Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
-
-                Intent i  = getIntent();
-                pageType = i.getStringExtra(PAGE_TYPE_KEY);
-
                 if (pageType.equals(MODE_NEW)) {
+                    Order o = new Order(dataManager.getNextOrderId(), timeHour, timeMinutes, customerId, riderId);
+                    o.setDishesMap(mapDishes, getApplicationContext());
                     dataManager.addNewOrder(getApplicationContext(), o);
                 } else if(pageType.equals(MODE_SHOW)) {
+                    Order o = dataManager.getOrderWithId(currentOrderId);
+                    
+                    o.setCustomerId(customerId);
+                    o.setRiderId(riderId);
+                    o.setTimeHour(timeHour);
+                    o.setTimeMinutes(timeMinutes);
+                    o.setDishesMap(mapDishes, getApplicationContext());
+                    
                     dataManager.setOrderWithID(getApplicationContext(), o);
                 }
                 
@@ -196,17 +228,24 @@ public class OrderDetailActivity extends AppCompatActivity {
     void setTime(int hour, int minutes) {
         timeHour = hour;
         timeMinutes = minutes;
+        writeTime();
+    }
     
+    private void writeTime() {
         DecimalFormat formatter = new DecimalFormat("00");
-        String shour = formatter.format(hour);
-        String sminutes = formatter.format(minutes);
-        
+        String shour = formatter.format(timeHour);
+        String sminutes = formatter.format(timeHour);
         etTime.setText(shour + ":" + sminutes);
     }
     
     public void showTimePickerDialog() {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+    
+    private void setTotalCost(float totalCost) {
+        String totalCostRes = getResources().getString(R.string.total);
+        tvTotCost.setText(totalCostRes + ": " + String.format("%.2f",totalCost) + " €");
     }
     
 }
