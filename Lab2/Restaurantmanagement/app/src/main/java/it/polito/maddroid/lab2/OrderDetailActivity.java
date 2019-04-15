@@ -39,14 +39,21 @@ public class OrderDetailActivity extends AppCompatActivity {
     private Button btChooseDishes;
     private HashMap<Integer, Integer> mapDishes;
     
-    private int timeHour;
-    private int timeMinutes;
+    private int timeHour = -1;
+    private int timeMinutes = -1;
 
     private MenuItem menuEdit;
     private MenuItem menuSave;
     private MenuItem menuDelete;
     private boolean editMode = false;
     private String pageType;
+    
+    public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
+    public static final String TIME_HOUR_KEY = "TIME_HOUR_KEY";
+    public static final String TIME_MIN_KEY = "TIME_MIN_KEY";
+    public static final String CURRENT_ORDER_ID_KEY = "CURRENT_ORDER_ID_KEY";
+    public static final String RIDER_ID_KEY = "RIDER_ID_KEY";
+    public static final String CUSTOMER_ID_KEY = "CUSTOMER_ID_KEY";
 
     DataManager dataManager;
     @Override
@@ -177,6 +184,48 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
     
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putBoolean(EDIT_MODE_KEY, editMode);
+        outState.putInt(TIME_HOUR_KEY, timeHour);
+        outState.putInt(TIME_MIN_KEY, timeMinutes);
+        
+        outState.putInt(CURRENT_ORDER_ID_KEY, currentOrderId);
+        
+        String riderIdStr = etRider.getText().toString();
+        if (!riderIdStr.isEmpty())
+            outState.putInt(RIDER_ID_KEY, Integer.parseInt(riderIdStr));
+    
+        String customerIdStr = etCustomer.getText().toString();
+        if (!customerIdStr.isEmpty())
+            outState.putInt(CUSTOMER_ID_KEY, Integer.parseInt(customerIdStr));
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        
+        int customerId = savedInstanceState.getInt(CUSTOMER_ID_KEY, -1);
+        
+        if (customerId != -1)
+            etCustomer.setText("" + customerId);
+        
+        int riderId = savedInstanceState.getInt(RIDER_ID_KEY, -1);
+        
+        if (riderId != -1)
+            etRider.setText("" + riderId);
+        
+        timeHour = savedInstanceState.getInt(TIME_HOUR_KEY, -1);
+        timeMinutes = savedInstanceState.getInt(TIME_MIN_KEY, -1);
+        writeTime();
+        
+        editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+        
+        currentOrderId = savedInstanceState.getInt(CURRENT_ORDER_ID_KEY);
+    }
+    
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
     
@@ -241,6 +290,9 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
     
     private void writeTime() {
+        
+        if (timeMinutes == -1 || timeHour == -1)
+            return;
         DecimalFormat formatter = new DecimalFormat("00");
         String shour = formatter.format(timeHour);
         String sminutes = formatter.format(timeMinutes);
