@@ -109,6 +109,9 @@ public class ChooseDishesAdapter extends BaseAdapter {
     
                 dishQuantityListener.quantityUpdated();
                 
+                if (dailyOffer.getQuantityLeft() > 0) {
+                    rowView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+                }
             }
             
         });
@@ -125,7 +128,12 @@ public class ChooseDishesAdapter extends BaseAdapter {
                 tvCurrentCost.setText(String.format("%.02f", cnt * dailyOffer.getPrice())+ " \u20AC");
                 
                 dishQuantityListener.quantityUpdated();
+    
+                if (dailyOffer.getQuantityLeft() == 0) {
+                    rowView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_disabled));
+                }
             }
+            
         });
 
         return rowView;

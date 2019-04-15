@@ -245,7 +245,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     
     private void setTotalCost(float totalCost) {
         String totalCostRes = getResources().getString(R.string.total);
-        tvTotCost.setText(totalCostRes + ": " + totalCost + " €");
+        tvTotCost.setText(totalCostRes + ": " + String.format("%.2f",totalCost) + " €");
     }
     
 }
