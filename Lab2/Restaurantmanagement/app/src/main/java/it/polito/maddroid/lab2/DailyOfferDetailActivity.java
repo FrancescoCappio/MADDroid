@@ -408,7 +408,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         }
         
         File img;
-        if (!editMode) {
+        if (!editMode || !saveImage) {
             img = DataManager.getDishImageFile(getApplicationContext(), currentOfferId);
         } else {
             img = DataManager.getDishTmpFile(getApplicationContext());
@@ -499,5 +499,6 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         //restore info on image save
         saveImage = savedInstanceState.getBoolean(SAVE_IMAGE_KEY);
 
+        updateDishImage();
     }
 }
