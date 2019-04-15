@@ -6,7 +6,7 @@ public class DailyOffer {
     private String description;
     private int quantity;
     private float price;
-    private int quantityChosen;
+    private int quantityLeft;
 
     public DailyOffer(int DailyOfferid, String name,String description, int quantity,float price) {
 
@@ -15,7 +15,7 @@ public class DailyOffer {
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.quantityChosen = 0;
+        this.quantityLeft = quantity;
     }
     
     public DailyOffer(DailyOffer dailyOffer) {
@@ -24,7 +24,7 @@ public class DailyOffer {
         this.description = dailyOffer.description;
         this.price = dailyOffer.price;
         this.quantity = dailyOffer.quantity;
-        this.quantityChosen = 0;
+        this.quantityLeft = dailyOffer.quantityLeft;
     }
     
     public int getId(){
@@ -49,30 +49,43 @@ public class DailyOffer {
 
     public int getQuantity (){ return this.quantity; }
     
-    public void setQuantity(int quantity){
+    private void setQuantity(int quantity){
         this.quantity = quantity;
     }
 
     public Float getPrice (){
         return this.price;
     }
+    
     public void setPrice(float price){
         this.price = price;
     }
 
-    public int getQuantityChosen(){return this.quantityChosen;}
-    
-    public void setQuantityChosen(int quantityChosen){
-        this.quantityChosen = quantityChosen;
-    }
-
-    public void addToQuantity(){
-        this.quantityChosen++;
-    }
-
-    public void removeFromQuantity(){
-        if(this.quantityChosen > 0){
-            this.quantityChosen--;
+    public boolean decreaseQuantityLeftByOne(){
+        if(quantityLeft > 0)
+        {
+            quantityLeft--;
+            return true;
         }
+        return false;
     }
+
+    public boolean increaseQuantityLeftByOne(){
+        
+        if (quantityLeft < quantity) {
+            quantityLeft++;
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public int getQuantityLeft() {
+        return quantityLeft;
+    }
+
+    public void setQuantityLeft(int quantityLeft) {
+        this.quantityLeft = quantityLeft;
+    }
+
 }

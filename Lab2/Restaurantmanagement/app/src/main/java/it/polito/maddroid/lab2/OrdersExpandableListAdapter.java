@@ -10,21 +10,23 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import it.polito.maddroid.lab2.Order;
+public class OrdersExpandableListAdapter extends BaseExpandableListAdapter {
 
-import static java.lang.String.format;
-
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
-
+    private final static int MINIUMUM_CHILD_HEIGHT_DP = 75;
+    
     private Context context;
     private List<Order> expandableListTitle;
     private HashMap<Order, List<DailyOffer>> expandableListDetail;
+    
+    private int childMinimumHeight;
 
-    public CustomExpandableListAdapter(Context context, List<Order> expandableListTitle,
+    public OrdersExpandableListAdapter(Context context, List<Order> expandableListTitle,
                                        HashMap<Order, List<DailyOffer>> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
+        final float scale = context.getResources().getDisplayMetrics().density;
+        childMinimumHeight = (int) (MINIUMUM_CHILD_HEIGHT_DP * scale + 0.5f);
     }
 
     @Override
@@ -37,35 +39,49 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int listPosition, int expandedListPosition) {
-        return expandedListPosition;
+        if (this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).get(expandedListPosition) != null)
+            return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).get(expandedListPosition).getId();
+        else
+            return -1;
     }
 
-    //TODO: fare la foto
     @Override
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
+        
         final DailyOffer expandedListText;
-        expandedListText= (DailyOffer) getChild(listPosition, expandedListPosition);
+        expandedListText = (DailyOffer) getChild(listPosition, expandedListPosition);
+        
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.daily_offer_orders, null);
+            convertView = layoutInflater.inflate(R.layout.daily_offer_expanded_list_item, null);
+    
+            convertView.setMinimumHeight(childMinimumHeight);
         }
-        TextView dishName = (TextView) convertView.findViewById(R.id.tv_dish_name);
-        TextView description = (TextView) convertView.findViewById(R.id.tv_dish_description);
-        TextView price = (TextView) convertView.findViewById(R.id.tv_price);
-        //TextView qnt = (TextView) convertView.findViewById(R.id.tv_quantity);
-        if(dishName != null)
-            dishName.setText(expandedListText.getName());
-        if(description != null)
-            description.setText(expandedListText.getDescription());
-        if(price != null)
-            price.setText(expandedListText.getPrice().toString());
-        //TODO: set the quantity
-//        if(qnt != null)
-//            qnt.setText(expandedListText.getPrice().toString());
+        
+        TextView tvDishName = convertView.findViewById(R.id.tv_dish_name);
+        TextView tvDescription = convertView.findViewById(R.id.tv_dish_description);
+        TextView tvPrice = convertView.findViewById(R.id.tv_price);
+        TextView tvQuantity = convertView.findViewById(R.id.tv_quantity);
+        
+        float sum = expandedListText.getPrice() * (int)expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId());
 
-
+        if(tvDishName != null)
+            tvDishName.setText(expandedListText.getName());
+        
+        if(tvDescription != null)
+            tvDescription.setText(expandedListText.getDescription());
+        
+        if(tvPrice != null)
+            tvPrice.setText(String.format("%.02f", sum) + " €");
+        
+        if(tvQuantity != null)
+            tvQuantity.setText(""+expandableListTitle.get(listPosition).getDishes().get(expandedListText.getId()));
+        
+        tvDishName.setTypeface(null,Typeface.BOLD);
+        tvPrice.setTypeface(null, Typeface.BOLD);
+        tvQuantity.setTypeface(null, Typeface.BOLD);
 
         return convertView;
     }
@@ -80,8 +96,8 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Object getGroup(int listPosition) {
-        return this.expandableListTitle.get(listPosition);
+    public Object getGroup(int groupPosition) {
+        return this.expandableListTitle.get(groupPosition);
     }
 
     @Override
@@ -97,31 +113,35 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int listPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
+        
         Order orderTitle = expandableListTitle.get(listPosition);
+        
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.order_list_item, null);
         }
+        
         TextView OrderTitleTextView = convertView.findViewById(R.id.tv_order_number);
         TextView TimeTitleTextView = convertView.findViewById(R.id.tv_schedule);
         TextView riderId = convertView.findViewById(R.id.tv_rider_id);
         TextView customerId = convertView.findViewById(R.id.tv_customer_id);
-        String s;
-        //TextView RiderTitleTextView = (TextView) convertView.findViewById(R.id.tv_order_number);
+        
         OrderTitleTextView.setTypeface(null, Typeface.BOLD);
-        s = ""+orderTitle.getId();
-        OrderTitleTextView.setText(s);
+        OrderTitleTextView.setText(""+orderTitle.getId());
+        
         TimeTitleTextView.setTypeface(null, Typeface.BOLD);
         DecimalFormat formatter = new DecimalFormat("00");
         String shour = formatter.format(orderTitle.getTimeHour());
         String sminutes = formatter.format(orderTitle.getTimeMinutes());
-        
         TimeTitleTextView.setText(""+shour+":"+sminutes);
+        
         riderId.setText(""+orderTitle.getRiderId());
         riderId.setTypeface(null,Typeface.BOLD);
+        
         customerId.setText(""+orderTitle.getCustomerId());
         customerId.setTypeface(null,Typeface.BOLD);
+        
         return convertView;
     }
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +68,8 @@ public class DailyOfferAdapter extends BaseAdapter {
         tvDishName.setText(dailyOffer.getName());
         
         tvDishDescription.setText(dailyOffer.getDescription());
-        
-        tvPrice.setText("" + dailyOffer.getPrice());
+    
+        tvPrice.setText(String.format("%.02f", dailyOffer.getPrice()) + " €");
         
         tvQuantity.setText("" + dailyOffer.getQuantity());
         
