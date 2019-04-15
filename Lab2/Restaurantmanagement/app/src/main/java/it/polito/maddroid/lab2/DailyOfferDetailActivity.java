@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -15,6 +16,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,6 +52,15 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     public final static String MODE_SHOW = "Show";
     public final static String OFFER_ID_KEY = "OFFER_ID_KEY";
 
+
+    //SAVE_INSTANCE
+    public static final String NAME_KEY = "NAME_KEY";
+    public static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
+    public static final String QUANTITY_KEY = "QUANTITY_KEY";
+    public static final String PRICE_KEY = "PRICE_KEY";
+    public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
+    public static final String CURRENT_OFFER_ID = "CURRENT_OFFER_ID";
+
     //views
     private EditText etName;
     private EditText etQuantity;
@@ -57,6 +69,8 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private ImageView ivDishPhoto;
     private TextView tvDescriptionCount;
     private FloatingActionButton fabAddPhoto;
+
+    private int DESCRIPTION_MAX_LENGTH;
     
     //content provider authority
     private static final String AUTHORITY = "it.polito.maddroid.lab2.fileprovider";
@@ -98,6 +112,27 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
             updateDishImage();
             updateDishData();
         }
+
+        //get values from resources
+        Resources res = getResources();
+        DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
+        updateDescriptionCount();
+        etDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateDescriptionCount();
+            }
+        });
     
         // set title
         ActionBar actionBar = getSupportActionBar();
@@ -378,5 +413,75 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 .into(ivDishPhoto);
     }
 
-    
+    private void updateDescriptionCount() {
+        int count = etDescription.getText().length();
+
+        String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
+
+        tvDescriptionCount.setText(cnt);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        String name = etName.getText().toString();
+        String description = etDescription.getText().toString();
+        String quantity = etQuantity.getText().toString();
+        String price = etPrice.getText().toString();
+        int currentID = currentOfferId;
+
+        if (!name.isEmpty()) {
+            outState.putString(NAME_KEY, name);
+        }
+
+        if (!description.isEmpty()) {
+            outState.putString(DESCRIPTION_KEY, description);
+        }
+
+        if (!quantity.isEmpty()) {
+            outState.putString(QUANTITY_KEY, quantity);
+        }
+
+        if (!price.isEmpty()) {
+            outState.putString(PRICE_KEY, price);
+        }
+
+        //save edit mode status
+        outState.putBoolean(EDIT_MODE_KEY, editMode);
+        //save CURRENT ID
+        outState.putInt(CURRENT_OFFER_ID,currentID);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        String name = savedInstanceState.getString(NAME_KEY, "");
+        String description =savedInstanceState.getString(DESCRIPTION_KEY, "");
+        String quantity =savedInstanceState.getString(QUANTITY_KEY, "");
+        String price = savedInstanceState.getString(PRICE_KEY, "");
+
+        if (!name.isEmpty()) {
+            etName.setText(name);
+        }
+
+        if (!description.isEmpty()) {
+            etDescription.setText(description);
+        }
+
+        if (!quantity.isEmpty()) {
+            etQuantity.setText(quantity);
+        }
+
+        if (!price.isEmpty()) {
+            etPrice.setText(price);
+        }
+
+        //restore editMode
+        editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+        currentOfferId = savedInstanceState.getInt(CURRENT_OFFER_ID);
+
+        updateDishImage();
+    }
 }
