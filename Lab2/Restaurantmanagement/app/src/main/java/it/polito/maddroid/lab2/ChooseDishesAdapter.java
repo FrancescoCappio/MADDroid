@@ -2,6 +2,7 @@ package it.polito.maddroid.lab2;
 
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,12 +75,15 @@ public class ChooseDishesAdapter extends BaseAdapter {
         
         //load image into imageview with glide
         Glide.with(context).load(DataManager.getDishImageFile(context,dailyOffer.getId())).centerCrop().into(ivDishPhoto);
-
         
         tvDishName.setText(dailyOffer.getName());
         tvDishDescription.setText(dailyOffer.getDescription());
         tvDishQuantity.setText("" + mapDishes.get(dailyOffer.getId()));
         tvCurrentCost.setText("" + (mapDishes.get(dailyOffer.getId()) * dailyOffer.getPrice())+ " \u20AC");
+        
+        if (dailyOffer.getQuantityLeft() == 0) {
+            rowView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_disabled));
+        }
         
         //count usato per contare il numero di dailyoffer ordinati
         imageMinus.setOnClickListener(v -> {
