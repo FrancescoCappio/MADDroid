@@ -54,8 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     // Firebase auth to manage signup and login
     private FirebaseAuth mAuth;
     
-    
-    
     // general purpose variables
     boolean loginContentVisible = false;
     boolean signupContentVisible = false;
