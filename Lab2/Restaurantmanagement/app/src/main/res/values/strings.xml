@@ -23,8 +23,22 @@
     <string name="detail">Detail</string>
     <string name="choose_dishes">Choose Dishes</string>
 
+
+    <string name="restaurant_name">Restaurant\'s Name</string>
+    <string name="restaurant_email">Restaurant\'s Email</string>
+    <string name="restaurant_address">Restaurant\'s address</string>
+    <string name="restaurant_description">Restaurant\'s description</string>
+    <string name="restaurant_phone_number">Restaurant\'s phone number</string>
+
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="restaurant_time_table">Time Table</string>
+    <string name="restaurant_time_morning">openning hour in morning</string>
+    <string name="restaurant_time_evening">oppening hours in evening</string>
+    <string name="data_saved">Data saved.</string>
 
 </resources>

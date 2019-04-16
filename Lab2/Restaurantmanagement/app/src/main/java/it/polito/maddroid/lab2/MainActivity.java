@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private OrdersFragment ordersFragment;
     private DailyOffersFragment dailyOffersFragment;
+    private RestaurantFragment restaurantFragment;
     private int CurrentSelectedPosition;
     
     @Override
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
     }
     
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         
         Fragment fragment = null;
         
@@ -80,6 +81,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle(R.string.daily_offers);
                 CurrentSelectedPosition = 1;
                 break;
+            case 2:
+                restaurantFragment = new RestaurantFragment();
+                fragment = restaurantFragment;
+                getSupportActionBar().setTitle("Restaurant Details");
+                CurrentSelectedPosition = 2;
             
             default:
                 break;
@@ -150,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             
         } else if (id == R.id.nav_orders) {
             selectItem(0);
+        } else if (id == R.id.nav_restaurant_details) {
+            selectItem(2);
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -181,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (dailyOffersFragment != null) {
                     dailyOffersFragment.notifyUpdate();
                 }
+
         }
     }
 

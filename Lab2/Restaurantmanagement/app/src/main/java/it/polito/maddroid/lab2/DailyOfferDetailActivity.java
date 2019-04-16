@@ -76,7 +76,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
     private int DESCRIPTION_MAX_LENGTH;
     
     //content provider authority
-    private static final String AUTHORITY = "it.polito.maddroid.lab2.fileprovider";
+    public static final String AUTHORITY = "it.polito.maddroid.lab2.fileprovider";
     
     private int currentOfferId = -1;
 
