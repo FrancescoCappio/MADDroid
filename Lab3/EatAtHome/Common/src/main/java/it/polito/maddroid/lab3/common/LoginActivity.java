@@ -58,6 +58,14 @@ public class LoginActivity extends AppCompatActivity {
     boolean loginContentVisible = false;
     boolean signupContentVisible = false;
     
+    private static final String LOGIN_VISIBLE_KEY = "LOGIN_VISIBLE_KEY";
+    private static final String SIGNUP_VISIBLE_KEY = "SIGNUP_VISIBLE_KEY";
+    private static final String LOGIN_MAIL_KEY = "LOGIN_MAIL_KEY";
+    private static final String LOGIN_PASS_KEY = "LOGIN_PASS_KEY";
+    private static final String SIGNUP_MAIL_KEY = "SIGNUP_MAIL_KEY";
+    private static final String SIGNUP_PASS_KEY = "SIGNUP_PASS_KEY";
+    private static final String SIGNUP_REPASS_KEY = "SIGNUP_REPASS_KEY";
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +92,67 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             Snackbar.make(rlLoginTitle,"You need to login to use the app", Snackbar.LENGTH_SHORT).show();
         }
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);super.onSaveInstanceState(outState);
+        
+        outState.putBoolean(LOGIN_VISIBLE_KEY, loginContentVisible);
+        outState.putBoolean(SIGNUP_VISIBLE_KEY, signupContentVisible);
+        
+        String loginMail = etMailLogin.getText().toString();
+        if (!loginMail.isEmpty())
+            outState.putString(LOGIN_MAIL_KEY, loginMail);
+        
+        String loginPass = etPassLogin.getText().toString();
+        if (!loginPass.isEmpty())
+            outState.putString(LOGIN_PASS_KEY, loginPass);
+        
+        String signupMail = etMailSignup.getText().toString();
+        if (!signupMail.isEmpty())
+            outState.putString(SIGNUP_MAIL_KEY, signupMail);
+    
+        String signupPass = etPassSignup.getText().toString();
+        if (!signupPass.isEmpty())
+            outState.putString(SIGNUP_PASS_KEY, signupPass);
+    
+        String signupRePass = etRePassSignup.getText().toString();
+        if (!signupRePass.isEmpty())
+            outState.putString(SIGNUP_REPASS_KEY, signupRePass);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        
+        loginContentVisible = savedInstanceState.getBoolean(LOGIN_VISIBLE_KEY);
+        signupContentVisible = savedInstanceState.getBoolean(SIGNUP_VISIBLE_KEY);
+        
+        if (loginContentVisible)
+            setLoginFormVisible(true);
+        if (signupContentVisible)
+            setSignupFormVisible(true);
+        
+        String loginMail = savedInstanceState.getString(LOGIN_MAIL_KEY, "");
+        if (!loginMail.isEmpty())
+            etMailLogin.setText(loginMail);
+        
+        String loginPass = savedInstanceState.getString(LOGIN_PASS_KEY, "");
+        if (!loginPass.isEmpty())
+            etPassLogin.setText(loginPass);
+    
+        String signupMail = savedInstanceState.getString(SIGNUP_MAIL_KEY, "");
+        if (!signupMail.isEmpty())
+            etMailSignup.setText(signupMail);
+    
+        String signupPass = savedInstanceState.getString(SIGNUP_PASS_KEY, "");
+        if (!signupPass.isEmpty())
+            etPassSignup.setText(signupPass);
+    
+        String signupRePass = savedInstanceState.getString(SIGNUP_REPASS_KEY, "");
+        if (!signupRePass.isEmpty())
+            etRePassSignup.setText(signupRePass);
     }
     
     private void getReferencesToViews() {
