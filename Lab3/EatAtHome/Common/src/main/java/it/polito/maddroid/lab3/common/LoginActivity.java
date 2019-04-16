@@ -236,18 +236,13 @@ public class LoginActivity extends AppCompatActivity {
                             Snackbar.make(rlLoginTitle, "Successfully signed up", Snackbar.LENGTH_SHORT).show();
                             enterApp();
                         }
-//                            updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.e(TAG, "createUserWithEmail:failure", task.getException());
                         Snackbar.make(rlLoginTitle, "Error during signup", Snackbar.LENGTH_SHORT).show();
                         
-//                            Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
                     }
 
-                    // ...
                 });
     }
     
@@ -277,14 +272,10 @@ public class LoginActivity extends AppCompatActivity {
                             Snackbar.make(rlLoginTitle, "Successfully logged in", Snackbar.LENGTH_SHORT).show();
                             enterApp();
                         }
-//                            updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.e(TAG, "signInWithEmail:failure", task.getException());
                         Snackbar.make(rlLoginTitle, "Error during login", Snackbar.LENGTH_SHORT).show();
-//                            Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
                     }
                 
                     // ...
