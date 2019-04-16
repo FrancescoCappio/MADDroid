@@ -175,7 +175,11 @@ public class OrderDetailActivity extends AppCompatActivity {
         editMode = enabled;
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
-        menuDelete.setVisible(enabled);
+        if (pageType.equals(MODE_NEW)){
+            menuDelete.setVisible(!enabled);
+        }else {
+            menuDelete.setVisible(enabled);
+        }
         
         etTime.setEnabled(enabled);
         etCustomer.setEnabled(enabled);

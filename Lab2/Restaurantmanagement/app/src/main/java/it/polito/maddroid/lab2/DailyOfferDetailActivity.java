@@ -240,7 +240,13 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         editMode = enabled;
         menuEdit.setVisible(!enabled);
         menuSave.setVisible(enabled);
-        menuDelete.setVisible(enabled);
+
+        if (pageType.equals(MODE_NEW)){
+            menuDelete.setVisible(!enabled);
+        }else {
+            menuDelete.setVisible(enabled);
+        }
+
 
         etDescription.setEnabled(enabled);
         etPrice.setEnabled(enabled);
