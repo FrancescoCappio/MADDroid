@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "335408548721",
+    "firebase_url": "https://madlab3.firebaseio.com",
+    "project_id": "madlab3",
+    "storage_bucket": "madlab3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335408548721:android:21039dc60221577a",
+        "android_client_info": {
+          "package_name": "it.polito.maddroid.lab3.common"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Qn14LAWEX8OMzUEDHp7j8ZzlkG9m6cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335408548721:android:223172d53ac3d32d",
+        "android_client_info": {
+          "package_name": "it.polito.maddroid.lab3.restaurateur"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Qn14LAWEX8OMzUEDHp7j8ZzlkG9m6cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335408548721:android:0329c4abdf1c3eb9",
+        "android_client_info": {
+          "package_name": "it.polito.maddroid.lab3.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Qn14LAWEX8OMzUEDHp7j8ZzlkG9m6cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335408548721:android:27e65394c4d9a1c8",
+        "android_client_info": {
+          "package_name": "it.polito.maddroid.lab3.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Qn14LAWEX8OMzUEDHp7j8ZzlkG9m6cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335408548721-3f3l9pfb9mbc4f2fenqf400h4g5j3g3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

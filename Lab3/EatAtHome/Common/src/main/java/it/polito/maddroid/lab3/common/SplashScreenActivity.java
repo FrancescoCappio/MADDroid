@@ -1,6 +1,8 @@
 package it.polito.maddroid.lab3.common;
 
 
+import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,5 +13,15 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        
+        new Handler().postDelayed(() -> {
+            Intent i = getIntent();
+            
+            Intent launchIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            // transfer extras from Intent i
+            launchIntent.putExtras(i);
+            startActivity(launchIntent);
+    
+        }, 1500);
     }
 }
