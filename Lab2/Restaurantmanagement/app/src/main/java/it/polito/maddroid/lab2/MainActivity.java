@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DailyOffersFragment dailyOffersFragment;
     private RestaurantFragment restaurantFragment;
     private int CurrentSelectedPosition;
+    MenuItem addItem;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
         
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
        // setContentView(R.layout.activity_order_detail);
         
     }
-    
+
     public void selectItem(int position) {
         
         Fragment fragment = null;
@@ -72,21 +74,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ordersFragment = new OrdersFragment();
                 fragment = ordersFragment;
                 getSupportActionBar().setTitle(R.string.orders);
+                if(addItem != null)
+                    addItem.setVisible(true);
                 CurrentSelectedPosition = 0;
+                navigationView.setCheckedItem(R.id.nav_orders);
                 break;
                 
             case 1:
                 dailyOffersFragment = new DailyOffersFragment();
                 fragment = dailyOffersFragment;
                 getSupportActionBar().setTitle(R.string.daily_offers);
+                if(addItem != null)
+                    addItem.setVisible(true);
                 CurrentSelectedPosition = 1;
+                navigationView.setCheckedItem(R.id.nav_daily_offers);
                 break;
             case 2:
                 restaurantFragment = new RestaurantFragment();
                 fragment = restaurantFragment;
                 getSupportActionBar().setTitle("Restaurant Details");
+                if(addItem != null)
+                    addItem.setVisible(false);
                 CurrentSelectedPosition = 2;
-            
+                navigationView.setCheckedItem(R.id.nav_restaurant_details);
+
             default:
                 break;
         }
@@ -117,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        addItem = menu.findItem(R.id.action_add);
         return true;
     }
     
@@ -126,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
             if (selectedId == 1) {
@@ -157,9 +169,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_orders) {
             selectItem(0);
         } else if (id == R.id.nav_restaurant_details) {
+
             selectItem(2);
         }
-        
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
