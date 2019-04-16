@@ -187,7 +187,6 @@ public class RestaurantFragment extends Fragment {
         btSaveDeatial.setOnClickListener(v -> {
             saveAvatarImage();
             saveDataSharedPrefs();
-
             //show toast to user
             Toast.makeText(getContext().getApplicationContext(), R.string.data_saved, Toast.LENGTH_SHORT).show();
             ((MainActivity) getActivity()).selectItem(0);
