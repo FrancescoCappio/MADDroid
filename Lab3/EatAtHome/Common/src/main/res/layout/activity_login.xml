@@ -5,8 +5,7 @@
     android:id="@+id/clLoginMainContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/SplashTheme"
-    android:background="@color/colorAccent"
+    android:background="@color/eah_orange"
     android:animateLayoutChanges="true"
     tools:context=".LoginActivity">
 
@@ -275,7 +274,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
-        android:theme="@style/WhiteAccent"
+        android:theme="@style/SplashTheme"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
@@ -294,7 +293,7 @@
         android:clickable="true"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/cards_margin_login_phone"
-        android:theme="@style/WhiteAccent"
+        android:theme="@style/SplashTheme"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         app:srcCompat="@drawable/ic_navigate_next_black_24dp"
