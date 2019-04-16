@@ -1,0 +1,12 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/eah_orange</item>
+        <item name="colorPrimaryDark">@color/eah_orange_dark</item>
+        <item name="colorAccent">@color/eah_white</item>
+    </style>
+
+</resources>
