@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -233,6 +235,7 @@ public class RestaurantFragment extends Fragment {
     }
     
     private void saveAvatarImage() {
+        photoChanged = false;
         File main = getAvatarFile();
         File tmp = getAvatarTmpFile();
 
@@ -400,28 +403,8 @@ public class RestaurantFragment extends Fragment {
                     // we need to copy the image into our directory, we try 2 methods to do this:
                     // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
                     // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
-                    InputStream is = getContext().getContentResolver().openInputStream(selectedImageUri);
-                    FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
+                    copyImageToTmpLocation(selectedImageUri);
 
-                    if (is == null) {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
-                    } else {
-                        byte[] buffer = new byte[4096];
-                        while (true) {
-                            int bytesRead = is.read(buffer);
-                            if (bytesRead == -1)
-                                break;
-                            fs.write(buffer, 0, bytesRead);
-                        }
-                    }
-
-                    fs.flush();
-                    fs.close();
-
-                    //update shown image
-                    photoChanged = true;
-                    updateAvatarImage();
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read bitmap");
                     e.printStackTrace();
@@ -431,11 +414,57 @@ public class RestaurantFragment extends Fragment {
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
                 //update shown image
-                photoChanged = true;
-                updateAvatarImage();
             }
-
+            startActivityToCropImage();
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            Uri resultUri = result.getUri();
+            Log.d(TAG, "Result uri: " + resultUri);
+            try {
+                copyImageToTmpLocation(resultUri);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot read bitmap");
+                e.printStackTrace();
+            }
+            photoChanged = true;
+            updateAvatarImage();
         }
+    }
+    
+    private void copyImageToTmpLocation(Uri selectedImageUri) throws IOException {
+        InputStream is = getContext().getContentResolver().openInputStream(selectedImageUri);
+        FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
+        
+        if (is == null) {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+        } else {
+            byte[] buffer = new byte[4096];
+            while (true) {
+                int bytesRead = is.read(buffer);
+                if (bytesRead == -1)
+                    break;
+                fs.write(buffer, 0, bytesRead);
+            }
+        }
+        
+        fs.flush();
+        fs.close();
+    }
+    
+    private void startActivityToCropImage() {
+        File myImageFile = getAvatarTmpFile();
+        
+        final Uri outputFileUri = FileProvider.getUriForFile(getContext(),
+                AUTHORITY,
+                myImageFile);
+        
+        CropImage.activity(outputFileUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(getActivity());
+        
     }
 
     private void updateAvatarImage() {
@@ -456,6 +485,7 @@ public class RestaurantFragment extends Fragment {
         if (cnt != null) {
             Glide.with(cnt)
                     .load(img)
+                    .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(ivAvatar);
         }

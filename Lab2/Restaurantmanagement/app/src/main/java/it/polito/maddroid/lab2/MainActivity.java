@@ -243,13 +243,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case ORDER_DETAIL_CODE:
                 if (ordersFragment != null)
                     ordersFragment.notifyUpdate();
-                
+                break;
                 
             case DAILY_OFFER_DETAIL_CODE:
                 if (dailyOffersFragment != null) {
                     dailyOffersFragment.notifyUpdate();
                 }
-
+                break;
+                
+            default:
+                List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : fragments) {
+                    fragment.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
     }
 
