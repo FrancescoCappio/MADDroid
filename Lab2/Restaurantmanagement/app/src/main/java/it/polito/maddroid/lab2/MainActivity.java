@@ -157,8 +157,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         addItem = menu.findItem(R.id.action_add);
         confirmItem = menu.findItem(R.id.action_confirm);
         
-        if (currentSelectedPosition == 0 || currentSelectedPosition == 1)
+        if (currentSelectedPosition == 0 || currentSelectedPosition == 1) {
             confirmItem.setVisible(false);
+            addItem.setVisible(true);
+        } else {
+            confirmItem.setVisible(true);
+            addItem.setVisible(false);
+        }
         return true;
     }
     
