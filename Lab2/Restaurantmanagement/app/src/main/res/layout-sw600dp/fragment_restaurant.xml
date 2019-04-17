@@ -24,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/avatar_iv_size"
-                android:layout_height="@dimen/avatar_iv_size"
+                android:layout_width="@dimen/avatar_iv_size_tablet"
+                android:layout_height="@dimen/avatar_iv_size_tablet"
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/placeholder_avatar"
@@ -42,7 +42,7 @@
             app:layout_constraintEnd_toEndOf="@id/card_avatar"
             app:layout_constraintBottom_toBottomOf="@id/card_avatar"
             app:elevation="@dimen/card_elevation"
-            app:fabSize="mini" />
+            app:fabSize="normal" />
 
 
         <android.support.v7.widget.CardView
