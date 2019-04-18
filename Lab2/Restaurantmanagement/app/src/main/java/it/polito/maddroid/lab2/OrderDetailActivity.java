@@ -3,6 +3,7 @@ package it.polito.maddroid.lab2;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -256,7 +257,13 @@ public class OrderDetailActivity extends AppCompatActivity {
                 Log.d(TAG, "Confirm pressed");
                 
                 //TODO: check that all the elements have been filled
-                
+                if((timeHour == -1) || (timeMinutes == -1)  || (mapDishes == null || mapDishes.isEmpty()) ||
+                        (etCustomer.getText().toString().isEmpty()) ||
+                        (etRider.getText().toString().isEmpty())) {
+
+                    Snackbar.make(etCustomer, R.string.fill_fields, Snackbar.LENGTH_SHORT).show();
+                    return true;
+                }
                 String customer = etCustomer.getText().toString();
                 int customerId = Integer.parseInt(customer);
                 String rider = etRider.getText().toString();

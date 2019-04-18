@@ -41,5 +41,6 @@
     <string name="restaurant_time_lunch">Opening hours lunch</string>
     <string name="restaurant_time_dinner">Opening hours dinner</string>
     <string name="data_saved">Data saved</string>
+    <string name="fill_fields">Malnati va in vici</string>
 
 </resources>
