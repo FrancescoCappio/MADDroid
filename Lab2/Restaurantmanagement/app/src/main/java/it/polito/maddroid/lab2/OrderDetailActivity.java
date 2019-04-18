@@ -111,7 +111,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     
         btChooseDishes.setOnClickListener(arg0 -> {
             Intent intent = new Intent(getApplicationContext(), OrderChooseDishesActivity.class);
-            if (pageType.equals(MODE_NEW)) {
+            
+            if (mapDishes == null || mapDishes.isEmpty()) {
                 intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_NEW);
             } else {
                 intent.putExtra(OrderChooseDishesActivity.PAGE_TYPE_KEY, OrderChooseDishesActivity.MODE_SHOW);

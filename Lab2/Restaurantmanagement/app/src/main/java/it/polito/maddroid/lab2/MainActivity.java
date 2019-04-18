@@ -1,6 +1,8 @@
 package it.polito.maddroid.lab2;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -210,14 +212,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         if (id == R.id.nav_daily_offers) {
             selectItem(1);
-            
         } else if (id == R.id.nav_orders) {
-
             selectItem(0);
-
         } else if (id == R.id.nav_restaurant_details) {
-
             selectItem(2);
+        } else if (id == R.id.nav_info) {
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab2");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
