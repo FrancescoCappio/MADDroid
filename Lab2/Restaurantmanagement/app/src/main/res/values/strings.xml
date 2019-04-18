@@ -23,6 +23,9 @@
     <string name="detail">Detail</string>
     <string name="choose_dishes">Choose Dishes</string>
 
+    <string name="fill_fields">Please fill all the fields</string>
+    <string name="insert_image">Please insert an image for your dish</string>
+
 
     <string name="restaurant_name">Restaurant\'s Name</string>
     <string name="restaurant_email">Restaurant\'s Email</string>

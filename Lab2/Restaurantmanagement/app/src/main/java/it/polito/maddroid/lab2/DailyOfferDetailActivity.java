@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -202,14 +203,26 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
                 break;
                 
             case R.id.menu_confirm:
-                String Name = etName.getText().toString();
-                String Quantity = etQuantity.getText().toString();
+                
+                String name = etName.getText().toString();
+                String quantity = etQuantity.getText().toString();
                 String price = etPrice.getText().toString();
                 String description = etDescription .getText().toString();
-
+                
+                if (name.isEmpty() || quantity.isEmpty() || price.isEmpty() || description.isEmpty()) {
+                    Snackbar.make(etName, R.string.fill_fields, Snackbar.LENGTH_SHORT).show();
+                    return true;
+                }
+                
+                
                 if(pageType.equals(MODE_NEW)){
                     
-                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+                    if (!saveImage) {
+                        Snackbar.make(etName, R.string.insert_image, Snackbar.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    
+                    DailyOffer offer = new DailyOffer(currentOfferId,name,description,Integer.parseInt(quantity), Float.parseFloat(price));
                     
                     // add offer to our list
                     dataManager.addNewDailyOffer(getApplicationContext(), offer);
@@ -219,7 +232,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
                 } else {
                     
-                    DailyOffer offer = new DailyOffer(currentOfferId,Name,description,Integer.parseInt(Quantity), Float.parseFloat(price));
+                    DailyOffer offer = new DailyOffer(currentOfferId,name,description,Integer.parseInt(quantity), Float.parseFloat(price));
     
                     // add offer to our list
                     dataManager.setDailyOfferWithId(getApplicationContext(), offer);
