@@ -387,7 +387,9 @@ public class LoginActivity extends AppCompatActivity {
     }
     
     private void enterApp() {
-        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+        Intent launchIntent = getIntent();
+        Class<?> cl = (Class<?>) launchIntent.getSerializableExtra(EAHCONST.LAUNCH_ACTIVITY_KEY);
+        Intent i = new Intent(getApplicationContext(), cl);
         startActivity(i);
     }
     

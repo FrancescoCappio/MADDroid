@@ -9,6 +9,8 @@ public class EAHCONST {
     public static String LAUNCH_APP_USER = "LAUNCH_APP_USER";
     public static String LAUNCH_APP_RIDER = "LAUNCH_APP_RIDER";
     
+    public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
+    
     // main subtrees
     final static String USERS_SUB_TREE = "users";
     final static String RESTAURANTS_SUB_TREE = "restaurants";

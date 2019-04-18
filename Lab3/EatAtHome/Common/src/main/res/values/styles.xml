@@ -16,4 +16,14 @@
         <item name="colorPrimaryDark">@color/eah_orange_dark</item>
         <item name="colorAccent">@color/eah_orange</item>
     </style>
+
+    <style name="MainAppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/eah_orange</item>
+        <item name="colorPrimaryDark">@color/eah_orange_dark</item>
+        <item name="colorAccent">@color/eah_yellow</item>
+    </style>
+
+    <style name="MainOrangeAccent" parent="MainAppTheme">
+        <item name="colorAccent">@color/eah_orange</item>
+    </style>
 </resources>

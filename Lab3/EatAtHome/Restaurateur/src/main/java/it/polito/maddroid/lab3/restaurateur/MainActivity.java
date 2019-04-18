@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
         
         i.putExtra(EAHCONST.LAUNCH_APP_KEY, EAHCONST.LAUNCH_APP_RESTAURATEUR);
+        i.putExtra(EAHCONST.LAUNCH_ACTIVITY_KEY, AccountInfoActivity.class);
         
         startActivity(i);
     }

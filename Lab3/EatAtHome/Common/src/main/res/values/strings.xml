@@ -6,4 +6,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="repassword">Repeat Password</string>
+
+    <string name="action_confirm">Confirm</string>
+    <string name="action_edit">Edit</string>
 </resources>
