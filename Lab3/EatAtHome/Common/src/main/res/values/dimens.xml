@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cards_margin_login_phone">40dp</dimen>
+    <dimen name="cards_corner_radius_login_phone">20dp</dimen>
+</resources>
