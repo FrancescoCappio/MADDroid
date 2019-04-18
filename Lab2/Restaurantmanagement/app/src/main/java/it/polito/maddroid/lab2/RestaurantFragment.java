@@ -8,28 +8,29 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +54,7 @@ public class RestaurantFragment extends Fragment {
     //shared prefs and constants
     private SharedPreferences sharedPreferences;
 
-    public static final String SHARED_PREFS = "Lab1_prefs_restaurateur" ;
+    public static final String SHARED_PREFS = "Lab2_prefs_restaurateur" ;
 
     public static final String NAME_KEY = "NAME_KEY";
     public static final String EMAIL_KEY = "EMAIL_KEY";
@@ -63,9 +64,8 @@ public class RestaurantFragment extends Fragment {
     public static final String TIME_TABLE_KEY = "TIME_TABLE_KEY";
     public static final String MORNING_TIME_KEY = "MORNING_TIME_KEY";
     public static final String EVENING_TIME_KEY = "EVENING_TIME_KEY";
-    public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
-
-
+    public static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
+    
     //views
     private EditText etName;
     private EditText etMail;
@@ -77,25 +77,14 @@ public class RestaurantFragment extends Fragment {
     private EditText etTimeTable;
     private EditText etMorningTime;
     private EditText etEveningTime;
-    private FloatingActionButton fabAddPhoto;
-    private Button btSaveDeatial;
-
 
     private int DESCRIPTION_MAX_LENGTH;
-
-
-    private boolean editMode = true;
-
-
-
-
+    
+    private boolean photoChanged = false;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
-
     }
 
     @Override
@@ -113,52 +102,76 @@ public class RestaurantFragment extends Fragment {
         etEveningTime = view.findViewById(R.id.et_evening_time);
         ivAvatar = view.findViewById(R.id.iv_avatar);
         tvDescriptionCount = view.findViewById(R.id.tv_description_count);
-        fabAddPhoto = view.findViewById(R.id.fab_add_photo);
-        btSaveDeatial = view.findViewById(R.id.ib_Confirm_detail);
-
-
-        //set avatar image from file
-        updateAvatarImage();
-
-        //load from shared prefs
-        sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-
-        String name = sharedPreferences.getString(NAME_KEY, "");
-        String description = sharedPreferences.getString(DESCRIPTION_KEY, "");
-        String mail = sharedPreferences.getString(EMAIL_KEY, "");
-        String address = sharedPreferences.getString(ADDRESS_KEY, "");
-        String phone = sharedPreferences.getString(PHONE_KEY, "");
-        String timeTable = sharedPreferences.getString(TIME_TABLE_KEY, "");
-        String morningTime = sharedPreferences.getString(MORNING_TIME_KEY, "");
-        String eveningTime = sharedPreferences.getString(EVENING_TIME_KEY, "");
-
+        
+        //load from shared prefs or savedstate
+        String name;
+        String description;
+        String mail;
+        String address;
+        String phone;
+        String timeTable;
+        String morningTime;
+        String eveningTime;
+        
+        if (savedInstanceState == null) {
+            sharedPreferences = getContext().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+    
+            name = sharedPreferences.getString(NAME_KEY, "");
+            description = sharedPreferences.getString(DESCRIPTION_KEY, "");
+            mail = sharedPreferences.getString(EMAIL_KEY, "");
+            address = sharedPreferences.getString(ADDRESS_KEY, "");
+            phone = sharedPreferences.getString(PHONE_KEY, "");
+            timeTable = sharedPreferences.getString(TIME_TABLE_KEY, "");
+            morningTime = sharedPreferences.getString(MORNING_TIME_KEY, "");
+            eveningTime = sharedPreferences.getString(EVENING_TIME_KEY, "");
+    
+        } else {
+            name = savedInstanceState.getString(NAME_KEY, "");
+            description = savedInstanceState.getString(DESCRIPTION_KEY, "");
+            mail = savedInstanceState.getString(EMAIL_KEY, "");
+            address = savedInstanceState.getString(ADDRESS_KEY, "");
+            phone = savedInstanceState.getString(PHONE_KEY, "");
+            timeTable = savedInstanceState.getString(TIME_TABLE_KEY, "");
+            morningTime = savedInstanceState.getString(MORNING_TIME_KEY, "");
+            eveningTime = savedInstanceState.getString(EVENING_TIME_KEY, "");
+            
+            photoChanged = savedInstanceState.getBoolean(PHOTO_CHANGED_KEY);
+        }
+    
         if (!name.isEmpty()) {
             etName.setText(name);
         }
-
+    
         if (!description.isEmpty()) {
             etDescription.setText(description);
         }
-
+    
         if (!mail.isEmpty()) {
             etMail.setText(mail);
         }
-
+    
         if (!phone.isEmpty()) {
             etPhone.setText(phone);
         }
+        
         if (!address.isEmpty()) {
             etAddress.setText(address);
         }
+        
         if (!timeTable.isEmpty()) {
             etTimeTable.setText(timeTable);
         }
+        
         if (!morningTime.isEmpty()) {
             etMorningTime.setText(morningTime);
         }
+        
         if (!eveningTime.isEmpty()) {
             etEveningTime.setText(eveningTime);
         }
+    
+        //set avatar image from file
+        updateAvatarImage();
 
         //get values from resources
         Resources res = getResources();
@@ -184,22 +197,45 @@ public class RestaurantFragment extends Fragment {
         });
 
         ivAvatar.setOnClickListener(v -> startActivityToGetImage());
-        btSaveDeatial.setOnClickListener(v -> {
-            saveAvatarImage();
-            saveDataSharedPrefs();
-            //show toast to user
-            Toast.makeText(getContext().getApplicationContext(), R.string.data_saved, Toast.LENGTH_SHORT).show();
-            ((MainActivity) getActivity()).selectItem(0);
-
-
-        } );
 
         return view;
 
     }
-
-
+    
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putBoolean(PHOTO_CHANGED_KEY, photoChanged);
+        
+        String name = etName.getText().toString();
+        String description = etDescription.getText().toString();
+        String address = etAddress.getText().toString();
+        String mail = etMail.getText().toString();
+        String phone = etPhone.getText().toString();
+        String timeTable = etTimeTable.getText().toString();
+        String morningTime = etMorningTime.getText().toString();
+        String eveningTime = etEveningTime.getText().toString();
+        
+        outState.putString(NAME_KEY, name);
+    
+        outState.putString(DESCRIPTION_KEY, description);
+    
+        outState.putString(EMAIL_KEY, mail);
+    
+        outState.putString(PHONE_KEY, phone);
+    
+        outState.putString(ADDRESS_KEY, address);
+    
+        outState.putString(TIME_TABLE_KEY, timeTable);
+    
+        outState.putString(MORNING_TIME_KEY, morningTime);
+    
+        outState.putString(EVENING_TIME_KEY, eveningTime);
+    }
+    
     private void saveAvatarImage() {
+        photoChanged = false;
         File main = getAvatarFile();
         File tmp = getAvatarTmpFile();
 
@@ -251,8 +287,7 @@ public class RestaurantFragment extends Fragment {
         String morningTime = etMorningTime.getText().toString();
         String eveningTime = etEveningTime.getText().toString();
 
-
-
+        
         editor.putString(NAME_KEY, name);
 
         editor.putString(DESCRIPTION_KEY, description);
@@ -271,8 +306,6 @@ public class RestaurantFragment extends Fragment {
 
         editor.apply();
 
-        //show toast to user
-        //Toast.makeText(getContext().getApplicationContext(), R.string.data_saved, Toast.LENGTH_SHORT).show();
     }
 
     private void startActivityToGetImage() {
@@ -370,27 +403,8 @@ public class RestaurantFragment extends Fragment {
                     // we need to copy the image into our directory, we try 2 methods to do this:
                     // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
                     // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
-                    InputStream is = getContext().getContentResolver().openInputStream(selectedImageUri);
-                    FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
+                    copyImageToTmpLocation(selectedImageUri);
 
-                    if (is == null) {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
-                    } else {
-                        byte[] buffer = new byte[4096];
-                        while (true) {
-                            int bytesRead = is.read(buffer);
-                            if (bytesRead == -1)
-                                break;
-                            fs.write(buffer, 0, bytesRead);
-                        }
-                    }
-
-                    fs.flush();
-                    fs.close();
-
-                    //update shown image
-                    updateAvatarImage();
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read bitmap");
                     e.printStackTrace();
@@ -400,86 +414,90 @@ public class RestaurantFragment extends Fragment {
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
                 //update shown image
-                updateAvatarImage();
             }
-
+            startActivityToCropImage();
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            Uri resultUri = result.getUri();
+            Log.d(TAG, "Result uri: " + resultUri);
+            try {
+                copyImageToTmpLocation(resultUri);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot read bitmap");
+                e.printStackTrace();
+            }
+            photoChanged = true;
+            updateAvatarImage();
         }
+    }
+    
+    private void copyImageToTmpLocation(Uri selectedImageUri) throws IOException {
+        InputStream is = getContext().getContentResolver().openInputStream(selectedImageUri);
+        FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
+        
+        if (is == null) {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
+        } else {
+            byte[] buffer = new byte[4096];
+            while (true) {
+                int bytesRead = is.read(buffer);
+                if (bytesRead == -1)
+                    break;
+                fs.write(buffer, 0, bytesRead);
+            }
+        }
+        
+        fs.flush();
+        fs.close();
+    }
+    
+    private void startActivityToCropImage() {
+        File myImageFile = getAvatarTmpFile();
+        
+        final Uri outputFileUri = FileProvider.getUriForFile(getContext(),
+                AUTHORITY,
+                myImageFile);
+        
+        CropImage.activity(outputFileUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(getActivity());
+        
     }
 
     private void updateAvatarImage() {
         File img;
-        if (!editMode) {
+        
+        if (!photoChanged)
             img = getAvatarFile();
-        } else {
+        else
             img = getAvatarTmpFile();
-        }
-
+        
         if (!img.exists() || !img.isFile()) {
             Log.d(TAG, "Cannot load unexisting file as avatar");
             return;
         }
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(img.getAbsolutePath(), options);
-
-        try {
-            ExifInterface exif = new ExifInterface(img.getAbsolutePath());
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
-
-            bitmap = rotateBitmap(bitmap, orientation);
-        } catch (IOException e) {
-            Log.e(TAG, "Cannot obtain exif info to check image rotation");
-            e.printStackTrace();
-        }
-
-        ivAvatar.setImageBitmap(bitmap);
-    }
-
-    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
-
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_NORMAL:
-                return bitmap;
-            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                matrix.setScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                matrix.setRotate(180);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_TRANSPOSE:
-                matrix.setRotate(90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_TRANSVERSE:
-                matrix.setRotate(-90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(-90);
-                break;
-            default:
-                return bitmap;
-        }
-        try {
-            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
-            return bmRotated;
-        }
-        catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
+        
+        Context cnt = getContext();
+        
+        if (cnt != null) {
+            Glide.with(cnt)
+                    .load(img)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(ivAvatar);
         }
     }
-
-
+    
+    
+    public void saveData() {
+        if (photoChanged)
+            saveAvatarImage();
+        
+        saveDataSharedPrefs();
+        //show toast to user
+        Snackbar.make(etAddress, R.string.data_saved, Snackbar.LENGTH_SHORT).show();
+    }
 }

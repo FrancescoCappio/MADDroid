@@ -21,11 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     
-    private List<DailyOffer> dailyOffers;
-    
     private NavigationView navigationView;
-    
-    private int selectedId; //0 = orders; 1 = daily_offers
     
     public static final int ORDER_DETAIL_CODE = 123;
     public static final int DAILY_OFFER_DETAIL_CODE = 124;
@@ -37,8 +33,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private OrdersFragment ordersFragment;
     private DailyOffersFragment dailyOffersFragment;
     private RestaurantFragment restaurantFragment;
-    private int CurrentSelectedPosition;
-    MenuItem addItem;
+    private int currentSelectedPosition; //0 = orders; 1 = daily_offers; 2 = restaurant
+    
+    private MenuItem addItem;
+    private MenuItem confirmItem;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +54,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_orders);
         
-        selectItem(0);
-       // setContentView(R.layout.activity_order_detail);
+        if (savedInstanceState == null)
+            selectItem(0);
         
     }
 
@@ -67,49 +64,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         Fragment fragment = null;
         
-        selectedId = position;
+        // before creating a new fragment we should check if the already displayed one is the same we want to open
+        FragmentManager fragmentManager = getSupportFragmentManager();
         
+        List<Fragment> fragments = fragmentManager.getFragments();
+        
+        Log.d(TAG, "Fragments count: " + fragments.size());
+        
+        for (Fragment fr : fragments) {
+            if ((fr instanceof OrdersFragment) || (fr instanceof  DailyOffersFragment) || (fr instanceof RestaurantFragment)) {
+                fragment = fr;
+                break;
+            }
+        }
+    
+        currentSelectedPosition = position;
+        
+        boolean changed = false;
         switch (position) {
             case 0:
-                ordersFragment = new OrdersFragment();
-                fragment = ordersFragment;
+                if (!(fragment instanceof OrdersFragment)) {
+                    ordersFragment = new OrdersFragment();
+                    fragment = ordersFragment;
+                    changed = true;
+                }
+                
                 getSupportActionBar().setTitle(R.string.orders);
                 if(addItem != null)
                     addItem.setVisible(true);
-                CurrentSelectedPosition = 0;
+                if (confirmItem != null)
+                    confirmItem.setVisible(false);
+                
                 navigationView.setCheckedItem(R.id.nav_orders);
                 break;
                 
             case 1:
-                dailyOffersFragment = new DailyOffersFragment();
-                fragment = dailyOffersFragment;
+    
+                if (!(fragment instanceof DailyOffersFragment)) {
+                    dailyOffersFragment = new DailyOffersFragment();
+                    fragment = dailyOffersFragment;
+                    changed = true;
+                }
+                
                 getSupportActionBar().setTitle(R.string.daily_offers);
                 if(addItem != null)
                     addItem.setVisible(true);
-                CurrentSelectedPosition = 1;
+                if (confirmItem != null)
+                    confirmItem.setVisible(false);
                 navigationView.setCheckedItem(R.id.nav_daily_offers);
                 break;
             case 2:
-                restaurantFragment = new RestaurantFragment();
-                fragment = restaurantFragment;
+    
+                if (!(fragment instanceof RestaurantFragment)) {
+                    restaurantFragment = new RestaurantFragment();
+                    fragment = restaurantFragment;
+                    changed = true;
+                }
+                
                 getSupportActionBar().setTitle("Restaurant Details");
                 if(addItem != null)
                     addItem.setVisible(false);
-                CurrentSelectedPosition = 2;
+                if (confirmItem != null)
+                    confirmItem.setVisible(true);
                 navigationView.setCheckedItem(R.id.nav_restaurant_details);
 
             default:
                 break;
         }
         
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragment != null && changed) {
             fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
-            
-            navigationView.setCheckedItem(position);
-        
         } else {
-            Log.e("MainActivity", "Error in creating fragment");
+            Log.d("MainActivity", "No need to change the fragment");
         }
     }
     
@@ -129,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         addItem = menu.findItem(R.id.action_add);
+        confirmItem = menu.findItem(R.id.action_confirm);
+        
+        if (currentSelectedPosition == 0 || currentSelectedPosition == 1) {
+            confirmItem.setVisible(false);
+            addItem.setVisible(true);
+        } else {
+            confirmItem.setVisible(true);
+            addItem.setVisible(false);
+        }
         return true;
     }
     
@@ -141,17 +176,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            if (selectedId == 1) {
+            if (currentSelectedPosition == 1) {
                 Intent i = new Intent(getApplicationContext(), DailyOfferDetailActivity.class);
                 i.putExtra(DailyOfferDetailActivity.PAGE_TYPE_KEY,DailyOfferDetailActivity.MODE_NEW);
                 startActivityForResult(i, DAILY_OFFER_DETAIL_CODE);
             }
-            if(selectedId == 0){
+            if(currentSelectedPosition == 0){
                 Intent i = new Intent(getApplicationContext(), OrderDetailActivity.class);
                 i.putExtra(OrderDetailActivity.PAGE_TYPE_KEY,OrderDetailActivity.MODE_NEW);
                 startActivityForResult(i,ORDER_DETAIL_CODE);
             }
             return true;
+        } else if (id == R.id.action_confirm) {
+            
+            if (currentSelectedPosition != 2) {
+                Log.e(TAG, "This shoud not be possible");
+                return true;
+            }
+            
+            if (restaurantFragment != null)
+                restaurantFragment.saveData();
+        
         }
         
         return super.onOptionsItemSelected(item);
@@ -167,7 +212,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectItem(1);
             
         } else if (id == R.id.nav_orders) {
+
             selectItem(0);
+
         } else if (id == R.id.nav_restaurant_details) {
 
             selectItem(2);
@@ -196,13 +243,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case ORDER_DETAIL_CODE:
                 if (ordersFragment != null)
                     ordersFragment.notifyUpdate();
-                
+                break;
                 
             case DAILY_OFFER_DETAIL_CODE:
                 if (dailyOffersFragment != null) {
                     dailyOffersFragment.notifyUpdate();
                 }
-
+                break;
+                
+            default:
+                List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : fragments) {
+                    fragment.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
     }
 
@@ -210,13 +264,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, CurrentSelectedPosition);
+        outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        CurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-        selectItem(CurrentSelectedPosition);
+        currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        selectItem(currentSelectedPosition);
     }
+    
 }

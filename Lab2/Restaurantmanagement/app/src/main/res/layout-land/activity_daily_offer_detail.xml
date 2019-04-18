@@ -26,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/daily_offer_image_size_phone"
-                android:layout_height="@dimen/daily_offer_image_size_phone"
+                android:layout_width="@dimen/detail_image_size_phone"
+                android:layout_height="@dimen/detail_image_size_phone"
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/ic_restaurant_black_24dp"

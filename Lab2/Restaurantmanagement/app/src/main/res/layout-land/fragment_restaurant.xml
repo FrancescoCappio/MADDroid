@@ -24,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/avatar_iv_size"
-                android:layout_height="@dimen/avatar_iv_size"
+                android:layout_width="@dimen/detail_image_size_phone"
+                android:layout_height="@dimen/detail_image_size_phone"
                 android:scaleType="centerCrop"
                 android:src="@drawable/placeholder_avatar"
                 />
@@ -203,7 +203,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:hint="@string/restaurant_time_table"
+                        android:hint="@string/restaurant_time_days"
                         android:scrollHorizontally="false"
                         android:textColor="@android:color/white"
                         android:textColorHint="@color/fairgray"
@@ -224,7 +224,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:hint="@string/restaurant_time_morning"
+                        android:hint="@string/restaurant_time_lunch"
                         android:scrollHorizontally="false"
                         android:textColor="@android:color/white"
                         android:textColorHint="@color/fairgray"
@@ -245,21 +245,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:hint="@string/restaurant_time_evening"
+                        android:hint="@string/restaurant_time_dinner"
                         android:scrollHorizontally="false"
                         android:textColor="@android:color/white"
                         android:textColorHint="@color/fairgray"
                         />
                 </android.support.design.widget.TextInputLayout>
-
-
-                    <Button
-                        android:background="@color/colorAccent"
-                        android:id="@+id/ib_Confirm_detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/save"
-                        app:layout_constraintTop_toBottomOf="@id/til_evening_time" />
 
 
             </android.support.constraint.ConstraintLayout>

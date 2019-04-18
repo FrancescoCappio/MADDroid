@@ -427,6 +427,7 @@ public class DailyOfferDetailActivity extends AppCompatActivity {
         
         Glide.with(getApplicationContext())
                 .load(img)
+                .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivDishPhoto);
     }
