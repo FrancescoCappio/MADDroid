@@ -6,7 +6,7 @@
 
     <application
         android:theme="@style/MainAppTheme">
-        <activity android:name=".SplashScreenActivity" android:theme="@style/SplashTheme"/>
+        <activity android:name=".SplashScreenActivity" android:theme="@style/SplashTheme" android:screenOrientation="portrait"/>
         <activity android:name=".LoginActivity" android:theme="@style/LoginActivityTheme" />
     </application>
 
