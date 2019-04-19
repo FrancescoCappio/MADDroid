@@ -63,10 +63,11 @@ public class AccountInfoActivity extends AppCompatActivity {
     private int DESCRIPTION_MAX_LENGTH;
     
     // general purpose attributes
-    private boolean editMode = true;
+    private boolean editMode = false;
     private boolean mandatoryAccountInfo = true;
     private int waitingCount = 0;
     boolean photoChanged = false;
+    boolean photoPresent = false;
     
     // menu items
     private MenuItem menuEdit;
@@ -89,6 +90,17 @@ public class AccountInfoActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
+    
+    // String keys to store instances info
+    private static final String NAME_KEY = "NAME_KEY";
+    private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
+    private static final String PHONE_KEY = "PHONE_KEY";
+    private static final String EMAIL_KEY = "EMAIL_KEY";
+    private static final String ADDRESS_KEY = "ADDRESS_KEY";
+    private static final String PHOTO_PRESENT_KEY = "PHOTO_PRESENT_KEY";
+    private static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
+    private static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
+    private static final String MANDATORY_INFO_KEY = "MANDATORY_INFO_KEY";
     
     
     @Override
@@ -130,7 +142,47 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         setupClickListeners();
         
-        manageLaunchIntent();
+        if (savedInstanceState == null)
+            manageLaunchIntent();
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putString(NAME_KEY, etName.getText().toString());
+        outState.putString(DESCRIPTION_KEY, etDescription.getText().toString());
+        outState.putString(PHONE_KEY, etPhone.getText().toString());
+        outState.putString(EMAIL_KEY, etMail.getText().toString());
+        outState.putString(ADDRESS_KEY, etAddress.getText().toString());
+        
+        outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
+        outState.putBoolean(EDIT_MODE_KEY, editMode);
+        
+        outState.putBoolean(PHOTO_PRESENT_KEY, photoPresent);
+        outState.putBoolean(PHOTO_CHANGED_KEY, photoChanged);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        
+        etName.setText(savedInstanceState.getString(NAME_KEY, ""));
+        etDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
+        etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+        etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
+        etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
+        
+        editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+        mandatoryAccountInfo = savedInstanceState.getBoolean(MANDATORY_INFO_KEY);
+        
+        photoPresent = savedInstanceState.getBoolean(PHOTO_PRESENT_KEY);
+        photoChanged = savedInstanceState.getBoolean(PHOTO_CHANGED_KEY);
+        
+        if (photoPresent)
+            updateAvatarImage();
+        
+        setEditEnabled(editMode);
     }
     
     private void manageLaunchIntent() {
@@ -162,7 +214,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         menuEdit = menu.findItem(R.id.menu_edit);
         menuConfirm = menu.findItem(R.id.menu_confirm);
         
-        setMenuItemsVisibility();
+        setEditEnabled(editMode);
         
         return true;
     }
@@ -182,8 +234,6 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         tvLoginEmail = findViewById(R.id.tv_login_email);
         btLogout = findViewById(R.id.bt_logout);
-        
-        
     }
     
     private void setupClickListeners() {
@@ -238,11 +288,6 @@ public class AccountInfoActivity extends AppCompatActivity {
         finishAndRemoveTask();
     }
     
-    private void setMenuItemsVisibility() {
-        menuEdit.setVisible(!editMode);
-        menuConfirm.setVisible(editMode);
-    }
-    
     private void setEditEnabled(boolean enabled) {
         
         if (menuConfirm != null)
@@ -276,11 +321,14 @@ public class AccountInfoActivity extends AppCompatActivity {
                 break;
             
             case R.id.menu_confirm:
-                if (manageUserConfirm())
+                if (manageUserConfirm()) {
+                    editMode = false;
                     setEditEnabled(false);
+                }
                 break;
                 
             case R.id.menu_edit:
+                editMode = true;
                 setEditEnabled(true);
                 break;
         }
@@ -485,6 +533,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             photoChanged = true;
+            photoPresent = true;
             updateAvatarImage();
         }
     }
@@ -571,6 +620,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 Log.d(TAG, "Avatar downloaded successfully");
                 updateAvatarImage();
                 setActivityLoading(false);
+                photoPresent = true;
             }).addOnFailureListener(exception -> {
                 Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
                 Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_download_ko);

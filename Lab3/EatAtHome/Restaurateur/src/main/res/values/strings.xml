@@ -9,4 +9,6 @@
     <string name="restaurant_description">Restaurant\'s description</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
 
+    <string name="setup_timetable">Setup restaurant\'s timetable</string>
+
 </resources>
