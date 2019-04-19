@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
                     
                     startActivity(i);
-                    finish();
                 }
             }
     

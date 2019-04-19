@@ -1,19 +1,21 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
@@ -55,9 +57,10 @@ import it.polito.maddroid.lab3.common.Utility;
 
 public class AccountInfoActivity extends AppCompatActivity {
     
-    // static final vars
+    // static const
     private static final String TAG = "AccountInfoActivity";
     private static final int PHOTO_REQUEST_CODE = 121;
+    private int DESCRIPTION_MAX_LENGTH;
     
     // general purpose attributes
     private boolean editMode = true;
@@ -111,9 +114,17 @@ public class AccountInfoActivity extends AppCompatActivity {
             finish();
         }
         
-        getSupportActionBar().setTitle(R.string.account_info);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.account_info);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         
         getReferencesToViews();
+    
+        Resources res = getResources();
+        DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
         
         tvLoginEmail.setText(currentUser.getEmail());
         
@@ -132,9 +143,6 @@ public class AccountInfoActivity extends AppCompatActivity {
         mandatoryAccountInfo = launchIntent.getBooleanExtra(EAHCONST.ACCOUNT_INFO_EMPTY, false);
         
         if (!mandatoryAccountInfo) {
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            
             // the user has probably already inserted some info in the past
             retrieveRestaurantsInfo();
             downloadAvatar(currentUser.getUid());
@@ -204,6 +212,17 @@ public class AccountInfoActivity extends AppCompatActivity {
         ivPhoto.setOnClickListener(v -> {
             Utility.startActivityToGetImage(this, MainActivity.FILE_PROVIDER_AUTHORITY, getAvatarTmpFile(), PHOTO_REQUEST_CODE);
         });
+        
+        etDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateDescriptionCount();
+            }
+        });
     }
     
     private void logoutAction() {
@@ -257,8 +276,8 @@ public class AccountInfoActivity extends AppCompatActivity {
                 break;
             
             case R.id.menu_confirm:
-                manageUserConfirm();
-                setEditEnabled(false);
+                if (manageUserConfirm())
+                    setEditEnabled(false);
                 break;
                 
             case R.id.menu_edit:
@@ -269,7 +288,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         return true;
     }
     
-    private void manageUserConfirm() {
+    private boolean manageUserConfirm() {
         
         // first we get info from edittexts
         String restaurantName = etName.getText().toString();
@@ -280,12 +299,12 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         if (restaurantPhone.isEmpty() || restaurantName.isEmpty() || restaurantAddress.isEmpty() || restaurantDescription.isEmpty() || restaurantEmail.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
-            return;
+            return false;
         }
         
         if (mandatoryAccountInfo && !photoChanged) {
             Utility.showAlertToUser(this, R.string.image_empty_alert);
-            return;
+            return false;
         }
         
         setActivityLoading(true);
@@ -327,7 +346,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.notify_save_ko);
             
         });
-        
+        return true;
     }
     
     @Override
@@ -557,5 +576,13 @@ public class AccountInfoActivity extends AppCompatActivity {
                 Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_download_ko);
                 setActivityLoading(false);
             });
+    }
+    
+    private void updateDescriptionCount() {
+        int count = etDescription.getText().length();
+        
+        String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
+        
+        tvDescriptionCount.setText(cnt);
     }
 }
