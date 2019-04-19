@@ -28,7 +28,12 @@
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
     <string name="logout_confirm_request">Are you sure do you want to logout?</string>
     <string name="notify_save_ok">Info saved</string>
+    <string name="notify_avatar_upload_ok">Avatar uploaded</string>
     <string name="notify_save_ko">Error while saving</string>
+    <string name="notify_avatar_upload_ko">Error uploading avatar</string>
+
+    <string name="notify_avatar_download_ko">Error downloading avatar</string>
 
     <string name="fields_empty_alert">Please fill all the fields</string>
+    <string name="image_empty_alert">Please set an image</string>
 </resources>

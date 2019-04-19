@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     LinearLayout llNavHeaderMain;
     NavigationView navigationView;
+    TextView tvAccountEmail;
+    
+    public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.restaurant";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
+        //TODO: check that the logged in user is a restaurateur -> else alert and exit
+        
+        tvAccountEmail.setText(currentUser.getEmail());
+        //TODO: set avatar image as navigation view header's image
     }
     
     @Override
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getReferencesToViews() {
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
+        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
         
     }
     
