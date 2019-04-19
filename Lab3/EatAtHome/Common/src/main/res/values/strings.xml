@@ -1,7 +1,12 @@
 <resources>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string name="app_name">Eat@Home</string>
     <string name="app_second_name">Common</string>
     <string name="login">Login</string>
+    <string name="logged_as">Logged as: </string>
+    <string name="logout">Logout</string>
     <string name="signup">Signup</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -9,4 +14,21 @@
 
     <string name="action_confirm">Confirm</string>
     <string name="action_edit">Edit</string>
+
+    <string name="app">App</string>
+    <string name="settings">Settings</string>
+    <string name="app_info">App info</string>
+
+    <string name="account_info">Account info</string>
+    <string name="restaurant_info">Restaurant info</string>
+
+    <string name="menu">Menu</string>
+
+    <string name="login_alert">You need to login to use the app</string>
+    <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
+    <string name="logout_confirm_request">Are you sure do you want to logout?</string>
+    <string name="notify_save_ok">Info saved</string>
+    <string name="notify_save_ko">Error while saving</string>
+
+    <string name="fields_empty_alert">Please fill all the fields</string>
 </resources>

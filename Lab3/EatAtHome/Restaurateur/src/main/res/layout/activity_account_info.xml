@@ -10,18 +10,77 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_logged_as"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logged_as"
+            android:textSize="18sp"
+            android:layout_marginStart="@dimen/activity_margin"
+            app:layout_constraintTop_toBottomOf="@+id/pb_loading"
+            app:layout_constraintBottom_toBottomOf="@id/bt_logout"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_login_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="@string/restaurant_email"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintBottom_toBottomOf="@id/bt_logout"
+            app:layout_constraintTop_toBottomOf="@id/pb_loading"
+            app:layout_constraintStart_toEndOf="@id/tv_logged_as"
+            app:layout_constraintEnd_toStartOf="@id/bt_logout"/>
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"
+            android:layout_marginTop="@dimen/activity_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bt_logout" />
+
+        <TextView
+            android:id="@+id/tv_restaurant_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/restaurant_info"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/activity_margin"
+            app:layout_constraintTop_toBottomOf="@+id/view_separator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <android.support.v7.widget.CardView
             android:id="@+id/cv_avatar_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/cards_margin_login_phone"
             android:layout_marginEnd="@dimen/cards_margin_login_phone"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="@dimen/margin"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_info"
 
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="@dimen/cards_corner_radius_login_phone"
@@ -51,10 +110,10 @@
             android:id="@+id/til_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin"
+            android:layout_marginTop="@dimen/activity_margin"
 
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -76,8 +135,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,8 +158,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_phone_number"
-                android:inputType="textPostalAddress"
+                android:inputType="phone"
                 android:singleLine="true"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -122,8 +181,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -153,8 +212,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -170,6 +229,15 @@
                 android:singleLine="true"/>
 
         </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/bt_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            android:layout_marginEnd="@dimen/activity_margin"
+            app:layout_constraintTop_toBottomOf="@id/pb_loading"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 

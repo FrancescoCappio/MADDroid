@@ -26,4 +26,10 @@
     <style name="MainOrangeAccent" parent="MainAppTheme">
         <item name="colorAccent">@color/eah_orange</item>
     </style>
+
+    <style name="MainAppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

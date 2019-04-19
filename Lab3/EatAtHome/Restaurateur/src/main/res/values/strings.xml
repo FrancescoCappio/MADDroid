@@ -8,4 +8,16 @@
     <string name="restaurant_address">Restaurant\'s address</string>
     <string name="restaurant_description">Restaurant\'s description</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="orders">Orders</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

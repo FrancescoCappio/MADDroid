@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin">16dp</dimen>
+    <dimen name="activity_margin">16dp</dimen>
     <dimen name="cards_margin_login_phone">40dp</dimen>
     <dimen name="cards_corner_radius_login_phone">20dp</dimen>
     <dimen name="detail_image_size_phone">150dp</dimen>
     <dimen name="detail_image_size_tablet">300dp</dimen>
+
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
