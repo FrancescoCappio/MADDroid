@@ -9,20 +9,33 @@ public class EAHCONST {
     public static String LAUNCH_APP_USER = "LAUNCH_APP_USER";
     public static String LAUNCH_APP_RIDER = "LAUNCH_APP_RIDER";
     
+    public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
+    
+    public static String LAUNCH_EDIT_ENABLED_KEY = "LAUNCH_EDIT_ENABLED_KEY";
+    public static String ACCOUNT_INFO_EMPTY = "ACCOUNT_INFO_EMPTY";
+    
+    
+    // CONSTS RELATED TO FIREBASE ONLINE DATABASE
+    public enum USER_TYPE {
+        USER,
+        RESTAURATEUR,
+        RIDER
+    }
+    
     // main subtrees
-    final static String USERS_SUB_TREE = "users";
-    final static String RESTAURANTS_SUB_TREE = "restaurants";
+    public final static String USERS_SUB_TREE = "users";
+    public final static String RESTAURANTS_SUB_TREE = "restaurants";
     
     // users subtree nodes fields
-    final static String USERS_NAME = "username";
-    final static String USERS_UUID = "uuid";
-    final static String USERS_TYPE = "usertype";
+    public final static String USERS_MAIL = "email";
+    public final static String USERS_TYPE = "usertype";
     
     // restaurants subtree nodes fields
-    final static String RESTAURANT_NAME = "name";
-    final static String RESTAURANT_ADDRESS = "address";
-    final static String RESTAURANT_DESCRIPTION = "decription";
-    
+    public final static String RESTAURANT_NAME = "name";
+    public final static String RESTAURANT_ADDRESS = "address";
+    public final static String RESTAURANT_DESCRIPTION = "decription";
+    public final static String RESTAURANT_PHONE = "phone";
+    public final static String RESTAURANT_EMAIL = "email";
     
     public static String generatePath(String... args) {
         StringBuilder sb = new StringBuilder();

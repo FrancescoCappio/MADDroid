@@ -21,6 +21,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             // transfer extras from Intent i
             launchIntent.putExtras(i);
             startActivity(launchIntent);
+            
+            finish();
     
         }, 1500);
     }

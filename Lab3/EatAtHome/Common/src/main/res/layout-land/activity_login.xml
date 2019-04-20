@@ -60,7 +60,7 @@
                         android:id="@+id/ivLoginArrow"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:src="@drawable/ic_arrow_drop_down_circle_gray_24dp"/>
+                        android:src="@drawable/ic_arrow_drop_down_circle_gray"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -170,7 +170,7 @@
                         android:id="@+id/ivSignupArrow"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:src="@drawable/ic_arrow_drop_down_circle_gray_24dp"/>
+                        android:src="@drawable/ic_arrow_drop_down_circle_gray"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -296,7 +296,7 @@
         android:theme="@style/SplashTheme"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        app:srcCompat="@drawable/ic_navigate_next_black_24dp"
+        app:srcCompat="@drawable/ic_navigate_next_black"
         android:visibility="gone"/>
 
 

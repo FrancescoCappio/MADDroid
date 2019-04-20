@@ -4,8 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application>
-        <activity android:name=".SplashScreenActivity" android:theme="@style/SplashTheme"/>
+    <application
+        android:theme="@style/MainAppTheme">
+        <activity android:name=".SplashScreenActivity" android:theme="@style/SplashTheme" android:screenOrientation="portrait"/>
         <activity android:name=".LoginActivity" android:theme="@style/LoginActivityTheme" />
     </application>
 

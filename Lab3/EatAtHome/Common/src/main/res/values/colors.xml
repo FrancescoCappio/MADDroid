@@ -2,6 +2,7 @@
 <resources>
 
     <color name="eah_orange">#FF5722</color>
+    <color name="eah_yellow">#ff9800</color>
     <color name="eah_orange_dark">#BE3C13</color>
     <color name="eah_white">#FFFFFF</color>
     <color name="eah_black">#000000</color>
