@@ -172,7 +172,6 @@ public class ChooseDishesAdapter extends BaseAdapter {
                         break;
                     }
                 }
-                
             }
         }
     }
