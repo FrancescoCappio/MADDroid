@@ -14,7 +14,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/tv_nav_restaurant_avatar"
+        android:id="@+id/tv_nav_rider_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/nav_header_desc"
@@ -30,9 +30,9 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/tv_nav_restaurant_email"
+        android:id="@+id/tv_nav_rider_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/email" />
+        android:text="@string/rider_email" />
 
 </LinearLayout>

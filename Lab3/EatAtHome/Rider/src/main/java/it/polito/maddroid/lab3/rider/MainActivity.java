@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getReferencesToViews() {
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
-        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
+        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_rider_email);
         
     }
     
@@ -105,9 +105,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         llNavHeaderMain.setOnClickListener(v -> {
             //TODO: start account info
-//            Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
-//            i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
-//            startActivity(i);
+            Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
+            i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
+            startActivity(i);
         });
         
     }
@@ -144,10 +144,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         
-        if (id == R.id.nav_orders) {
+        if (id == R.id.nav_delivery) {
             // Handle the camera action
         }
-        else if (id == R.id.nav_menu) {
+        else if (id == R.id.nav_deliveries_done) {
         
         }
         else if (id == R.id.nav_settings) {
@@ -168,16 +168,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String userEmail = (String) dataSnapshot.child(EAHCONST.USERS_MAIL).getValue();
-                
+
                 if (userEmail == null) {
                     //the user has not filled its account info yet
                     
                     //TODO: start account info
-//                    Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
-//                    i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
-//                    i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
+                    Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
+                    i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
+                    i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
 //
-//                    startActivity(i);
+                    startActivity(i);
                 }
             }
     
