@@ -1,7 +1,10 @@
 package it.polito.maddroid.lab3.common;
 
 
-public class RestaurantCategory {
+import java.io.Serializable;
+
+
+public class RestaurantCategory implements Serializable {
     
     private String id;
     private String name;

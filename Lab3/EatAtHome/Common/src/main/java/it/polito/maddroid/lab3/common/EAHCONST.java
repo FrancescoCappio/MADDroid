@@ -14,6 +14,8 @@ public class EAHCONST {
     public static String LAUNCH_EDIT_ENABLED_KEY = "LAUNCH_EDIT_ENABLED_KEY";
     public static String ACCOUNT_INFO_EMPTY = "ACCOUNT_INFO_EMPTY";
     
+    public static String RESTAURANT_CATEGORY_EXTRA = "RESTAURANT_CATEGORY_EXTRA";
+    
     
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {

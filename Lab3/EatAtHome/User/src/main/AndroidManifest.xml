@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MainAppTheme">
-        <activity android:name=".RestaurantSearchActivity"></activity>
+        <activity
+            android:name=".RestaurantSearchActivity"
+            android:windowSoftInputMode="stateVisible"></activity>
         <activity android:name=".AccountInfoActivity" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity

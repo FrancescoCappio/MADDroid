@@ -1,7 +1,9 @@
 package it.polito.maddroid.lab3.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,7 +47,7 @@ public class RestaurantsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
+        View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
 
         rvCategories = view.findViewById(R.id.rv_categories);
 
@@ -58,6 +60,13 @@ public class RestaurantsFragment extends Fragment {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(),2));
         
         downloadCategoriesInfo();
+    
+        CardView cvSearch = view.findViewById(R.id.cv_search);
+        
+        cvSearch.setOnClickListener(v -> {
+            Intent i = new Intent(getContext(),RestaurantSearchActivity.class);
+            startActivity(i);
+        });
 
         return view;
     }
@@ -91,7 +100,12 @@ public class RestaurantsFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        CategoryGridAdapter adapter = new CategoryGridAdapter(categories);
+        CategoryGridAdapter adapter = new CategoryGridAdapter(categories, category -> {
+            Intent i = new Intent(getContext(),RestaurantSearchActivity.class);
+            i.putExtra(EAHCONST.RESTAURANT_CATEGORY_EXTRA, category);
+            
+            startActivity(i);
+        });
         rvCategories.setAdapter(adapter);
     }
     

@@ -22,9 +22,11 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
     private List<RestaurantCategory> categories;
     private static StorageReference storageReference;
     
-    public CategoryGridAdapter(List<RestaurantCategory> categories) {
+    private ItemClickListener itemClickListener;
+    
+    public CategoryGridAdapter(List<RestaurantCategory> categories, ItemClickListener onItemclickListener) {
         this.categories = categories;
-        
+        this.itemClickListener = onItemclickListener;
         storageReference = FirebaseStorage.getInstance().getReference();
     }
     
@@ -41,7 +43,7 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
             
         }
         
-        public void setupCategory(RestaurantCategory category) {
+        public void setupCategory(RestaurantCategory category, ItemClickListener itemClickListener) {
             tvCatName.setText(category.getName());
     
             StorageReference riversRef = storageReference.child("rest_cat_" + category.getId() +".jpg");
@@ -49,7 +51,13 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
             GlideApp.with(ivCatImage.getContext())
                     .load(riversRef)
                     .into(ivCatImage);
+            
+            ivCatImage.setOnClickListener(v -> itemClickListener.clickListener(category));
         }
+    }
+    
+    public interface ItemClickListener {
+        void clickListener(RestaurantCategory category);
     }
     
     @Override
@@ -68,7 +76,7 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         
         // pass the category to the viewholder
-        holder.setupCategory(categories.get(position));
+        holder.setupCategory(categories.get(position), itemClickListener);
     }
     
     @Override
