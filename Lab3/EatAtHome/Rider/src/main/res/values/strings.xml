@@ -3,12 +3,12 @@
     
     <string name="rider_avatar_content_description">Rider\'s avatar image</string>
 
-    <string name="rider_name">Rider\'s name</string>
-    <string name="rider_email">Rider\'s email</string>
-    <string name="rider_address">Rider\'s address</string>
-    <string name="rider_description">Rider\'s description</string>
-    <string name="rider_phone_number">Rider\'s phone number</string>
+    <string name="rider_name">Name</string>
+    <string name="rider_email">Email</string>
+    <string name="rider_address">Address</string>
+    <string name="rider_description">Description</string>
+    <string name="rider_phone_number">Phone number</string>
 
-    <string name="order_rider">Deliveries done</string>
+    <string name="order_rider">Last deliveries</string>
 
 </resources>
