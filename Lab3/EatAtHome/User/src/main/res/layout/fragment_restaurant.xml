@@ -1,17 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RestaurantFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/eah_background_dark"
+    tools:context=".RestaurantsFragment">
 
-
-    <ListView
-        android:id="@+id/lv_Restaurant"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/restaurant_list_item"
-        >
-    </ListView>
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="@dimen/activity_margin"
+        app:cardCornerRadius="5dp"
+        app:contentPadding="5dp">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:text="@string/search_all_categories"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_search_black"
+            android:layout_gravity="end"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_categories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/cv_search"
+        android:background="@color/eah_background_dark"
+        tools:listitem="@layout/category_list_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</RelativeLayout>

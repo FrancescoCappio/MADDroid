@@ -17,7 +17,8 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.util.List;
 
-import it.polito.maddroid.lab3.common.Utility;
+import it.polito.maddroid.lab3.common.Restaurant;
+
 
 public class RestaurantAdapter extends BaseAdapter {
     private static final String TAG = "RestaurantAdapter";

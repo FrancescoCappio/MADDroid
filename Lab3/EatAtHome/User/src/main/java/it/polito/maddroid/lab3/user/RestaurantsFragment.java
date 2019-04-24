@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,23 +18,24 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.RestaurantCategory;
 
 
-public class RestaurantFragment extends Fragment {
+public class RestaurantsFragment extends Fragment {
 
-    private ListView lvResturansts;
+    private RecyclerView rvCategories;
 
-    private static final String TAG = "RestaurantFragment";
-
-    RestaurantAdapter adapter;
+    private static final String TAG = "RestaurantsFragment";
 
     private DatabaseReference dbRef;
 
-    private List<Restaurant> restaurants;
+    public List<RestaurantCategory> categories;
 
 
-    public RestaurantFragment() {
+    public RestaurantsFragment() {
         // Required empty public constructor
     }
 
@@ -47,46 +47,38 @@ public class RestaurantFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
 
-        lvResturansts = view.findViewById(R.id.lv_Restaurant);
+        rvCategories = view.findViewById(R.id.rv_categories);
 
-        restaurants = new ArrayList<>();
+        categories = new ArrayList<>();
 
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-        downloadRestaurantsInfo();
-
-
-
-        //adapter = new RestaurantAdapter(new ArrayList<>(restaurants), getContext());
-
-        lvResturansts.setAdapter(adapter);
-
-
+        rvCategories.setHasFixedSize(true);
+        
+        rvCategories.setLayoutManager(new GridLayoutManager(getContext(),2));
+        
+        downloadCategoriesInfo();
 
         return view;
     }
 
-    private void downloadRestaurantsInfo() {
+    private void downloadCategoriesInfo() {
         Query queryRef = dbRef
-                .child(EAHCONST.RESTAURANTS_SUB_TREE)
-                .orderByChild(EAHCONST.RESTAURANT_NAME);
+                .child(EAHCONST.CATEGORIES_SUB_TREE)
+                .orderByChild(EAHCONST.CATEGORIES_NAME);
 
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    
+                    String catId = ds.getKey();
+                    String catName = (String) ds.child(EAHCONST.CATEGORIES_NAME).getValue();
+                    
+                    RestaurantCategory rc = new RestaurantCategory(catId, catName);
 
-                    // do somethind with the individual restaurant
-                    String restaurantId = (String) ds.getKey();
-                    String name = (String) ds.child(EAHCONST.RESTAURANT_NAME).getValue();
-                    String description = (String) ds.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
-                    String address = (String) ds.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
-                    String phone = (String) ds.child(EAHCONST.RESTAURANT_PHONE).getValue();
-
-                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone);
-
-                    restaurants.add(r);
+                    categories.add(rc);
                 }
                 setupAdapter();
             }
@@ -99,12 +91,9 @@ public class RestaurantFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        RestaurantAdapter adapter = new RestaurantAdapter(restaurants, getContext());
-        lvResturansts.setAdapter(adapter);
-
+        CategoryGridAdapter adapter = new CategoryGridAdapter(categories);
+        rvCategories.setAdapter(adapter);
     }
-
-
-
+    
 
 }
