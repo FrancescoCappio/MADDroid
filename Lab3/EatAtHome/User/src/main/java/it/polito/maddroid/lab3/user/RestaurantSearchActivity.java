@@ -4,17 +4,20 @@ package it.polito.maddroid.lab3.user;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
+import it.polito.maddroid.lab3.common.Utility;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,8 +39,12 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     private DatabaseReference dbRef;
     
     private EditText etSearch;
+    private ImageView ivSearch;
+    private RecyclerView rvRestaurants;
     
     private RestaurantCategory restaurantCategory;
+    
+    RestaurantListAdapter adapter;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,8 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference();
     
         getReferencesToViews();
+        
+        restaurants = new ArrayList<>();
         
         Intent launchIntent = getIntent();
         
@@ -70,10 +80,23 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     
         // automatically put focus on search edit text and open the keyboard
         etSearch.requestFocus();
+        
+        // setup list
+        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback());
+        rvRestaurants.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        rvRestaurants.setAdapter(adapter);
+        
+        setupClickListeners();
     }
     
     private void getReferencesToViews() {
         etSearch = findViewById(R.id.et_search);
+        ivSearch = findViewById(R.id.iv_search);
+        rvRestaurants = findViewById(R.id.rv_restaurants);
+    }
+    
+    private void setupClickListeners() {
+        ivSearch.setOnClickListener(v -> downloadRestaurantsInfo(etSearch.getText().toString()));
     }
     
     @Override
@@ -89,10 +112,20 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         return true;
     }
     
-    private void downloadRestaurantsInfo() {
+    private void downloadRestaurantsInfo(String query) {
+        
+        //TODO: download by category
+        if (query == null || query.isEmpty()) {
+            Utility.showAlertToUser(this, R.string.alert_search_empty);
+            return;
+        }
+        
         Query queryRef = dbRef
                 .child(EAHCONST.RESTAURANTS_SUB_TREE)
-                .orderByChild(EAHCONST.RESTAURANT_NAME);
+                .orderByChild(EAHCONST.RESTAURANT_NAME)
+                .startAt(query);
+        
+        //TODO: match by name
         
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -111,7 +144,11 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     
                     restaurants.add(r);
                 }
-//                setupAdapter();
+                
+                if (!dataSnapshot.hasChildren())
+                    restaurants.clear();
+                
+                adapter.submitList(restaurants);
             }
             
             @Override

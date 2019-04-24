@@ -11,6 +11,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginStart="5dp"
         android:scaleType="centerCrop"
+        android:layout_centerVertical="true"
         android:src="@drawable/ic_restaurant_black_24dp"/>
 
     <LinearLayout
@@ -43,18 +44,14 @@
             android:textColor="@android:color/black"
             android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/tv_restaurant_adress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_restaurant_description"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Adress"
-            android:textColor="@android:color/black"
-            android:textSize="12sp" />
-
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/eah_background_dark"
+        android:layout_alignParentBottom="true"
+        />
 
 
 </RelativeLayout>
