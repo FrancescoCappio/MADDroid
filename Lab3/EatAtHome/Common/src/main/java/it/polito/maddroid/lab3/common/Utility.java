@@ -9,8 +9,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.FileProvider;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
