@@ -17,7 +17,7 @@ public class EAHCONST {
     
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
-        USER,
+        CUSTOMER,
         RESTAURATEUR,
         RIDER
     }
@@ -25,7 +25,9 @@ public class EAHCONST {
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
     public final static String RESTAURANTS_SUB_TREE = "restaurants";
+    public final static String CUSTOMERS_SUB_TREE = "customers";
     public final static String RIDERS_SUB_TREE = "riders";
+
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
@@ -38,11 +40,20 @@ public class EAHCONST {
     public final static String RESTAURANT_PHONE = "phone";
     public final static String RESTAURANT_EMAIL = "email";
 
+
+    // customers subtree nodes fields
+    public final static String CUSTOMER_NAME = "name";
+    public final static String CUSTOMER_ADDRESS = "address";
+    public final static String CUSTOMER_DESCRIPTION = "decription";
+    public final static String CUSTOMER_PHONE = "phone";
+    public final static String CUSTOMER_EMAIL = "email";
+  
     public final static String RIDER_NAME = "name";
     public final static String RIDER_ADDRESS = "address";
     public final static String RIDER_DESCRIPTION = "decription";
     public final static String RIDER_PHONE = "phone";
     public final static String RIDER_EMAIL = "email";
+
     
     public static String generatePath(String... args) {
         StringBuilder sb = new StringBuilder();

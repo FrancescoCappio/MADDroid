@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -23,14 +26,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    
-    
+
+    private final static String TAG = "MainActivity";
+
+    private int currentSelectedPosition; //0 = restaurant
+    private RestaurantFragment restaurantFragment;
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -105,9 +114,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         llNavHeaderMain.setOnClickListener(v -> {
             //TODO: start account info
-//            Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
-//            i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
-//            startActivity(i);
+            Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
+            i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
+            startActivity(i);
         });
         
     }
@@ -148,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Handle the camera action
         }
         else if (id == R.id.nav_menu) {
+            selectItem(0);
         
         }
         else if (id == R.id.nav_settings) {
@@ -161,6 +171,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void selectItem(int position) {
+
+        Fragment fragment = null;
+
+        // before creating a new fragment we should check if the already displayed one is the same we want to open
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        Log.d(TAG, "Fragments count: " + fragments.size());
+
+        for (Fragment fr : fragments) {
+            if ((fr instanceof RestaurantFragment)) {
+                fragment = fr;
+                break;
+            }
+        }
+
+        currentSelectedPosition = position;
+
+        boolean changed = false;
+        switch (position) {
+            case 0:
+                if (!(fragment instanceof RestaurantFragment)) {
+                    restaurantFragment = new RestaurantFragment();
+                    fragment = restaurantFragment;
+                    changed = true;
+                }
+
+                getSupportActionBar().setTitle(R.string.restaurants);
+                navigationView.setCheckedItem(R.id.nav_menu);
+                break;
+
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+
+            default:
+                break;
+        }
+
+        if (fragment != null && changed) {
+            fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
+        } else {
+            Log.d("MainActivity", "No need to change the fragment");
+        }
+    }
     
     private void checkIfUserHasCompletedAccountInfo() {
         String userId = currentUser.getUid();
@@ -172,11 +233,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (userEmail == null) {
                     //the user has not filled its account info yet
                     //TODO: start account info
-//                    Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
-//                    i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
-//                    i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
-//
-//                    startActivity(i);
+                    Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
+                    i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
+                    i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
+
+                    startActivity(i);
                 }
             }
     
