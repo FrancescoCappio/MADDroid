@@ -14,6 +14,7 @@ import it.polito.maddroid.lab3.common.Utility;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -97,6 +98,18 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     
     private void setupClickListeners() {
         ivSearch.setOnClickListener(v -> downloadRestaurantsInfo(etSearch.getText().toString()));
+    
+        // also search on enter pressed
+        etSearch.setOnKeyListener((v, keyCode, event) -> {
+            // If the event is a key-down event on the "enter" button
+            if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                    (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                // Perform action on key press
+                downloadRestaurantsInfo(etSearch.getText().toString());
+                return true;
+            }
+            return false;
+        });
     }
     
     @Override
@@ -106,10 +119,10 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
         }
         
-        return true;
+        return false;
     }
     
     private void downloadRestaurantsInfo(String query) {

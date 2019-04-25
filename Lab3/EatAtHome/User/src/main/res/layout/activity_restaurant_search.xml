@@ -28,6 +28,9 @@
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:lines="1"
                 android:layout_toStartOf="@+id/iv_search"
                 android:textSize="18sp"
                 android:hint="@string/search_all_categories"/>
