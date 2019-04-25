@@ -26,6 +26,7 @@ public class EAHCONST {
     
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
+    public final static String CATEGORIES_ASSOCIATIONS_SUB_TREE = "categories_associations";
     public final static String RESTAURANTS_SUB_TREE = "restaurants";
     public final static String CATEGORIES_SUB_TREE = "restaurant_categories";
     public final static String CUSTOMERS_SUB_TREE = "customers";
