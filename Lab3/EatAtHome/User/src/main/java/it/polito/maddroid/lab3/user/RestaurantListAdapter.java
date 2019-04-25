@@ -20,10 +20,12 @@ import it.polito.maddroid.lab3.common.Restaurant;
 public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantListAdapter.MyViewHolder> {
     
     private static StorageReference storageReference;
+    private ItemClickListener clickListener;
     
-    protected RestaurantListAdapter(@NonNull DiffUtil.ItemCallback<Restaurant> diffCallback) {
+    protected RestaurantListAdapter(@NonNull DiffUtil.ItemCallback<Restaurant> diffCallback, ItemClickListener clickListener) {
         super(diffCallback);
         storageReference = FirebaseStorage.getInstance().getReference();
+        this.clickListener = clickListener;
     }
     
     @NonNull
@@ -39,11 +41,16 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.setupRestaurant(getItem(position));
+        holder.setupRestaurant(getItem(position), clickListener);
+    }
+    
+    public interface ItemClickListener {
+        void onItemClickListener(Restaurant restaurant);
     }
     
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         
+        private View itemView;
         private TextView tvRestaurantName;
         private TextView tvRestaurantDescription;
         private ImageView ivRestaurantPhoto;
@@ -51,12 +58,13 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
     
+            this.itemView = itemView;
             tvRestaurantName = itemView.findViewById(R.id.tv_restaurant_name);
             tvRestaurantDescription = itemView.findViewById(R.id.tv_restaurant_description);
             ivRestaurantPhoto = itemView.findViewById(R.id.iv_restaurant_photo);
         }
         
-        public void setupRestaurant(Restaurant restaurant) {
+        public void setupRestaurant(Restaurant restaurant, ItemClickListener itemClickListener) {
             tvRestaurantName.setText(restaurant.getName());
             tvRestaurantDescription.setText(restaurant.getDescription());
     
@@ -65,6 +73,8 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)
                     .into(ivRestaurantPhoto);
+            
+            itemView.setOnClickListener(v -> itemClickListener.onItemClickListener(restaurant));
         }
         
     }

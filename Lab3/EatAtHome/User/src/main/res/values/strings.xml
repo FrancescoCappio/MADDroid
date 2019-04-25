@@ -9,6 +9,8 @@
     <string name="user_description">Description</string>
     <string name="user_phone_number">Phone number</string>
 
+    <string name="restaurant_details">Restaurant details</string>
+
     <string name="search_all_categories">Search in all categories</string>
     <string name="search_restaurant_in_category">Search in category:</string>
     <string name="restaurant_search">Restaurants search</string>

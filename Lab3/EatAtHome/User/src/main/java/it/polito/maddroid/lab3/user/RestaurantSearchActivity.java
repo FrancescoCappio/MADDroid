@@ -83,7 +83,13 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         etSearch.requestFocus();
         
         // setup list
-        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback());
+        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
+            // open restaurant detail activity and close current activity
+            Intent i = new Intent(getApplicationContext(), RestaurantDetailActivity.class);
+            i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
+            startActivity(i);
+            finish();
+        });
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rvRestaurants.setAdapter(adapter);
         
@@ -151,8 +157,9 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     String description = (String) ds.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
                     String address = (String) ds.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
                     String phone = (String) ds.child(EAHCONST.RESTAURANT_PHONE).getValue();
+                    String email = (String) ds.child(EAHCONST.RESTAURANT_EMAIL).getValue();
                     
-                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone);
+                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email);
                     
                     restaurants.add(r);
                 }
@@ -222,5 +229,9 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         if (newRests.isEmpty())
             Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
         adapter.submitList(newRests);
+    }
+    
+    private void getCategoriesForRestaurant() {
+    
     }
 }
