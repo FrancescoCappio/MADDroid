@@ -17,7 +17,8 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.util.List;
 
-import it.polito.maddroid.lab3.common.Utility;
+import it.polito.maddroid.lab3.common.Restaurant;
+
 
 public class RestaurantAdapter extends BaseAdapter {
     private static final String TAG = "RestaurantAdapter";
@@ -53,7 +54,6 @@ public class RestaurantAdapter extends BaseAdapter {
 
         TextView tvName = v.findViewById(R.id.tv_restaurant_name);
         TextView tvDescription = v.findViewById(R.id.tv_restaurant_description);
-        TextView tvAddress = v.findViewById(R.id.tv_restaurant_adress);
         ImageView ivRestaurantPhoto = v.findViewById(R.id.iv_restaurant_photo);
 
 
@@ -66,7 +66,6 @@ public class RestaurantAdapter extends BaseAdapter {
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivRestaurantPhoto);
 
-        tvAddress.setText(r.getAddress());
         tvName.setText(r.getName());
         tvDescription.setText(r.getDescription());
 

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static String TAG = "MainActivity";
 
     private int currentSelectedPosition; //0 = restaurant
-    private RestaurantFragment restaurantFragment;
+    private RestaurantsFragment restaurantFragment;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         tvAccountEmail.setText(currentUser.getEmail());
         //TODO: set avatar image as navigation view header's image
+        
+        selectItem(0);
     }
     
     @Override
@@ -156,9 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_orders) {
             // Handle the camera action
         }
-        else if (id == R.id.nav_menu) {
+        else if (id == R.id.nav_restaurants) {
             selectItem(0);
-        
         }
         else if (id == R.id.nav_settings) {
         
@@ -184,25 +185,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof RestaurantFragment)) {
+            if ((fr instanceof RestaurantsFragment)) {
                 fragment = fr;
                 break;
             }
         }
 
         currentSelectedPosition = position;
+        navigationView.setCheckedItem(position);
 
         boolean changed = false;
         switch (position) {
             case 0:
-                if (!(fragment instanceof RestaurantFragment)) {
-                    restaurantFragment = new RestaurantFragment();
+                
+                if (!(fragment instanceof RestaurantsFragment)) {
+                    restaurantFragment = new RestaurantsFragment();
                     fragment = restaurantFragment;
                     changed = true;
                 }
 
                 getSupportActionBar().setTitle(R.string.restaurants);
-                navigationView.setCheckedItem(R.id.nav_menu);
+                
                 break;
 
             case 1:
