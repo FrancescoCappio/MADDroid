@@ -123,14 +123,13 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         Query queryRef = dbRef
                 .child(EAHCONST.RESTAURANTS_SUB_TREE)
                 .orderByChild(EAHCONST.RESTAURANT_NAME)
-                .startAt(query);
-        
-        //TODO: match by name
+                .startAt(query).endAt(query + "\uf8ff");
         
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
+                restaurants = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     
                     // do somethind with the individual restaurant
@@ -144,9 +143,6 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     
                     restaurants.add(r);
                 }
-                
-                if (!dataSnapshot.hasChildren())
-                    restaurants.clear();
                 
                 adapter.submitList(restaurants);
             }
