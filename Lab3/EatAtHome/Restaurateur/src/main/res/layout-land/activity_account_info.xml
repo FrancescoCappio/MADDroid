@@ -238,7 +238,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_description" />
-
+        <Button
+            android:id="@+id/bt_restaurant_categories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_categories"
+            android:layout_margin="@dimen/activity_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_timetable"/>
         <Button
             android:id="@+id/bt_timetable"
             android:layout_width="wrap_content"
@@ -247,7 +255,7 @@
             android:layout_margin="@dimen/activity_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_separator_timetable"/>
+            app:layout_constraintTop_toBottomOf="@id/bt_restaurant_categories"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

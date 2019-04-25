@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -46,11 +48,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
+import it.polito.maddroid.lab3.common.RestaurantCategory;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -66,8 +71,12 @@ public class AccountInfoActivity extends AppCompatActivity {
     private boolean editMode = false;
     private boolean mandatoryAccountInfo = true;
     private int waitingCount = 0;
+    private String userId;
     boolean photoChanged = false;
     boolean photoPresent = false;
+    private List<String> categories;
+    private ArrayList<Boolean> categoriesSelected = new ArrayList<>();
+    private ArrayList<String> categoriesID = new ArrayList<>();
     
     // menu items
     private MenuItem menuEdit;
@@ -83,6 +92,8 @@ public class AccountInfoActivity extends AppCompatActivity {
     private ImageView ivPhoto;
     private FloatingActionButton fabPhoto;
     private Button btLogout;
+    private Button btCategories;
+    private Button btTimeTable;
     private TextView tvLoginEmail;
     
     // Firebase attributes
@@ -112,7 +123,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        
+        downloadCategoriesInfo();
         if (currentUser == null) {
             // this should not be possible. The user should be logged in to be here
             Utility.showAlertToUser(this, R.string.login_alert);
@@ -234,6 +245,8 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         tvLoginEmail = findViewById(R.id.tv_login_email);
         btLogout = findViewById(R.id.bt_logout);
+        btCategories = findViewById(R.id.bt_restaurant_categories);
+        btTimeTable = findViewById(R.id.bt_timetable);
     }
     
     private void setupClickListeners() {
@@ -273,6 +286,40 @@ public class AccountInfoActivity extends AppCompatActivity {
                 updateDescriptionCount();
             }
         });
+
+        btCategories.setOnClickListener(v ->
+            {
+                while (categories.size()==0);
+
+                String [] multiChoiceItems = new String[categories.size()];
+                boolean[] checkedItems = new boolean[categories.size()];
+                for (int i = 0; i < categories.size();i++)
+                {
+                    multiChoiceItems[i] = categories.get(i);
+                    checkedItems[i] = categoriesSelected.get(i);
+                }
+                Map<String,Object> updateMap = new HashMap<>();
+                new AlertDialog.Builder(this)
+                        .setTitle("Select your restaurant categories")
+                        .setMultiChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int index, boolean isChecked) {
+                                //Log.d("MainActivity", "clicked item index is " + categoriesID.get(index));
+                                if(isChecked){
+                                    categoriesSelected.set(index, true);
+                                    //Log.d("MainActivity", categoriesSelected.toString());
+                                }
+                                else{
+                                    categoriesSelected.set(index,false);
+                                    //Log.d("MainActivity", categoriesSelected.toString());
+                                }
+                            }
+                        })
+                        .setPositiveButton("Confirm", null)
+                        .setNegativeButton("Back", null)
+                        .show();
+            }
+        );
     }
     
    private void logoutAction() {
@@ -300,6 +347,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etMail.setEnabled(enabled);
         etPhone.setEnabled(enabled);
         etAddress.setEnabled(enabled);
+        btCategories.setEnabled(enabled);
 
         if (enabled)
             fabPhoto.show();
@@ -339,12 +387,16 @@ public class AccountInfoActivity extends AppCompatActivity {
     private boolean manageUserConfirm() {
         
         // first we get info from edittexts
+        boolean categorySelected = false;
+        for(int i = 0; i < categoriesSelected.size() ; ++i)
+            if(categoriesSelected.get(i))
+                categorySelected= true;
         String restaurantName = etName.getText().toString();
         String restaurantPhone = etPhone.getText().toString();
         String restaurantAddress = etAddress.getText().toString();
         String restaurantEmail = etMail.getText().toString();
         String restaurantDescription = etDescription.getText().toString();
-        
+
         if (restaurantPhone.isEmpty() || restaurantName.isEmpty() || restaurantAddress.isEmpty() || restaurantDescription.isEmpty() || restaurantEmail.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
@@ -354,7 +406,13 @@ public class AccountInfoActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.image_empty_alert);
             return false;
         }
-        
+
+        if (!categorySelected) {
+            Utility.showAlertToUser(this, R.string.no_category_alert);
+            return false;
+        }
+
+
         setActivityLoading(true);
         
         // now add users info in users tree
@@ -362,7 +420,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         String userEmail = currentUser.getEmail();
         
-        String userId = currentUser.getUid();
+        userId = currentUser.getUid();
     
         if (photoChanged)
             uploadAvatar(userId);
@@ -380,7 +438,18 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
-        
+
+        for(int i = 0; i < categoriesSelected.size(); ++i)
+        {
+
+            if(categoriesSelected.get(i))
+            {
+                //Log.d("clicked",categories.get(i));
+                //Log.d("clicked",categoriesID.get(i));
+                updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, categoriesID.get(i),userId),userId);
+            }
+        }
+
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             
             Log.d(TAG, "Success registering user info");
@@ -634,5 +703,34 @@ public class AccountInfoActivity extends AppCompatActivity {
         String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
         
         tvDescriptionCount.setText(cnt);
+    }
+
+    private void downloadCategoriesInfo() {
+        Query queryRef = dbRef
+                .child(EAHCONST.CATEGORIES_SUB_TREE)
+                .orderByChild(EAHCONST.CATEGORIES_NAME);
+
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange Called");
+                ArrayList<String> tmp = new ArrayList<String>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                    String catId = ds.getKey();
+                    String catName = (String) ds.child(EAHCONST.CATEGORIES_NAME).getValue();
+                    categoriesID.add(catId);
+                    tmp.add(catName);
+                    //TODO read the correct categories for the restaurant
+                    categoriesSelected.add(false);
+                }
+                categories = tmp;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+            }
+        });
     }
 }

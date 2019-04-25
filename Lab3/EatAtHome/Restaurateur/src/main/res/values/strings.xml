@@ -10,5 +10,6 @@
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
 
     <string name="setup_timetable">Setup restaurant\'s timetable</string>
+    <string name="setup_categories">Setup categories</string>
 
 </resources>
