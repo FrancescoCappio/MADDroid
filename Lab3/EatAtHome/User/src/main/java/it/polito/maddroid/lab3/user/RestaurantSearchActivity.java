@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -36,6 +35,7 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantSearchActvty";
     
     private List<Restaurant> restaurants;
+    private List<String> restaurantsInCategory;
     
     private DatabaseReference dbRef;
     
@@ -156,8 +156,8 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     
                     restaurants.add(r);
                 }
-                
-                adapter.submitList(restaurants);
+                // now that we have downloaded all the restaurants matching the name we need to filter them considering the chosen category
+                filterRestaurantsByCategory();
             }
             
             @Override
@@ -165,5 +165,62 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                 Log.e(TAG, "onCancelled called");
             }
         });
+    }
+    
+    private void filterRestaurantsByCategory() {
+        
+        if (restaurants.isEmpty()) {
+            Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
+            return;
+        }
+        
+        if (restaurantCategory == null) {
+            // no category filter: submit the list as is
+            adapter.submitList(restaurants);
+            return;
+        }
+        
+        // to filter the restaurant by category we download the ids of all the restaurants in the chosen category
+        // and we remove from our restaurants lists the one not present in the list of the category
+        Query queryRef = dbRef
+                .child(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE)
+                .child(restaurantCategory.getId())
+                .orderByKey();
+        
+        restaurantsInCategory = new ArrayList<>();
+    
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                
+                if (!dataSnapshot.hasChildren()) {
+                    Log.d(TAG, "There are 0 restaurants in this category");
+                }
+                
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    restaurantsInCategory.add(ds.getKey());
+                }
+                
+                matchRestaurantsAndCategory();
+            }
+        
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+            }
+        });
+    }
+    
+    private void matchRestaurantsAndCategory() {
+        List<Restaurant> newRests = new ArrayList<>();
+        
+        for (Restaurant r : restaurants) {
+            if (restaurantsInCategory.contains(r.getRestaurantID()))
+                newRests.add(r);
+        }
+    
+        if (newRests.isEmpty())
+            Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
+        adapter.submitList(newRests);
     }
 }

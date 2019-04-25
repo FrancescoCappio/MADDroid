@@ -14,4 +14,6 @@
     <string name="restaurant_search">Restaurants search</string>
 
     <string name="alert_search_empty">You have to insert something to search</string>
+
+    <string name="alert_no_restaurant_found">No restaurants found matching your filters</string>
 </resources>
