@@ -101,6 +101,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
+    private String prec_list_cat = new String();
     
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
@@ -289,7 +290,10 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         btCategories.setOnClickListener(v ->
             {
-                while (categories.size()==0);
+                if (categories.size() == 0) {
+                    Utility.showAlertToUser(this, R.string.no_category_alert);
+                    return;
+                }
 
                 String [] multiChoiceItems = new String[categories.size()];
                 boolean[] checkedItems = new boolean[categories.size()];
@@ -348,6 +352,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etPhone.setEnabled(enabled);
         etAddress.setEnabled(enabled);
         btCategories.setEnabled(enabled);
+        btTimeTable.setEnabled(enabled);
 
         if (enabled)
             fabPhoto.show();
@@ -419,13 +424,52 @@ public class AccountInfoActivity extends AppCompatActivity {
         EAHCONST.USER_TYPE userType = EAHCONST.USER_TYPE.RESTAURATEUR;
         
         String userEmail = currentUser.getEmail();
+        //string of categories for Restaurant sub-tree
+        String list_cat = new String();
+
         
         userId = currentUser.getUid();
-    
+
+        dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child(userId).exists())
+                {
+                    prec_list_cat = (String) dataSnapshot.child(userId).child(EAHCONST.CATEGORIES_SUB_TREE).getValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        Map<String,Object> updateMap = new HashMap<>();
+
+        String[] parts = prec_list_cat.split(";");
+        for (int k = 0; k < parts.length; ++k)
+        {
+            if (categoriesID.contains(parts[k]))
+            {
+                int index = categoriesID.indexOf(parts[k]);
+                Log.d("cancellare cat?", (String.valueOf(index)+ " "+ categoriesSelected.get(index)));
+                Log.d("cancellare cat?", categoriesID.get(index));
+
+                if ( ! categoriesSelected.get(index))
+                {
+                    Log.d("cancellare cat ", String.valueOf(index));
+                    Log.d("cancellare cat ", categoriesID.get(index));
+                    dbRef.child(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, categoriesID.get(index),userId)).removeValue();
+
+                }
+            }
+        }
+
+
         if (photoChanged)
             uploadAvatar(userId);
         
-        Map<String,Object> updateMap = new HashMap<>();
+
     
         // userEmail cannot be null because we permit only registration by email
         assert userEmail != null;
@@ -439,16 +483,23 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
 
+        boolean alreadyPresent;
         for(int i = 0; i < categoriesSelected.size(); ++i)
         {
-
+            alreadyPresent = false;
             if(categoriesSelected.get(i))
             {
-                //Log.d("clicked",categories.get(i));
-                //Log.d("clicked",categoriesID.get(i));
-                updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, categoriesID.get(i),userId),userId);
+                for (int j = 0; j < parts.length; ++j)
+                {
+                    if(parts[j].equals(categoriesID.get(i)))
+                        alreadyPresent = true;
+                }
+                if (!alreadyPresent)
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, categoriesID.get(i),userId),userId);
+                list_cat = list_cat + categoriesID.get(i)+";";
             }
         }
+        updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.CATEGORIES_SUB_TREE), list_cat);
 
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             
@@ -489,6 +540,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 String restaurantEmail = (String) dataSnapshot.child(EAHCONST.RESTAURANT_EMAIL).getValue();
                 String restaurantPhone = (String) dataSnapshot.child(EAHCONST.RESTAURANT_PHONE).getValue();
                 String restaurantDescription = (String) dataSnapshot.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
+                String categoriesRest = (String) dataSnapshot.child(EAHCONST.CATEGORIES_SUB_TREE).getValue();
                 
                 if (restaurantName != null) {
                     etName.setText(restaurantName);
@@ -508,6 +560,14 @@ public class AccountInfoActivity extends AppCompatActivity {
                 
                 if (restaurantDescription != null) {
                     etDescription.setText(restaurantDescription);
+                }
+
+                String[] parts = categoriesRest.split(";");
+                for(int i = 0; i < categoriesSelected.size() ; i++)
+                {
+                    for (int j = 0; j < parts.length; j++)
+                        if(parts[j].equals(categoriesID.get(i)))
+                            categoriesSelected.set(i, true);
                 }
                 
                 setActivityLoading(false);
