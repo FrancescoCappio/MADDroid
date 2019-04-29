@@ -3,6 +3,7 @@ package it.polito.maddroid.lab3.common;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -72,5 +73,23 @@ public class Utility {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, totIntents.toArray(new Parcelable[totIntents.size()]));
         
         context.startActivityForResult(chooserIntent, requestCode);
+    }
+    
+    public static String getCategoriesNamesMatchingIds(String categoriesIds, List<RestaurantCategory> categories) {
+        StringBuilder sb = new StringBuilder();
+        
+        for (String catId : categoriesIds.split(";"))
+            for (RestaurantCategory rc : categories)
+                if (rc.getId().equals(catId))
+                    sb.append(rc.getName()).append(", ");
+                
+        // delete last comma
+        sb.delete(sb.length()-2, sb.length());
+        return sb.toString();
+    }
+    
+    public static int getPixelsFromDP(Context context, int dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 }

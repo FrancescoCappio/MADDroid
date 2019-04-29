@@ -58,6 +58,7 @@ import androidx.core.content.FileProvider;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Restaurant;
+import it.polito.maddroid.lab3.common.RestaurantCategory;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -69,7 +70,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
     // general purpose attributes
     private int waitingCount = 0;
-    private List<String> categories;
+    private List<RestaurantCategory> allCategories;
     private Restaurant currentRestaurant;
     
     // views
@@ -107,6 +108,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
+        
+        collapsingToolbarLayout.setExpandedTitleMarginStart(Utility.getPixelsFromDP(getApplicationContext(), 16));
+        
         getReferencesToViews();
         
         setupClickListeners();
@@ -117,6 +122,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             // download list of categories this restaurant belongs to
             downloadCategoriesInfo();
             
+            allCategories = new ArrayList<>();
             //TODO: also download timetables info
     
             tvDescription.setText(currentRestaurant.getDescription());
@@ -224,35 +230,37 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 pbLoading.setVisibility(View.INVISIBLE);
         }
     }
-
+    
     private void downloadCategoriesInfo() {
-        
-        //TODO: fix this
-        
         Query queryRef = dbRef
                 .child(EAHCONST.CATEGORIES_SUB_TREE)
-                .orderByChild(currentRestaurant.getRestaurantID());
+                .orderByChild(EAHCONST.CATEGORIES_NAME);
         
-        setActivityLoading(true);
-
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                setActivityLoading(false);
                 Log.d(TAG, "onDataChange Called");
-                ArrayList<String> tmp = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
+                    
+                    String catId = ds.getKey();
                     String catName = (String) ds.child(EAHCONST.CATEGORIES_NAME).getValue();
-                    tmp.add(catName);
+                    
+                    RestaurantCategory rc = new RestaurantCategory(catId, catName);
+                    
+                    allCategories.add(rc);
                 }
-                categories = tmp;
+                setupCategoriesString();
             }
-
+            
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled called");
             }
         });
+    }
+    
+    public void setupCategoriesString() {
+        if (currentRestaurant != null && currentRestaurant.getCategoriesIds() != null)
+            tvCategories.setText(Utility.getCategoriesNamesMatchingIds(currentRestaurant.getCategoriesIds(), allCategories));
     }
 }

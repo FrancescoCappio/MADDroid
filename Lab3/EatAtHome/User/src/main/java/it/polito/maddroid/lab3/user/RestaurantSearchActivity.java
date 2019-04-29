@@ -157,8 +157,9 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     String address = (String) ds.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
                     String phone = (String) ds.child(EAHCONST.RESTAURANT_PHONE).getValue();
                     String email = (String) ds.child(EAHCONST.RESTAURANT_EMAIL).getValue();
+                    String categoriesIds = (String) ds.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
                     
-                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email);
+                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds);
                     
                     restaurants.add(r);
                 }
@@ -186,42 +187,10 @@ public class RestaurantSearchActivity extends AppCompatActivity {
             return;
         }
         
-        // to filter the restaurant by category we download the ids of all the restaurants in the chosen category
-        // and we remove from our restaurants lists the one not present in the list of the category
-        Query queryRef = dbRef
-                .child(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE)
-                .child(restaurantCategory.getId())
-                .orderByKey();
-        
-        restaurantsInCategory = new ArrayList<>();
-    
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                
-                if (!dataSnapshot.hasChildren()) {
-                    Log.d(TAG, "There are 0 restaurants in this category");
-                }
-                
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    restaurantsInCategory.add(ds.getKey());
-                }
-                
-                matchRestaurantsAndCategory();
-            }
-        
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "onCancelled called");
-            }
-        });
-    }
-    
-    private void matchRestaurantsAndCategory() {
         List<Restaurant> newRests = new ArrayList<>();
-        
+    
         for (Restaurant r : restaurants) {
-            if (restaurantsInCategory.contains(r.getRestaurantID()))
+            if (r.matchesCategoryId(restaurantCategory.getId()))
                 newRests.add(r);
         }
     
