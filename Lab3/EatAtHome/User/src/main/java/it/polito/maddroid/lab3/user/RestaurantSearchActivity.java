@@ -133,7 +133,6 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     
     private void downloadRestaurantsInfo(String query) {
         
-        //TODO: download by category
         if (query == null || query.isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_search_empty);
             return;
@@ -229,9 +228,5 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         if (newRests.isEmpty())
             Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
         adapter.submitList(newRests);
-    }
-    
-    private void getCategoriesForRestaurant() {
-    
     }
 }

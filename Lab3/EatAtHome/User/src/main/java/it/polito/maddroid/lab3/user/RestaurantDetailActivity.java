@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,6 +53,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
@@ -71,7 +73,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private Restaurant currentRestaurant;
     
     // views
-    private TextView tvName;
     private TextView tvDescription;
     private TextView tvPhoneNumber;
     private TextView tvEmail;
@@ -102,13 +103,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.restaurant_details);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+    
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         
         getReferencesToViews();
         
@@ -122,7 +119,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             
             //TODO: also download timetables info
     
-            tvName.setText(currentRestaurant.getName());
             tvDescription.setText(currentRestaurant.getDescription());
             tvAddress.setText(currentRestaurant.getAddress());
             tvPhoneNumber.setText(currentRestaurant.getPhone());
@@ -134,7 +130,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             GlideApp.with(getApplicationContext())
                     .load(riversRef)
                     .into(ivPhoto);
+    
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(currentRestaurant.getName());
+                actionBar.setHomeButtonEnabled(true);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
+        
+        
     }
     
     @Override
@@ -154,7 +159,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         
-        outState.putString(NAME_KEY, tvName.getText().toString());
+        outState.putString(NAME_KEY, currentRestaurant.getName());
         outState.putString(DESCRIPTION_KEY, tvDescription.getText().toString());
         outState.putString(PHONE_KEY, tvPhoneNumber.getText().toString());
         outState.putString(EMAIL_KEY, tvEmail.getText().toString());
@@ -168,8 +173,12 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        
-        tvName.setText(savedInstanceState.getString(NAME_KEY, ""));
+    
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(currentRestaurant.getName());
+        }
+
         tvDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
         tvAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
         tvPhoneNumber.setText(savedInstanceState.getString(PHONE_KEY, ""));
@@ -184,7 +193,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
     private void getReferencesToViews() {
         
-        tvName = findViewById(R.id.tv_name);
         tvAddress = findViewById(R.id.tv_address);
         tvDescription = findViewById(R.id.tv_description);
         tvEmail = findViewById(R.id.tv_mail);
