@@ -14,6 +14,7 @@
 
     <string name="action_confirm">Confirm</string>
     <string name="action_edit">Edit</string>
+    <string name="action_cancel">Cancel</string>
 
     <string name="app">App</string>
     <string name="settings">Settings</string>
@@ -42,6 +43,7 @@
     <string name="fields_empty_alert">Please fill all the fields</string>
     <string name="image_empty_alert">Please set an image</string>
     <string name="no_category_alert">Please set at least one Category</string>
+    <string name="no_category_list">Please wait a moment</string>
 
     <string name="title_activity_main">MainActivity</string>
 
