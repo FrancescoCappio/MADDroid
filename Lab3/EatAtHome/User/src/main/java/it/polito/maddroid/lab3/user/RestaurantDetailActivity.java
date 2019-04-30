@@ -93,8 +93,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
         
-        collapsingToolbarLayout.setExpandedTitleMarginStart(Utility.getPixelsFromDP(getApplicationContext(), 16));
-        
+//        collapsingToolbarLayout.setExpandedTitleMarginStart(Utility.getPixelsFromDP(getApplicationContext(), 16));
+        collapsingToolbarLayout.setTitleEnabled(false);
         getReferencesToViews();
         
         rvOrderDishes.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
