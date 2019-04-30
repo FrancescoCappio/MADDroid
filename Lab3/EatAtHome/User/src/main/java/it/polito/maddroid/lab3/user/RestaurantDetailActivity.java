@@ -1,31 +1,15 @@
 package it.polito.maddroid.lab3.user;
 
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,30 +20,20 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
-import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
-import it.polito.maddroid.lab3.common.SplashScreenActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 
@@ -72,6 +46,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private int waitingCount = 0;
     private List<RestaurantCategory> allCategories;
     private Restaurant currentRestaurant;
+    List<Dish> dishes;
+    private DishOrderListAdapter adapter;
     
     // views
     private TextView tvDescription;
@@ -81,9 +57,12 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private TextView tvTimetable;
     private TextView tvCategories;
     private ImageView ivPhoto;
+    private RecyclerView rvOrderDishes;
     
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
@@ -104,6 +83,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        
+        dishes = new ArrayList<>();
     
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,6 +96,12 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setExpandedTitleMarginStart(Utility.getPixelsFromDP(getApplicationContext(), 16));
         
         getReferencesToViews();
+        
+        rvOrderDishes.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        
+        adapter = new DishOrderListAdapter(new DishDiffUtilCallback());
+        
+        rvOrderDishes.setAdapter(adapter);
         
         setupClickListeners();
         
@@ -143,6 +132,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 actionBar.setHomeButtonEnabled(true);
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
+            
+            downloadDishesInfo();
         }
         
         
@@ -206,6 +197,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         tvTimetable = findViewById(R.id.tv_timetable);
         tvCategories = findViewById(R.id.tv_categories);
         ivPhoto = findViewById(R.id.iv_avatar);
+        rvOrderDishes = findViewById(R.id.rv_order_dishes);
         
     }
     
@@ -232,6 +224,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
     
     private void downloadCategoriesInfo() {
+        setActivityLoading(true);
         Query queryRef = dbRef
                 .child(EAHCONST.CATEGORIES_SUB_TREE)
                 .orderByChild(EAHCONST.CATEGORIES_NAME);
@@ -250,11 +243,13 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                     allCategories.add(rc);
                 }
                 setupCategoriesString();
+                setActivityLoading(false);
             }
             
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled called");
+                setActivityLoading(false);
             }
         });
     }
@@ -262,5 +257,46 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     public void setupCategoriesString() {
         if (currentRestaurant != null && currentRestaurant.getCategoriesIds() != null)
             tvCategories.setText(Utility.getCategoriesNamesMatchingIds(currentRestaurant.getCategoriesIds(), allCategories));
+    }
+    
+    private void downloadDishesInfo() {
+        setActivityLoading(true);
+        Query queryRef = dbRef
+                .child(EAHCONST.DISHES_SUB_TREE).child(currentRestaurant.getRestaurantID())
+                .orderByKey();
+        
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange Called");
+                dishes = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    
+                    String dishId = ds.getKey();
+                    String dishName = (String) ds.child(EAHCONST.DISH_NAME).getValue();
+                    
+                    
+                    Float f = ds.child(EAHCONST.DISH_PRICE).getValue(Float.class);
+                    float price = 0;
+                    if (f != null) {
+                        price = f;
+                    }
+                    String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
+                    
+                    Dish dish = new Dish(dishId,dishName,price,dishDescription);
+                    
+                    dishes.add(dish);
+                    
+                }
+                adapter.submitList(dishes);
+                setActivityLoading(false);
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+                setActivityLoading(false);
+            }
+        });
     }
 }

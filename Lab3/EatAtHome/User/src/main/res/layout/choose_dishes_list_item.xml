@@ -93,11 +93,11 @@
         android:textColor="@android:color/black"
         android:layout_marginTop="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/tv_Current_dish_cost"
+        android:layout_toStartOf="@+id/tv_current_dish_cost"
         android:layout_marginBottom="5dp"/>
 
     <TextView
-        android:id="@+id/tv_Current_dish_cost"
+        android:id="@+id/tv_current_dish_cost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="20"
