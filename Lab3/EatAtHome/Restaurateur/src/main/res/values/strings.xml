@@ -2,6 +2,7 @@
     <string name="app_second_name">Restaurateur</string>
 
     <string name="restaurant_avatar_content_description">Restaurant\'s avatar image</string>
+    <string name="dish_avatar_content_description">Dish\'s avatar image</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -9,7 +10,25 @@
     <string name="restaurant_description">Restaurant\'s description</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
 
+    <string name="dish_name">Dish\'s name</string>
+    <string name="dish_price">Dish\'s price</string>
+    <string name="dish_description">Dish\'s description</string>
+
+    <string name="fill_fields">Please fill all the fields</string>
+    <string name="insert_image">Please insert an image for your dish</string>
+    <string name="Deleted">The dish is successfully deleted</string>
+
     <string name="setup_timetable">Setup restaurant\'s timetable</string>
     <string name="setup_categories">Setup categories</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="Menu">Menu</string>
+
+    <string name="action_add">Add</string>
 
 </resources>

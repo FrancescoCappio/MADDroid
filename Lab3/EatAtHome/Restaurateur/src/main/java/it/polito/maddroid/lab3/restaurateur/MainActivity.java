@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -23,12 +27,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final static String TAG = "MainActivity";
+
+    public static final int DISH_DETAIL_CODE = 124;
+
+
+    private int currentSelectedPosition;
+    private MenuFragment menuFragment;
     
     
     private FirebaseAuth mAuth;
@@ -38,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LinearLayout llNavHeaderMain;
     NavigationView navigationView;
     TextView tvAccountEmail;
+
+    private MenuItem addItem;
+    private MenuItem confirmItem;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.restaurant";
     
@@ -73,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         tvAccountEmail.setText(currentUser.getEmail());
         //TODO: set avatar image as navigation view header's image
+
     }
     
     @Override
@@ -126,14 +146,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        addItem = menu.findItem(R.id.action_add);
+        addItem.setVisible(false);
+
         return true;
     }
-    
+
+    private void setAddItem(){
+        if (currentSelectedPosition == 1) {
+            addItem.setVisible(true);
+        } else {
+            addItem.setVisible(false);
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        
-        
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_add) {
+            if (currentSelectedPosition == 1) {
+                Intent i = new Intent(getApplicationContext(), DishDetailsActivity.class);
+                i.putExtra(DishDetailsActivity.PAGE_TYPE_KEY,DishDetailsActivity.MODE_NEW);
+                startActivityForResult(i, DISH_DETAIL_CODE);
+            }
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
     
@@ -144,9 +183,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         
         if (id == R.id.nav_orders) {
+            selectItem(0);
             // Handle the camera action
         }
         else if (id == R.id.nav_menu) {
+            selectItem(1);
         
         }
         else if (id == R.id.nav_settings) {
@@ -159,6 +200,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void selectItem(int position) {
+
+        Fragment fragment = null;
+
+        // before creating a new fragment we should check if the already displayed one is the same we want to open
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        Log.d(TAG, "Fragments count: " + fragments.size());
+
+        for (Fragment fr : fragments) {
+            if ((fr instanceof MenuFragment)) {
+                fragment = fr;
+                break;
+            }
+        }
+
+        currentSelectedPosition = position;
+        navigationView.setCheckedItem(position);
+
+        boolean changed = false;
+        switch (position) {
+            case 0:
+
+                break;
+
+            case 1:
+                if (!(fragment instanceof MenuFragment)) {
+                    menuFragment = new MenuFragment();
+                    fragment = menuFragment;
+                    changed = true;
+                }
+
+                getSupportActionBar().setTitle(R.string.Menu);
+
+                break;
+            case 2:
+
+                break;
+
+            default:
+                break;
+        }
+
+        setAddItem();
+
+        if (fragment != null && changed) {
+            fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
+        } else {
+            Log.d("MainActivity", "No need to change the fragment");
+        }
     }
     
     private void checkIfUserHasCompletedAccountInfo() {
@@ -185,5 +280,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-    
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+
+        if (data == null) {
+            Log.e(TAG, "Result data null");
+            return;
+        }
+
+        switch (requestCode) {
+            case MainActivity.DISH_DETAIL_CODE:
+                 menuFragment.downloadDishesInfo();
+        }
+    }
 }
