@@ -215,15 +215,17 @@ public class DishDetailsActivity extends AppCompatActivity {
                 setActivityLoading(true);
 
                 String name = etName.getText().toString();
-                String price = etPrice.getText().toString();
+                String sPrice = etPrice.getText().toString();
+                
                 String description = etDescription.getText().toString();
 
-                if (name.isEmpty() || price.isEmpty() || description.isEmpty()) {
+                if (name.isEmpty() || sPrice.isEmpty() || description.isEmpty()) {
                     Utility.showAlertToUser(DishDetailsActivity.this, R.string.fill_fields);
                     setActivityLoading(false);
                     return true;
                 }
-
+    
+                float price = Float.parseFloat(sPrice);
 
                 if(pageType.equals(MODE_NEW)){
 
@@ -244,7 +246,7 @@ public class DishDetailsActivity extends AppCompatActivity {
                     Map<String,Object> updateMap = new HashMap<>();
                     
                     updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_NAME), name);
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_PRICE),Float.parseFloat(price));
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_PRICE), price);
                     updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_DESCRIPTION), description);
                     
                     dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
