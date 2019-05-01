@@ -205,8 +205,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="15dp"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingEnd="@dimen/activity_margin"
+        android:paddingBottom="70dp"
 
         tools:listitem="@layout/choose_dishes_list_item"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

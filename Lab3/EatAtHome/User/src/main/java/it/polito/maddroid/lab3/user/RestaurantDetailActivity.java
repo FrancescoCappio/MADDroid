@@ -50,6 +50,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private Restaurant currentRestaurant;
     List<Dish> dishes;
     private DishOrderListAdapter adapter;
+    List<Dish> choosenDishes;
     
     // toolbars
     AppBarLayout appBarLayout;
@@ -64,6 +65,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private ImageView ivPhoto;
     private RecyclerView rvOrderDishes;
     private CardView cvTotalCost;
+    private TextView tvTotalCost;
     
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
@@ -110,7 +112,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
     
-            adapter = new DishOrderListAdapter(new DishDiffUtilCallback(), currentRestaurant);
+            adapter = new DishOrderListAdapter(new DishDiffUtilCallback(), currentRestaurant, this::choosenDishesUpdated);
+            
             rvOrderDishes.setAdapter(adapter);
             
             // download list of categories this restaurant belongs to
@@ -204,6 +207,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         ivPhoto = findViewById(R.id.iv_avatar);
         rvOrderDishes = findViewById(R.id.rv_order_dishes);
         cvTotalCost = findViewById(R.id.cv_total_cost);
+        tvTotalCost = findViewById(R.id.tv_total_cost);
     
         appBarLayout = findViewById(R.id.app_bar);
         
@@ -216,13 +220,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             float marginHeight = Utility.getPixelsFromDP(getApplicationContext(), 16);
             float destYPosition = totalHeight - marginHeight - cvTotalCost.getHeight();
         
-            Log.d(TAG, "Current offse: " + Math.abs(verticalOffset));
+            float currentOffset = Math.abs(verticalOffset);
+            
+            Log.d(TAG, "Current offse: " + currentOffset);
             Log.d(TAG, "Total scrolll: " + appBarLayout1.getTotalScrollRange());
         
             if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
                 // completely collapsed
-            
+                Log.d(TAG, "Completely collapsed");
                 cvTotalCost.setY(destYPosition);
+                Log.d(TAG, "Current position: " + cvTotalCost.getY());
             
             } else if (verticalOffset == 0) {
                 // completely expanded
@@ -231,6 +238,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                     initialYPos = cvTotalCost.getY();
                 } else {
                     cvTotalCost.setY(initialYPos);
+                    Log.d(TAG, "Current position: " + cvTotalCost.getY());
                 }
             
             } else {
@@ -244,6 +252,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 Log.d(TAG, "Current dest: " + currentDest);
             
                 cvTotalCost.setY(currentDest);
+                Log.d(TAG, "Current position: " + cvTotalCost.getY());
             }
         });
     }
@@ -341,5 +350,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 setActivityLoading(false);
             }
         });
+    }
+    
+    private void choosenDishesUpdated() {
+        choosenDishes = adapter.getChosenDishes();
+        
+        float totalCost = 0;
+        
+        for (Dish d : choosenDishes) {
+            totalCost += d.getQuantity()*d.getPrice();
+        }
+        
+        tvTotalCost.setText(String.valueOf(totalCost));
     }
 }

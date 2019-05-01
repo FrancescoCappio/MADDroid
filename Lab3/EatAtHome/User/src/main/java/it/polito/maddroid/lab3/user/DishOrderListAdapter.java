@@ -26,11 +26,13 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
     private static StorageReference storageReference;
 
     private Restaurant currentRestaurant;
+    private DataUpdatedListener listener;
     
-    protected DishOrderListAdapter(@NonNull DiffUtil.ItemCallback<Dish> diffCallback, Restaurant currentRestaurant) {
+    protected DishOrderListAdapter(@NonNull DiffUtil.ItemCallback<Dish> diffCallback, Restaurant currentRestaurant, DataUpdatedListener listener) {
         super(diffCallback);
         storageReference = FirebaseStorage.getInstance().getReference();
         this.currentRestaurant = currentRestaurant;
+        this.listener = listener;
     }
     
     @NonNull
@@ -46,7 +48,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
     
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.setupDish(getItem(position), currentRestaurant);
+        holder.setupDish(getItem(position), currentRestaurant,  listener);
     }
     
     public List<Dish> getChosenDishes() {
@@ -59,6 +61,10 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
         }
         
         return dishes;
+    }
+    
+    public interface DataUpdatedListener {
+        public void notifyDataUpdated();
     }
     
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -85,7 +91,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
             ibRemoveDish = itemView.findViewById(R.id.ib_remove_Dish);
         }
         
-        public void setupDish(Dish dish, Restaurant currentRestaurant) {
+        public void setupDish(Dish dish, Restaurant currentRestaurant, DataUpdatedListener listener) {
             
             tvDishName.setText(dish.getName());
             tvDishDescription.setText(dish.getDescription());
@@ -104,6 +110,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
                 dish.setQuantity(dish.getQuantity() + 1);
                 setTotalCost(dish);
                 tvDishQuantity.setText(dish.getQuantity() + "");
+                listener.notifyDataUpdated();
             });
             
             ibRemoveDish.setOnClickListener(v -> {
@@ -112,6 +119,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
                     dish.setQuantity(count - 1);
                     setTotalCost(dish);
                     tvDishQuantity.setText(dish.getQuantity());
+                    listener.notifyDataUpdated();
                 }
             });
             
