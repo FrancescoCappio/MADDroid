@@ -99,49 +99,13 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-        
         collapsingToolbarLayout.setTitleEnabled(false);
-        getReferencesToViews();
         
-        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            float totalHeight = getResources().getDisplayMetrics().heightPixels;
-            float marginHeight = Utility.getPixelsFromDP(getApplicationContext(), 16);
-            float destYPosition = totalHeight - marginHeight - cvTotalCost.getHeight();
-            
-            Log.d(TAG, "Current offse: " + Math.abs(verticalOffset));
-            Log.d(TAG, "Total scrolll: " + appBarLayout1.getTotalScrollRange());
-            
-            if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
-                // completely collapsed
-            
-                cvTotalCost.setY(destYPosition);
-                
-            } else if (verticalOffset == 0) {
-                // completely expanded
-                
-                if (initialYPos <= 0.1) {
-                    initialYPos = cvTotalCost.getY();
-                } else {
-                    cvTotalCost.setY(initialYPos);
-                }
-                
-            } else {
-                // Somewhere in between
-                // Do according to your requirement
-                float prop = Math.abs(verticalOffset);
-                float perc = prop/ appBarLayout1.getTotalScrollRange();
-    
-                float currentDest = initialYPos + perc*(destYPosition - initialYPos);
-                
-                Log.d(TAG, "Current dest: " + currentDest);
-                
-                cvTotalCost.setY(currentDest);
-            }
-        });
+        getReferencesToViews();
         
         rvOrderDishes.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         
-        setupClickListeners();
+        setupEventListeners();
         
         if (savedInstanceState == null) {
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
@@ -245,8 +209,43 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
     }
     
-    private void setupClickListeners() {
+    private void setupEventListeners() {
         //TODO: add click listeners to phone number (to direct call), email addres (to direct new email)
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            float totalHeight = getResources().getDisplayMetrics().heightPixels;
+            float marginHeight = Utility.getPixelsFromDP(getApplicationContext(), 16);
+            float destYPosition = totalHeight - marginHeight - cvTotalCost.getHeight();
+        
+            Log.d(TAG, "Current offse: " + Math.abs(verticalOffset));
+            Log.d(TAG, "Total scrolll: " + appBarLayout1.getTotalScrollRange());
+        
+            if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
+                // completely collapsed
+            
+                cvTotalCost.setY(destYPosition);
+            
+            } else if (verticalOffset == 0) {
+                // completely expanded
+            
+                if (initialYPos <= 0.1) {
+                    initialYPos = cvTotalCost.getY();
+                } else {
+                    cvTotalCost.setY(initialYPos);
+                }
+            
+            } else {
+                // Somewhere in between
+                // Do according to your requirement
+                float prop = Math.abs(verticalOffset);
+                float perc = prop/ appBarLayout1.getTotalScrollRange();
+            
+                float currentDest = initialYPos + perc*(destYPosition - initialYPos);
+            
+                Log.d(TAG, "Current dest: " + currentDest);
+            
+                cvTotalCost.setY(currentDest);
+            }
+        });
     }
     
     private synchronized void setActivityLoading(boolean loading) {
