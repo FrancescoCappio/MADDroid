@@ -8,8 +8,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -21,18 +19,18 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
+import it.polito.maddroid.lab3.common.Restaurant;
 
 
 public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter.MyViewHolder> {
     private static StorageReference storageReference;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
+
+    private Restaurant currentRestaurant;
     
-    protected DishOrderListAdapter(@NonNull DiffUtil.ItemCallback<Dish> diffCallback) {
+    protected DishOrderListAdapter(@NonNull DiffUtil.ItemCallback<Dish> diffCallback, Restaurant currentRestaurant) {
         super(diffCallback);
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         storageReference = FirebaseStorage.getInstance().getReference();
+        this.currentRestaurant = currentRestaurant;
     }
     
     @NonNull
@@ -48,7 +46,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
     
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.setupDish(getItem(position), currentUser);
+        holder.setupDish(getItem(position), currentRestaurant);
     }
     
     public List<Dish> getChosenDishes() {
@@ -87,7 +85,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
             ibRemoveDish = itemView.findViewById(R.id.ib_remove_Dish);
         }
         
-        public void setupDish(Dish dish, FirebaseUser currentUser) {
+        public void setupDish(Dish dish, Restaurant currentRestaurant) {
             
             tvDishName.setText(dish.getName());
             tvDishDescription.setText(dish.getDescription());
@@ -96,7 +94,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
             
             setTotalCost(dish);
             
-            StorageReference riversRef = storageReference.child("dish_" + currentUser.getUid() + "_" + dish.getDishID() +".jpg");
+            StorageReference riversRef = storageReference.child("dish_" + currentRestaurant.getRestaurantID() + "_" + dish.getDishID() +".jpg");
             
             GlideApp.with(ivDishPhoto.getContext())
                     .load(riversRef)

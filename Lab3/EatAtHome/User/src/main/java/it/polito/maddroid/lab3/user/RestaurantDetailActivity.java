@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
@@ -49,6 +51,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     List<Dish> dishes;
     private DishOrderListAdapter adapter;
     
+    // toolbars
+    AppBarLayout appBarLayout;
+    
     // views
     private TextView tvDescription;
     private TextView tvPhoneNumber;
@@ -58,6 +63,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private TextView tvCategories;
     private ImageView ivPhoto;
     private RecyclerView rvOrderDishes;
+    private CardView cvTotalCost;
     
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
@@ -75,6 +81,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     
+    private float initialYPos = -1.0f;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,20 +100,54 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
         
-//        collapsingToolbarLayout.setExpandedTitleMarginStart(Utility.getPixelsFromDP(getApplicationContext(), 16));
         collapsingToolbarLayout.setTitleEnabled(false);
         getReferencesToViews();
         
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            float totalHeight = getResources().getDisplayMetrics().heightPixels;
+            float marginHeight = Utility.getPixelsFromDP(getApplicationContext(), 16);
+            float destYPosition = totalHeight - marginHeight - cvTotalCost.getHeight();
+            
+            Log.d(TAG, "Current offse: " + Math.abs(verticalOffset));
+            Log.d(TAG, "Total scrolll: " + appBarLayout1.getTotalScrollRange());
+            
+            if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
+                // completely collapsed
+            
+                cvTotalCost.setY(destYPosition);
+                
+            } else if (verticalOffset == 0) {
+                // completely expanded
+                
+                if (initialYPos <= 0.1) {
+                    initialYPos = cvTotalCost.getY();
+                } else {
+                    cvTotalCost.setY(initialYPos);
+                }
+                
+            } else {
+                // Somewhere in between
+                // Do according to your requirement
+                float prop = Math.abs(verticalOffset);
+                float perc = prop/ appBarLayout1.getTotalScrollRange();
+    
+                float currentDest = initialYPos + perc*(destYPosition - initialYPos);
+                
+                Log.d(TAG, "Current dest: " + currentDest);
+                
+                cvTotalCost.setY(currentDest);
+            }
+        });
+        
         rvOrderDishes.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        
-        adapter = new DishOrderListAdapter(new DishDiffUtilCallback());
-        
-        rvOrderDishes.setAdapter(adapter);
         
         setupClickListeners();
         
         if (savedInstanceState == null) {
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
+    
+            adapter = new DishOrderListAdapter(new DishDiffUtilCallback(), currentRestaurant);
+            rvOrderDishes.setAdapter(adapter);
             
             // download list of categories this restaurant belongs to
             downloadCategoriesInfo();
@@ -198,6 +239,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         tvCategories = findViewById(R.id.tv_categories);
         ivPhoto = findViewById(R.id.iv_avatar);
         rvOrderDishes = findViewById(R.id.rv_order_dishes);
+        cvTotalCost = findViewById(R.id.cv_total_cost);
+    
+        appBarLayout = findViewById(R.id.app_bar);
         
     }
     
