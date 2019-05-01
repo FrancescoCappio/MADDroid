@@ -41,6 +41,8 @@ public class MenuFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private MenuListAdapter adapter;
+    
+    private Dish lastDishClicked;
 
     private int waitingCount = 0;
 
@@ -74,15 +76,12 @@ public class MenuFragment extends Fragment {
 
         downloadDishesInfo();
 
-        adapter = new MenuListAdapter(new DishDiffUtilCallBack(), new MenuListAdapter.ItemClickListener() {
-            @Override
-            public void clickListener(Dish dish) {
-                int dishID = Integer.parseInt(dish.getDishID());
-                Intent i = new Intent(getContext(), DishDetailsActivity.class);
-                i.putExtra(DishDetailsActivity.PAGE_TYPE_KEY, DishDetailsActivity.MODE_SHOW);
-                i.putExtra(DishDetailsActivity.DISH_ID_KEY, dishID );
-                startActivityForResult(i, MainActivity.DISH_DETAIL_CODE);
-            }
+        adapter = new MenuListAdapter(new DishDiffUtilCallBack(), dish -> {
+            Intent i = new Intent(getContext(), DishDetailsActivity.class);
+            i.putExtra(DishDetailsActivity.PAGE_TYPE_KEY, DishDetailsActivity.MODE_SHOW);
+            i.putExtra(DishDetailsActivity.DISH_KEY, dish);
+            lastDishClicked = dish;
+            startActivityForResult(i, MainActivity.DISH_DETAIL_CODE);
         });
 
         rvMenu.setAdapter(adapter);
@@ -107,7 +106,12 @@ public class MenuFragment extends Fragment {
                     float dishPrice = Float.parseFloat( ds.child(EAHCONST.DISH_PRICE).getValue().toString());
                     String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
 
-                    Dish dish = new Dish(dishId,dishName,dishPrice,dishDescription);
+                    Dish dish = new Dish(Integer.parseInt(dishId),dishName,dishPrice,dishDescription);
+                    
+                    if (lastDishClicked != null && lastDishClicked.getDishID() == dish.getDishID()) {
+                        dish.markUpdated();
+                        lastDishClicked = null;
+                    }
                     dishes.add(dish);
                 }
                 setupAdapter();

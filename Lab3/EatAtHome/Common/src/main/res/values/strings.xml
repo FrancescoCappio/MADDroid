@@ -14,6 +14,9 @@
 
     <string name="action_confirm">Confirm</string>
     <string name="action_edit">Edit</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_add">Add</string>
 
     <string name="app">App</string>
     <string name="settings">Settings</string>
@@ -35,12 +38,12 @@
     <string name="logout_confirm_request">Are you sure do you want to logout?</string>
     <string name="notify_save_ok">Info saved</string>
     <string name="notify_avatar_upload_ok">Avatar uploaded</string>
-    <string name="notify_Image_upload_ok">Image uploaded</string>
+    <string name="notify_image_upload_ok">Image uploaded</string>
     <string name="notify_save_ko">Error while saving</string>
-    <string name="notify_Image_upload_ko">Error uploading image</string>
+    <string name="notify_image_upload_ko">Error uploading image</string>
     <string name="notify_avatar_upload_ko">Error uploading avatar</string>
 
-    <string name="notify_Image_download_ko">Error downloading image</string>
+    <string name="notify_image_download_ko">Error downloading image</string>
     <string name="notify_avatar_download_ko">Error downloading avatar</string>
 
     <string name="fields_empty_alert">Please fill all the fields</string>

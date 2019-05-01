@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
@@ -80,15 +81,10 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
             StorageReference riversRef = storageReference.child("dish_"+ userUID+"_" + dish.getDishID() +".jpg");
 
             GlideApp.with(ivDishPhoto.getContext())
-                    .load(riversRef)
+                    .load(riversRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
                     .into(ivDishPhoto);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    itemClickListener.clickListener(dish);
-                }
-            });
+            itemView.setOnClickListener(v -> itemClickListener.clickListener(dish));
 
         }
 

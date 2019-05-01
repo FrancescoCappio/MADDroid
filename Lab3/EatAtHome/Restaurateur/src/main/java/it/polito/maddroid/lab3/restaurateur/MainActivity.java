@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     changed = true;
                 }
 
-                getSupportActionBar().setTitle(R.string.Menu);
+                getSupportActionBar().setTitle(R.string.menu);
 
                 break;
             case 2:
@@ -297,7 +297,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (requestCode) {
             case MainActivity.DISH_DETAIL_CODE:
-                 menuFragment.downloadDishesInfo();
+                if (menuFragment != null)
+                    menuFragment.downloadDishesInfo();
+                break;
         }
     }
 }

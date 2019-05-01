@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -28,8 +29,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,7 +67,7 @@ public class DishDetailsActivity extends AppCompatActivity {
     public final static String PAGE_TYPE_KEY = "PAGE_TYPE_KEY";
     public final static String MODE_NEW = "New";
     public final static String MODE_SHOW = "Show";
-    public final static String DISH_ID_KEY = "DISH_ID_KEY";
+    public final static String DISH_KEY = "DISH_KEY";
 
     //views
     private EditText etName;
@@ -78,10 +77,9 @@ public class DishDetailsActivity extends AppCompatActivity {
     private TextView tvDescriptionCount;
     private FloatingActionButton fabAddPhoto;
 
-
-
-    private int currentDishId = -1;
-    private int LastDishId = -1;
+    
+    private Dish currentDish;
+    private int lastDishId = -1;
     private String userUID;
 
 
@@ -100,7 +98,6 @@ public class DishDetailsActivity extends AppCompatActivity {
     public static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     public static final String PRICE_KEY = "PRICE_KEY";
     public static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
-    public static final String CURRENT_DISH_ID = "CURRENT_DISH_ID";
     public static final String SAVE_IMAGE_KEY = "SAVE_IMAGE_KEY";
     public static final String SAVE_CHANGE_IMAGE_KEY = "SAVE_CHANGE_IMAGE_KEY";
 
@@ -199,23 +196,15 @@ public class DishDetailsActivity extends AppCompatActivity {
 
                 setActivityLoading(true);
                 dbRef.child(EAHCONST.DISHES_SUB_TREE).child(currentUser.getUid()).
-                        child(String.valueOf(currentDishId)).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Utility.showAlertToUser(DishDetailsActivity.this, R.string.Deleted);
-                        deleteDishImage(userUID,currentDishId);
-                        setActivityLoading(false);
-                    }
-
-                }
-                ).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error od delete Dish");
-                        setActivityLoading(false);
-
-                    }
-                });
+                        child(String.valueOf(currentDish.getDishID())).removeValue().addOnSuccessListener(aVoid -> {
+                            Utility.showAlertToUser(DishDetailsActivity.this, R.string.Deleted);
+                            deleteDishImage(userUID,currentDish.getDishID());
+                            setActivityLoading(false);
+                        }).addOnFailureListener(e -> {
+                            Log.d(TAG, "Error od delete Dish");
+                            setActivityLoading(false);
+    
+                        });
 
                 setResult(RESULT_OK, data);
                 finish();
@@ -227,7 +216,7 @@ public class DishDetailsActivity extends AppCompatActivity {
 
                 String name = etName.getText().toString();
                 String price = etPrice.getText().toString();
-                String description = etDescription.getText().toString();                ;
+                String description = etDescription.getText().toString();
 
                 if (name.isEmpty() || price.isEmpty() || description.isEmpty()) {
                     Utility.showAlertToUser(DishDetailsActivity.this, R.string.fill_fields);
@@ -238,28 +227,26 @@ public class DishDetailsActivity extends AppCompatActivity {
 
                 if(pageType.equals(MODE_NEW)){
 
-                    getLastDishID();
-
                     if (!photoPresent) {
                         Utility.showAlertToUser(DishDetailsActivity.this, R.string.insert_image);
                         setActivityLoading(false);
                         return true;
                     }
+                    
+                    if (lastDishId == -1) {
+                        Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_not_ready);
+                        setActivityLoading(false);
+                        return true;
+                    }
 
-                    if (photoPresent)
-                        uploadDishImage(userUID,LastDishId);
+                    uploadDishImage(userUID, lastDishId);
 
                     Map<String,Object> updateMap = new HashMap<>();
-
-                    // userEmail cannot be null because we permit only registration by email
-                    assert LastDishId != -1;
-                    assert userUID != null;
-
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(LastDishId), EAHCONST.DISH_NAME), name);
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(LastDishId), EAHCONST.DISH_PRICE),Float.parseFloat(price));
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(LastDishId), EAHCONST.DISH_DESCRIPTION), description);
-
-
+                    
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_NAME), name);
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_PRICE),Float.parseFloat(price));
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(lastDishId), EAHCONST.DISH_DESCRIPTION), description);
+                    
                     dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
 
                         Log.d(TAG, "Success registering user info");
@@ -278,16 +265,10 @@ public class DishDetailsActivity extends AppCompatActivity {
 
                     Map<String,Object> updateMap = new HashMap<>();
 
-                    // userEmail cannot be null because we permit only registration by email
-                    assert currentDishId != -1;
-                    assert userUID != null;
-
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDishId), EAHCONST.DISH_NAME), name);
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDishId), EAHCONST.DISH_PRICE), price);
-                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDishId), EAHCONST.DISH_DESCRIPTION), description);
-
-
-
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDish.getDishID()), EAHCONST.DISH_NAME), name);
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDish.getDishID()), EAHCONST.DISH_PRICE), price);
+                    updateMap.put(EAHCONST.generatePath(EAHCONST.DISHES_SUB_TREE, userUID, String.valueOf(currentDish.getDishID()), EAHCONST.DISH_DESCRIPTION), description);
+                    
                     dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
 
                         Log.d(TAG, "Success updating user info");
@@ -301,7 +282,7 @@ public class DishDetailsActivity extends AppCompatActivity {
                     });
 
                     if (photoChanged)
-                        uploadDishImage(userUID,currentDishId);
+                        uploadDishImage(userUID,currentDish.getDishID());
 
                 }
 
@@ -347,13 +328,12 @@ public class DishDetailsActivity extends AppCompatActivity {
         userUID = currentUser.getUid();
 
         if (pageType.equals(MODE_NEW)) {
+            getLastDishID();
             editMode = true;
         } else {
-            currentDishId = launchIntent.getIntExtra(DISH_ID_KEY, -1);
-            setActivityLoading(true);
-            retrieveDishData();
-            downloadDishImage(userUID, currentDishId);
-            setActivityLoading(false);
+            currentDish = (Dish) launchIntent.getSerializableExtra(DISH_KEY);
+            writeDishData();
+            downloadDishImage(userUID, currentDish.getDishID());
         }
         setEditEnabled(editMode);
     }
@@ -372,7 +352,9 @@ public class DishDetailsActivity extends AppCompatActivity {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                     String dishId = ds.getKey();
-                    LastDishId = Integer.parseInt(dishId) +1;
+                    
+                    if (dishId != null)
+                        lastDishId = Integer.parseInt(dishId) + 1;
                 }
             }
             @Override
@@ -382,53 +364,30 @@ public class DishDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void retrieveDishData() {
-
-        // we want to read but we are not interested in updates
-        dbRef.child(EAHCONST.DISHES_SUB_TREE).child(userUID).child(String.valueOf(currentDishId))
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                String dishName = (String) dataSnapshot.child(EAHCONST.DISH_NAME).getValue();
-                float dishPrice = Float.parseFloat(dataSnapshot.child(EAHCONST.DISH_PRICE).getValue().toString());
-                String dishDescription = (String) dataSnapshot.child(EAHCONST.DISH_DESCRIPTION).getValue();
-
-                if (dishName != null) {
-                    etName.setText(dishName);
-                }
-
-                if (dishPrice != 0) {
-                    etPrice.setText(String.valueOf(dishPrice));
-                }
-
-                if (dishDescription != null) {
-                    etDescription.setText(dishDescription);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void writeDishData() {
+        etName.setText(currentDish.getName());
+        etPrice.setText(String.valueOf(currentDish.getPrice()));
+        etDescription.setText(currentDish.getDescription());
     }
-
+    
     private void downloadDishImage(String UID, int DISH_ID){
-
+        
         File localFile = getImageTmpFile();
-
+        setActivityLoading(true);
+        
         StorageReference riversRef = mStorageRef.child("dish_" + UID +"_"+DISH_ID +".jpg");
-
+        
         riversRef.getFile(localFile)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Log.d(TAG, "Image downloaded successfully");
-                    updateImage();
-                    photoPresent = true;
-                }).addOnFailureListener(exception -> {
-            Log.e(TAG, "Error while downloading Image image: " + exception.getMessage());
-            Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_Image_download_ko);
-        });
+            .addOnSuccessListener(taskSnapshot -> {
+                Log.d(TAG, "Image downloaded successfully");
+                updateImage();
+                photoPresent = true;
+                setActivityLoading(false);
+            }).addOnFailureListener(exception -> {
+                Log.e(TAG, "Error while downloading Image image: " + exception.getMessage());
+                Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_image_download_ko);
+                setActivityLoading(false);
+            });
     }
 
     private void uploadDishImage(String UID, int DISH_ID) {
@@ -439,12 +398,12 @@ public class DishDetailsActivity extends AppCompatActivity {
         riversRef.putFile(file)
                 .addOnSuccessListener(taskSnapshot -> {
                     Log.d(TAG, "Image uploaded successfully");
-                    Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_Image_upload_ok);
+                    Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_image_upload_ok);
 
                 })
                 .addOnFailureListener(exception -> {
                     Log.e(TAG, "Could not upload Image: " + exception.getMessage());
-                    Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_Image_upload_ko);
+                    Utility.showAlertToUser(DishDetailsActivity.this, R.string.notify_image_upload_ko);
                 });
     }
 
@@ -577,17 +536,9 @@ public class DishDetailsActivity extends AppCompatActivity {
     private void deleteDishImage(String userUID, int currentDishId) {
 
         StorageReference riversRef = mStorageRef.child("dish_" + userUID +"_"+ currentDishId +".jpg");
-        riversRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Dish image is delted from FIREBASE");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "there is an error on delete image from FIREBASE");
-            }
-        });
+        riversRef.delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Dish image is deleted from FIREBASE"))
+                .addOnFailureListener(e -> Log.e(TAG, "there is an error on delete image from FIREBASE"));
     }
 
     private synchronized void setActivityLoading(boolean loading) {
@@ -611,7 +562,6 @@ public class DishDetailsActivity extends AppCompatActivity {
         String name = etName.getText().toString();
         String description = etDescription.getText().toString();
         String price = etPrice.getText().toString();
-        int currentID = currentDishId;
 
         if (!name.isEmpty()) {
             outState.putString(NAME_KEY, name);
@@ -627,8 +577,8 @@ public class DishDetailsActivity extends AppCompatActivity {
 
         //save edit mode status
         outState.putBoolean(EDIT_MODE_KEY, editMode);
-        //save CURRENT ID
-        outState.putInt(CURRENT_DISH_ID,currentID);
+        //save CURRENT dish
+        outState.putSerializable(DISH_KEY, currentDish);
         // if to save image or not
         outState.putBoolean(SAVE_IMAGE_KEY,photoPresent);
         // if image change or not
@@ -657,7 +607,7 @@ public class DishDetailsActivity extends AppCompatActivity {
 
         //restore editMode
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
-        currentDishId = savedInstanceState.getInt(CURRENT_DISH_ID);
+        currentDish = (Dish) savedInstanceState.getSerializable(DISH_KEY);
 
         //restore info on image save
         photoPresent = savedInstanceState.getBoolean(SAVE_IMAGE_KEY);

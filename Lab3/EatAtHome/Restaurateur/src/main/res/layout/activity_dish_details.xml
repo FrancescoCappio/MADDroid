@@ -43,7 +43,7 @@ tools:context=".DishDetailsActivity">
                 android:id="@+id/iv_dish_Image"
                 android:layout_width="@dimen/detail_image_size_phone"
                 android:layout_height="@dimen/detail_image_size_phone"
-                android:src="@drawable/placeholder_avatar"
+                android:src="@drawable/ic_restaurant_menu_black_24dp"
                 android:contentDescription="@string/dish_avatar_content_description" />
 
         </androidx.cardview.widget.CardView>

@@ -16,19 +16,10 @@
 
     <string name="fill_fields">Please fill all the fields</string>
     <string name="insert_image">Please insert an image for your dish</string>
+    <string name="alert_not_ready">Please wait, not ready to save</string>
     <string name="Deleted">The dish is successfully deleted</string>
 
     <string name="setup_timetable">Setup restaurant\'s timetable</string>
     <string name="setup_categories">Setup categories</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
-    <string name="delete">Delete</string>
-    <string name="Menu">Menu</string>
-
-    <string name="action_add">Add</string>
 
 </resources>
