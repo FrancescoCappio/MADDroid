@@ -82,9 +82,9 @@ public class AccountInfoActivity extends AppCompatActivity {
     private String timeTableRest;
     boolean photoChanged = false;
     boolean photoPresent = false;
-    private List<String> categories;
-    private ArrayList<Boolean> categoriesSelected = new ArrayList<>();
-    private ArrayList<String> categoriesID = new ArrayList<>();
+    private List<RestaurantCategory> categories;
+    private List<String> previousSelectedCategoriesId;
+    private List<String> currentSelectedCategoriesId;
     
     // menu items
     private MenuItem menuEdit;
@@ -131,7 +131,12 @@ public class AccountInfoActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        
         downloadCategoriesInfo();
+        
+        currentSelectedCategoriesId = new ArrayList<>();
+        previousSelectedCategoriesId = new ArrayList<>();
+        
         if (currentUser == null) {
             // this should not be possible. The user should be logged in to be here
             Utility.showAlertToUser(this, R.string.login_alert);
@@ -296,37 +301,36 @@ public class AccountInfoActivity extends AppCompatActivity {
         });
 
         btCategories.setOnClickListener(v ->
-            {
-                while (categories.size()==0);
-
-                String [] multiChoiceItems = new String[categories.size()];
-                boolean[] checkedItems = new boolean[categories.size()];
-                for (int i = 0; i < categories.size();i++)
                 {
-                    multiChoiceItems[i] = categories.get(i);
-                    checkedItems[i] = categoriesSelected.get(i);
-                }
-                Map<String,Object> updateMap = new HashMap<>();
-                new AlertDialog.Builder(this)
-                        .setTitle("Select your restaurant categories")
-                        .setMultiChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int index, boolean isChecked) {
-                                //Log.d("MainActivity", "clicked item index is " + categoriesID.get(index));
+                    if (categories.size() == 0) {
+                        Utility.showAlertToUser(this, R.string.no_category_alert);
+                        return;
+                    }
+                    
+                    String [] multiChoiceItems = new String[categories.size()];
+                    boolean[] checkedItems = new boolean[categories.size()];
+                    for (int i = 0; i < categories.size();i++)
+                    {
+                        multiChoiceItems[i] = categories.get(i).getName();
+                        checkedItems[i] = currentSelectedCategoriesId.contains(categories.get(i).getId());
+                    }
+                    
+                    new AlertDialog.Builder(this)
+                            .setTitle("Select your restaurant categories")
+                            .setMultiChoiceItems(multiChoiceItems, checkedItems, (dialog, index, isChecked) -> {
                                 if(isChecked){
-                                    categoriesSelected.set(index, true);
-                                    //Log.d("MainActivity", categoriesSelected.toString());
+                                    if (!currentSelectedCategoriesId.contains(categories.get(index).getId()))
+                                        currentSelectedCategoriesId.add(categories.get(index).getId());
                                 }
                                 else{
-                                    categoriesSelected.set(index,false);
-                                    //Log.d("MainActivity", categoriesSelected.toString());
+                                    if (currentSelectedCategoriesId.contains(categories.get(index).getId()))
+                                        currentSelectedCategoriesId.remove(categories.get(index).getId());
                                 }
-                            }
-                        })
-                        .setPositiveButton("Confirm", null)
-                        .setNegativeButton("Back", null)
-                        .show();
-            }
+                            })
+                            .setPositiveButton(R.string.action_confirm, null)
+                            .setNegativeButton(R.string.action_cancel, null)
+                            .show();
+                }
         );
 
     btTimeTable.setOnClickListener(v->
@@ -804,7 +808,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etAddress.setEnabled(enabled);
         btCategories.setEnabled(enabled);
         btTimeTable.setEnabled(enabled);
-
+        
         if (enabled)
             fabPhoto.show();
         else
@@ -843,26 +847,27 @@ public class AccountInfoActivity extends AppCompatActivity {
     private boolean manageUserConfirm() {
         
         // first we get info from edittexts
-        boolean categorySelected = false;
-        for(int i = 0; i < categoriesSelected.size() ; ++i)
-            if(categoriesSelected.get(i))
-                categorySelected= true;
         String restaurantName = etName.getText().toString();
         String restaurantPhone = etPhone.getText().toString();
         String restaurantAddress = etAddress.getText().toString();
         String restaurantEmail = etMail.getText().toString();
         String restaurantDescription = etDescription.getText().toString();
-
+        
+        
+        // now we check if at leat one category has been selected
+        boolean categorySelected = !currentSelectedCategoriesId.isEmpty();
+        
         if (restaurantPhone.isEmpty() || restaurantName.isEmpty() || restaurantAddress.isEmpty() || restaurantDescription.isEmpty() || restaurantEmail.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
         }
         
+        // we also check if the photo has been set
         if (mandatoryAccountInfo && !photoChanged) {
             Utility.showAlertToUser(this, R.string.image_empty_alert);
             return false;
         }
-
+        
         if (!categorySelected) {
             Utility.showAlertToUser(this, R.string.no_category_alert);
             return false;
@@ -872,7 +877,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.no_timetable_alert);
             return false;
         }
-
+        
         setActivityLoading(true);
         
         // now add users info in users tree
@@ -882,11 +887,23 @@ public class AccountInfoActivity extends AppCompatActivity {
         
         userId = currentUser.getUid();
     
+        Map<String,Object> updateMap = new HashMap<>();
+        
+        // check categories to be removed
+        for (String id : previousSelectedCategoriesId) {
+            if (!currentSelectedCategoriesId.contains(id))
+                updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, id, userId), null);
+        }
+        
+        // check categories to be added
+        for (String id : currentSelectedCategoriesId) {
+            if (!previousSelectedCategoriesId.contains(id))
+                updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, id, userId), userId);
+        }
+        
         if (photoChanged)
             uploadAvatar(userId);
         
-        Map<String,Object> updateMap = new HashMap<>();
-    
         // userEmail cannot be null because we permit only registration by email
         assert userEmail != null;
         
@@ -898,23 +915,27 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
+    
         //TODO CONTROLLARE QUESTO INSERIMENTO
         //updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
-        for(int i = 0; i < categoriesSelected.size(); ++i)
-        {
-
-            if(categoriesSelected.get(i))
-            {
-                //Log.d("clicked",categories.get(i));
-                //Log.d("clicked",categoriesID.get(i));
-                updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, categoriesID.get(i),userId),userId);
-            }
-        }
+    
+        //produce new categories string
+        StringBuilder sb = new StringBuilder();
+        for (String id : currentSelectedCategoriesId)
+            sb.append(id).append(";");
+    
+        updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_CATEGORIES), sb.toString());
+        
 
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             
             Log.d(TAG, "Success registering user info");
             setActivityLoading(false);
+            
+            //now align the 2 categories lists
+            previousSelectedCategoriesId.clear();
+            previousSelectedCategoriesId.addAll(currentSelectedCategoriesId);
+            
             Utility.showAlertToUser(this,R.string.notify_save_ok);
             
         }).addOnFailureListener(e -> {
@@ -951,6 +972,8 @@ public class AccountInfoActivity extends AppCompatActivity {
                 String restaurantPhone = (String) dataSnapshot.child(EAHCONST.RESTAURANT_PHONE).getValue();
                 String restaurantDescription = (String) dataSnapshot.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
                 
+                String categoriesRest = (String) dataSnapshot.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
+                
                 if (restaurantName != null) {
                     etName.setText(restaurantName);
                 }
@@ -969,6 +992,13 @@ public class AccountInfoActivity extends AppCompatActivity {
                 
                 if (restaurantDescription != null) {
                     etDescription.setText(restaurantDescription);
+                }
+                
+                if (categoriesRest != null) {
+                    for (String id : categoriesRest.split(";")) {
+                        currentSelectedCategoriesId.add(id);
+                        previousSelectedCategoriesId.add(id);
+                    }
                 }
                 
                 setActivityLoading(false);
@@ -1126,16 +1156,16 @@ public class AccountInfoActivity extends AppCompatActivity {
         setActivityLoading(true);
         
         riversRef.putFile(file)
-            .addOnSuccessListener(taskSnapshot -> {
-                Log.d(TAG, "Avatar uploaded successfully");
-                Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_upload_ok);
-                setActivityLoading(false);
-            })
-            .addOnFailureListener(exception -> {
-                Log.e(TAG, "Could not upload avatar: " + exception.getMessage());
-                Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_upload_ko);
-                setActivityLoading(false);
-            });
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Avatar uploaded successfully");
+                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_upload_ok);
+                    setActivityLoading(false);
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e(TAG, "Could not upload avatar: " + exception.getMessage());
+                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_upload_ko);
+                    setActivityLoading(false);
+                });
     }
     
     private void downloadAvatar(String UID) {
@@ -1144,18 +1174,18 @@ public class AccountInfoActivity extends AppCompatActivity {
         StorageReference riversRef = mStorageRef.child("avatar_" + UID +".jpg");
         
         setActivityLoading(true);
-        
+    
         riversRef.getFile(localFile)
-            .addOnSuccessListener(taskSnapshot -> {
-                Log.d(TAG, "Avatar downloaded successfully");
-                updateAvatarImage();
-                setActivityLoading(false);
-                photoPresent = true;
-            }).addOnFailureListener(exception -> {
-                Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
-                Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_download_ko);
-                setActivityLoading(false);
-            });
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Avatar downloaded successfully");
+                    updateAvatarImage();
+                    setActivityLoading(false);
+                    photoPresent = true;
+                }).addOnFailureListener(exception -> {
+            Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
+            Utility.showAlertToUser(AccountInfoActivity.this, R.string.notify_avatar_download_ko);
+            setActivityLoading(false);
+        });
     }
     
     private void updateDescriptionCount() {
@@ -1167,27 +1197,30 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
     private void downloadCategoriesInfo() {
+        
         Query queryRef = dbRef
                 .child(EAHCONST.CATEGORIES_SUB_TREE)
                 .orderByChild(EAHCONST.CATEGORIES_NAME);
-
+        
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
-                ArrayList<String> tmp = new ArrayList<String>();
+                
+                List<RestaurantCategory> tmpList = new ArrayList<>();
+                
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
+                    
                     String catId = ds.getKey();
                     String catName = (String) ds.child(EAHCONST.CATEGORIES_NAME).getValue();
-                    categoriesID.add(catId);
-                    tmp.add(catName);
-                    //TODO read the correct categories for the restaurant
-                    categoriesSelected.add(false);
+                    
+                    tmpList.add(new RestaurantCategory(catId, catName));
                 }
-                categories = tmp;
+                
+                categories = tmpList;
             }
-
+            
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled called");
