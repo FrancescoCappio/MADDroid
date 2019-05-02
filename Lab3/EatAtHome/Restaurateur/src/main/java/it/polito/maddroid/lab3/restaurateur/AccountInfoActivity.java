@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,20 +15,26 @@ import androidx.core.content.FileProvider;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -72,6 +79,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private boolean mandatoryAccountInfo = true;
     private int waitingCount = 0;
     private String userId;
+    private String timeTableRest;
     boolean photoChanged = false;
     boolean photoPresent = false;
     private List<String> categories;
@@ -320,9 +328,456 @@ public class AccountInfoActivity extends AppCompatActivity {
                         .show();
             }
         );
+
+    btTimeTable.setOnClickListener(v->
+            {
+                LayoutInflater inflater = getLayoutInflater();
+                View alertLayout = inflater.inflate(R.layout.timetable, null);
+                TextView days[] = new  TextView[7];
+                TextView openFirst[] = new  TextView[7];
+                TextView openSecond[] = new  TextView[7];
+                TextView closeFirst[] = new  TextView[7];
+                TextView closeSecond[] = new  TextView[7];
+                Switch swDays[] = new Switch[7];
+                Switch swDaysCont[] = new Switch[7];
+
+                days[0] = alertLayout.findViewById(R.id.tv_day_0);
+                days[1] = alertLayout.findViewById(R.id.tv_day_1);
+                days[2] = alertLayout.findViewById(R.id.tv_day_2);
+                days[3] = alertLayout.findViewById(R.id.tv_day_3);
+                days[4] = alertLayout.findViewById(R.id.tv_day_4);
+                days[5] = alertLayout.findViewById(R.id.tv_day_5);
+                days[6] = alertLayout.findViewById(R.id.tv_day_6);
+
+                swDays[0] = alertLayout.findViewById(R.id.sw_day_0);
+                swDays[1] = alertLayout.findViewById(R.id.sw_day_1);
+                swDays[2] = alertLayout.findViewById(R.id.sw_day_2);
+                swDays[3] = alertLayout.findViewById(R.id.sw_day_3);
+                swDays[4] = alertLayout.findViewById(R.id.sw_day_4);
+                swDays[5] = alertLayout.findViewById(R.id.sw_day_5);
+                swDays[6] = alertLayout.findViewById(R.id.sw_day_6);
+
+                swDaysCont[0] = alertLayout.findViewById(R.id.sw_continued_day_0);
+                swDaysCont[1] = alertLayout.findViewById(R.id.sw_continued_day_1);
+                swDaysCont[2] = alertLayout.findViewById(R.id.sw_continued_day_2);
+                swDaysCont[3] = alertLayout.findViewById(R.id.sw_continued_day_3);
+                swDaysCont[4] = alertLayout.findViewById(R.id.sw_continued_day_4);
+                swDaysCont[5] = alertLayout.findViewById(R.id.sw_continued_day_5);
+                swDaysCont[6] = alertLayout.findViewById(R.id.sw_continued_day_6);
+
+                openFirst[0] = alertLayout.findViewById(R.id.tv_openL_time0);
+                closeFirst[0] = alertLayout.findViewById(R.id.tv_closeL_time0);
+                openSecond[0] = alertLayout.findViewById(R.id.tv_openD_time0);
+                closeSecond[0] = alertLayout.findViewById(R.id.tv_closeD_time0);
+                openFirst[1] = alertLayout.findViewById(R.id.tv_openL_time1);
+                closeFirst[1] = alertLayout.findViewById(R.id.tv_closeL_time1);
+                openSecond[1] = alertLayout.findViewById(R.id.tv_openD_time1);
+                closeSecond[1] = alertLayout.findViewById(R.id.tv_closeD_time1);
+                openFirst[2] = alertLayout.findViewById(R.id.tv_openL_time2);
+                closeFirst[2] = alertLayout.findViewById(R.id.tv_closeL_time2);
+                openSecond[2] = alertLayout.findViewById(R.id.tv_openD_time2);
+                closeSecond[2] = alertLayout.findViewById(R.id.tv_closeD_time2);
+                openFirst[3] = alertLayout.findViewById(R.id.tv_openL_time3);
+                closeFirst[3] = alertLayout.findViewById(R.id.tv_closeL_time3);
+                openSecond[3] = alertLayout.findViewById(R.id.tv_openD_time3);
+                closeSecond[3] = alertLayout.findViewById(R.id.tv_closeD_time3);
+                openFirst[4] = alertLayout.findViewById(R.id.tv_openL_time4);
+                closeFirst[4] = alertLayout.findViewById(R.id.tv_closeL_time4);
+                openSecond[4] = alertLayout.findViewById(R.id.tv_openD_time4);
+                closeSecond[4] = alertLayout.findViewById(R.id.tv_closeD_time4);
+                openFirst[5] = alertLayout.findViewById(R.id.tv_openL_time5);
+                closeFirst[5] = alertLayout.findViewById(R.id.tv_closeL_time5);
+                openSecond[5] = alertLayout.findViewById(R.id.tv_openD_time5);
+                closeSecond[5] = alertLayout.findViewById(R.id.tv_closeD_time5);
+                openFirst[6] = alertLayout.findViewById(R.id.tv_openL_time6);
+                closeFirst[6] = alertLayout.findViewById(R.id.tv_closeL_time6);
+                openSecond[6] = alertLayout.findViewById(R.id.tv_openD_time6);
+                closeSecond[6] = alertLayout.findViewById(R.id.tv_closeD_time6);
+
+                swDays[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[0].setEnabled(true);
+                            openSecond[0].setEnabled(true);
+                            closeFirst[0].setEnabled(true);
+                            closeSecond[0].setEnabled(true);
+                            swDaysCont[0].setEnabled(true);
+
+                        }
+                        else {
+
+                            openFirst[0].setEnabled(false);
+                            openSecond[0].setEnabled(false);
+                            closeFirst[0].setEnabled(false);
+                            closeSecond[0].setEnabled(false);
+                            swDaysCont[0].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[1].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[1].setEnabled(true);
+                            openSecond[1].setEnabled(true);
+                            closeFirst[1].setEnabled(true);
+                            closeSecond[1].setEnabled(true);
+                            swDaysCont[1].setEnabled(true);
+
+
+                        }
+                        else {
+
+                            openFirst[1].setEnabled(false);
+                            openSecond[1].setEnabled(false);
+                            closeFirst[1].setEnabled(false);
+                            closeSecond[1].setEnabled(false);
+                            swDaysCont[1].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[2].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[2].setEnabled(true);
+                            openSecond[2].setEnabled(true);
+                            closeFirst[2].setEnabled(true);
+                            closeSecond[2].setEnabled(true);
+                            swDaysCont[2].setEnabled(true);
+                        }
+                        else {
+                            //TODO resettare il tempo? o lasciarlo cosi?
+                            openFirst[2].setEnabled(false);
+                            openSecond[2].setEnabled(false);
+                            closeFirst[2].setEnabled(false);
+                            closeSecond[2].setEnabled(false);
+                            swDaysCont[2].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[3].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[3].setEnabled(true);
+                            openSecond[3].setEnabled(true);
+                            closeFirst[3].setEnabled(true);
+                            closeSecond[3].setEnabled(true);
+                            swDaysCont[3].setEnabled(true);
+
+                        }
+                        else {
+
+                            openFirst[3].setEnabled(false);
+                            openSecond[3].setEnabled(false);
+                            closeFirst[3].setEnabled(false);
+                            closeSecond[3].setEnabled(false);
+                            swDaysCont[3].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[4].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[4].setEnabled(true);
+                            openSecond[4].setEnabled(true);
+                            closeFirst[4].setEnabled(true);
+                            closeSecond[4].setEnabled(true);
+                            swDaysCont[4].setEnabled(true);
+
+                        }
+                        else {
+
+                            openFirst[4].setEnabled(false);
+                            openSecond[4].setEnabled(false);
+                            closeFirst[4].setEnabled(false);
+                            closeSecond[4].setEnabled(false);
+                            swDaysCont[4].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[5].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[5].setEnabled(true);
+                            openSecond[5].setEnabled(true);
+                            closeFirst[5].setEnabled(true);
+                            closeSecond[5].setEnabled(true);
+                            swDaysCont[5].setEnabled(true);
+
+                        }
+                        else {
+
+                            openFirst[5].setEnabled(false);
+                            openSecond[5].setEnabled(false);
+                            closeFirst[5].setEnabled(false);
+                            closeSecond[5].setEnabled(false);
+                            swDaysCont[5].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDays[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            openFirst[6].setEnabled(true);
+                            openSecond[6].setEnabled(true);
+                            closeFirst[6].setEnabled(true);
+                            closeSecond[6].setEnabled(true);
+                            swDaysCont[6].setEnabled(true);
+
+                        }
+                        else {
+
+                            openFirst[6].setEnabled(false);
+                            openSecond[6].setEnabled(false);
+                            closeFirst[6].setEnabled(false);
+                            closeSecond[6].setEnabled(false);
+                            swDaysCont[6].setEnabled(false);
+
+                        }
+                    }
+                });
+
+                openFirst[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                openSecond[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeFirst[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+                closeSecond[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
+
+                swDaysCont[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[0].setEnabled(false);
+                            closeSecond[0].setEnabled(false);
+                        } else {
+                            openSecond[0].setEnabled(true);
+                            closeSecond[0].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[1].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[1].setEnabled(false);
+                            closeSecond[1].setEnabled(false);
+                        } else {
+                             openSecond[1].setEnabled(true);
+                            closeSecond[1].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[2].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[2].setEnabled(false);
+                            closeSecond[2].setEnabled(false);
+                        } else {
+                            openSecond[2].setEnabled(true);
+                            closeSecond[2].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[3].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[3].setEnabled(false);
+                            closeSecond[3].setEnabled(false);
+                        } else {
+                            openSecond[3].setEnabled(true);
+                            closeSecond[3].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[4].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[4].setEnabled(false);
+                            closeSecond[4].setEnabled(false);
+                        } else {
+                            openSecond[4].setEnabled(true);
+                            closeSecond[4].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[5].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[5].setEnabled(false);
+                            closeSecond[5].setEnabled(false);
+                        } else {
+                            openSecond[5].setEnabled(true);
+                            closeSecond[5].setEnabled(true);
+                        }
+                    }
+                });
+
+                swDaysCont[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            openSecond[6].setEnabled(false);
+                            closeSecond[6].setEnabled(false);
+                        } else {
+                            openSecond[6].setEnabled(true);
+                            closeSecond[6].setEnabled(true);
+                        }
+                    }
+                });
+
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle("Restaurant Time Table");
+                // this is set the view from XML inside AlertDialog
+                alert.setView(alertLayout);
+                // disallow cancel of AlertDialog on click of back button and outside touch
+                alert.setCancelable(false);
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                alert.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String s = new String();
+                        for (int i = 0 ; i < 7; i++){
+                            if(swDays[i].isChecked())
+                            {
+                                s = s + "Day"+i+",";
+
+                                if(swDaysCont[i].isChecked())
+                                {
+                                   /* if(! control(openFirst[i], closeFirst[i]))
+                                    {
+                                        Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }*/
+                                    s = s + openFirst[i].getText()+"_";
+                                    s = s + closeFirst[i].getText()+";";
+
+                                }
+                                else
+                                {
+                                   /* if((! control(openFirst[i], closeFirst[i]))&&(!control(openSecond[i],closeSecond[i])))
+                                    {
+                                        Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }*/
+                                    s = s + openFirst[i].getText()+"_";
+                                    s = s + closeFirst[i].getText()+",";
+                                    s = s + openSecond[i].getText()+"_";
+                                    s = s + closeSecond[i].getText()+";";
+
+                                }
+                            }
+                            else
+                            {
+                                s = s + "Day"+i+" closed;";
+                            }
+                        }
+                        timeTableRest = s;
+                        Toast.makeText(getBaseContext(), " Confirm pressed, timetable saved in DB", Toast.LENGTH_SHORT).show();
+                        String s1 = Utility.extractTimeTable(s);
+                        System.out.println(s1);
+                        System.out.println(Utility.openRestaurant(s,0,10,00));
+                        System.out.println(Utility.openRestaurant(s,2,10,30));
+                        System.out.println(Utility.openRestaurant(s,5,19,45));
+                        System.out.println(Utility.openRestaurant(s,4,01,10));
+                        System.out.println(Utility.openRestaurant(s,4,17,30));
+
+                    }
+                });
+                AlertDialog dialog = alert.create();
+                dialog.show();
+
+            }
+            );
+
     }
-    
-   private void logoutAction() {
+
+    /*private boolean control(TextView textView, TextView textView1) {
+        String time1 = (String) textView.getText();
+        String time2 = (String) textView1.getText();
+
+        int hour1, hour2;
+        int min1, min2;
+        hour1 = Integer.parseInt(time1.substring(0,2));
+        hour2 = Integer.parseInt(time2.substring(0,2));
+        min1 = Integer.parseInt(time1.substring(3,5));
+        min2 = Integer.parseInt(time2.substring(3,5));
+
+        if((hour1 > hour2 && hour)
+    }*/
+
+    private void logoutAction() {
         mAuth.signOut();
 
         // launch splash screen activity again and then loginactivity
@@ -348,6 +803,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etPhone.setEnabled(enabled);
         etAddress.setEnabled(enabled);
         btCategories.setEnabled(enabled);
+        btTimeTable.setEnabled(enabled);
 
         if (enabled)
             fabPhoto.show();
@@ -412,6 +868,10 @@ public class AccountInfoActivity extends AppCompatActivity {
             return false;
         }
 
+        if (timeTableRest.isEmpty()){
+            Utility.showAlertToUser(this, R.string.no_timetable_alert);
+            return false;
+        }
 
         setActivityLoading(true);
         
@@ -438,7 +898,8 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
-
+        //TODO CONTROLLARE QUESTO INSERIMENTO
+        //updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
         for(int i = 0; i < categoriesSelected.size(); ++i)
         {
 
@@ -732,5 +1193,10 @@ public class AccountInfoActivity extends AppCompatActivity {
                 Log.e(TAG, "onCancelled called");
             }
         });
+    }
+
+    public void showTimePickerDialog(TextView tv) {
+        DialogFragment newFragment = new it.polito.maddroid.lab2.TimePickerFragment(tv);
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 }

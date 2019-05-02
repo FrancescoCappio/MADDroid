@@ -42,6 +42,7 @@
     <string name="fields_empty_alert">Please fill all the fields</string>
     <string name="image_empty_alert">Please set an image</string>
     <string name="no_category_alert">Please set at least one Category</string>
+    <string name="no_timetable_alert">Please set the time Table</string>
 
     <string name="title_activity_main">MainActivity</string>
 

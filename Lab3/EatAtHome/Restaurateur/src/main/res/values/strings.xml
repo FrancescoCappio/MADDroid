@@ -12,4 +12,17 @@
     <string name="setup_timetable">Setup restaurant\'s timetable</string>
     <string name="setup_categories">Setup categories</string>
 
+    <string name="time">hh:mm</string>
+    <string name="open_time">Open at</string>
+    <string name="no_stop_q">Continued</string>
+    <string name="close_time">Close at</string>
+
+    <string name="day0">Monday</string>
+    <string name="day1">Tuesday</string>
+    <string name="day2">Wednesday</string>
+    <string name="day3">Thursday</string>
+    <string name="day4">Friday</string>
+    <string name="day5">Saturday</string>
+    <string name="day6">Sunday</string>
+
 </resources>
