@@ -3,6 +3,8 @@ package it.polito.maddroid.lab3.user;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -67,6 +69,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private CardView cvTotalCost;
     private TextView tvTotalCost;
     
+    private MenuItem menuOrder;
+    private boolean appBarExpanded;
+    
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
@@ -82,8 +87,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private static final String TIMETABLE_KEY = "TIMETABLE_KEY";
     
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
-    
-    private float initialYPos = -1.0f;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,6 +198,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.restaurant_detail_menu, menu);
+
+        menuOrder = menu.findItem(R.id.menu_order);
+
+        return true;
+    }
     
     private void getReferencesToViews() {
         
@@ -215,45 +229,28 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
     private void setupEventListeners() {
         //TODO: add click listeners to phone number (to direct call), email addres (to direct new email)
+        
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            float totalHeight = getResources().getDisplayMetrics().heightPixels;
-            float marginHeight = Utility.getPixelsFromDP(getApplicationContext(), 16);
-            float destYPosition = totalHeight - marginHeight - cvTotalCost.getHeight();
+            
+            appBarLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
+                        // completely collapsed
+                        appBarExpanded = false;
         
-            float currentOffset = Math.abs(verticalOffset);
-            
-            Log.d(TAG, "Current offse: " + currentOffset);
-            Log.d(TAG, "Total scrolll: " + appBarLayout1.getTotalScrollRange());
+                    } else if (verticalOffset == 0) {
+                        // completely expanded
+                        appBarExpanded = true;
         
-            if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
-                // completely collapsed
-                Log.d(TAG, "Completely collapsed");
-                cvTotalCost.setY(destYPosition);
-                Log.d(TAG, "Current position: " + cvTotalCost.getY());
-            
-            } else if (verticalOffset == 0) {
-                // completely expanded
-            
-                if (initialYPos <= 0.1) {
-                    initialYPos = cvTotalCost.getY();
-                } else {
-                    cvTotalCost.setY(initialYPos);
-                    Log.d(TAG, "Current position: " + cvTotalCost.getY());
+                    } else {
+                        appBarExpanded = false;
+                    }
+    
+                    updateTotalVisibility();
                 }
+            });
             
-            } else {
-                // Somewhere in between
-                // Do according to your requirement
-                float prop = Math.abs(verticalOffset);
-                float perc = prop/ appBarLayout1.getTotalScrollRange();
-            
-                float currentDest = initialYPos + perc*(destYPosition - initialYPos);
-            
-                Log.d(TAG, "Current dest: " + currentDest);
-            
-                cvTotalCost.setY(currentDest);
-                Log.d(TAG, "Current position: " + cvTotalCost.getY());
-            }
         });
     }
     
@@ -355,12 +352,42 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private void choosenDishesUpdated() {
         choosenDishes = adapter.getChosenDishes();
         
+        updateTotalVisibility();
+    }
+    
+    private String computeTotalCost() {
         float totalCost = 0;
-        
+    
         for (Dish d : choosenDishes) {
-            totalCost += d.getQuantity()*d.getPrice();
+            totalCost += d.getQuantity() * d.getPrice();
+        }
+    
+        return String.format("%.02f", totalCost) + " €";
+    }
+    
+    private void updateTotalVisibility() {
+        if (choosenDishes == null || choosenDishes.isEmpty()) {
+            cvTotalCost.setVisibility(View.GONE);
+            if (menuOrder != null)
+                menuOrder.setVisible(false);
+            
+            return;
         }
         
-        tvTotalCost.setText(String.valueOf(totalCost));
+        String total = computeTotalCost();
+        tvTotalCost.setText(total);
+        
+        if (menuOrder != null)
+            menuOrder.setTitle(total);
+        
+        if (appBarExpanded) {
+            cvTotalCost.setVisibility(View.VISIBLE);
+            if (menuOrder != null)
+                menuOrder.setVisible(false);
+        } else {
+            cvTotalCost.setVisibility(View.GONE);
+            if (menuOrder != null)
+                menuOrder.setVisible(true);
+        }
     }
 }

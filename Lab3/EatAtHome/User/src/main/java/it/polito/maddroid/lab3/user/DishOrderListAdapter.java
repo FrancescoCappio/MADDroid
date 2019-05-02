@@ -118,7 +118,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
                 if (count > 0) {
                     dish.setQuantity(count - 1);
                     setTotalCost(dish);
-                    tvDishQuantity.setText(dish.getQuantity());
+                    tvDishQuantity.setText(String.valueOf(dish.getQuantity()));
                     listener.notifyDataUpdated();
                 }
             });
