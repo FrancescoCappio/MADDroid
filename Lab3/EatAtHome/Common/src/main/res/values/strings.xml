@@ -67,4 +67,21 @@
 
     <string name="delivery_detail">Delivery Details</string>
 
+    <string name="dishes">Dishes</string>
+
+    <string name="restaurant_name">Restaurant\'s name</string>
+    <string name="restaurant_email">Restaurant\'s email</string>
+    <string name="restaurant_address">Restaurant\'s address</string>
+    <string name="restaurant_description">Restaurant\'s description</string>
+    <string name="restaurant_phone_number">Restaurant\'s phone number</string>
+    <string name="restaurant_categories">Restaurant\'s categories</string>
+    <string name="restaurant_timetable">Restaurant\'s timetable</string>
+
+    <string name="delivery_time">Delivery time</string>
+    <string name="delivery_address">Delivery address</string>
+    <string name="payment_info">Payment info</string>
+    <string name="pay_at_delivery_time">Pay at delivery time</string>
+
+    <string name="confirm_order">Confirm order</string>
+
 </resources>

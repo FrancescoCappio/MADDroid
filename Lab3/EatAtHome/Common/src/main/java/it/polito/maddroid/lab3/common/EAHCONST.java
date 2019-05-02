@@ -33,6 +33,9 @@ public class EAHCONST {
     public final static String RIDERS_SUB_TREE = "riders";
     public final static String DISHES_SUB_TREE = "dishes";
     public final static String RESTAURANTS_TIMETABLES_SUB_TREE = "restaurants_timetables";
+    public final static String ORDERS_REST_SUBTREE = "orders_restaurateur";
+    public final static String ORDERS_CUST_SUBTREE = "orders_customer";
+    public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
@@ -64,12 +67,32 @@ public class EAHCONST {
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
 
-    // restaurants subtree nodes fields
+    // dishes (menu) subtree nodes fields
     public final static String DISH_NAME = "name";
     public final static String DISH_PRICE = "price";
     public final static String DISH_DESCRIPTION = "description";
     public final static String DISH_ID = "dishID";
-
+    
+    // restaurants orders subtree nodes fields
+    public final static String REST_ORDER_COMPLETED = "completed";
+    public final static String REST_ORDER_CONFIRMED = "confirmed";
+    public final static String REST_ORDER_DATE = "date";
+    public final static String REST_ORDER_DELIVERY_TIME = "delivery_time";
+    public final static String REST_ORDER_CUSTOMER_ID = "customer_id";
+    public final static String REST_ORDER_RIDER_ID = "riderId";
+    public final static String REST_ORDER_DISHES_SUBTREE = "dishes";
+    
+    // customers order subtree nodes fields
+    public final static String CUST_ORDER_COMPLETED = "completed";
+    public final static String CUST_ORDER_CONFIRMED_REST = "confirmed_by_restaurateur";
+    public final static String CUST_ORDER_RESTAURATEUR_ID = "restaurateur_id";
+    public final static String CUST_ORDER_RIDER_ID = "rider_id";
+    
+    // riders order subtree nodes fields
+    public final static String RIDER_ORDER_CONFIRMED = "confirmed";
+    public final static String RIDER_ORDER_COMPLETED = "completed";
+    public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
+    public final static String RIDER_ORDER_CUSTOMER_ID = "customer_id";
     
     public static String generatePath(String... args) {
         StringBuilder sb = new StringBuilder();

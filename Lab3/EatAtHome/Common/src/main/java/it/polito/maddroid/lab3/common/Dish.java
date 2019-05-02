@@ -10,6 +10,7 @@ public class Dish implements Serializable {
     private String name;
     private String description;
     private float price;
+    private int quantity;
     
     // necessary to mark the dish to be updated
     private boolean update;
@@ -20,6 +21,7 @@ public class Dish implements Serializable {
         this.description = description;
         this.price = price;
         this.update = false;
+        this.quantity = 0;
     }
 
     public int getDishID() { return dishID; }
@@ -36,5 +38,13 @@ public class Dish implements Serializable {
     
     public void markUpdated() {
         update = !update;
+    }
+    
+    public int getQuantity() {
+        return quantity;
+    }
+    
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

@@ -6,6 +6,8 @@
     <dimen name="detail_image_size_phone">150dp</dimen>
     <dimen name="detail_image_size_tablet">300dp</dimen>
 
+    <dimen name="menu_dish_image_size">70dp</dimen>
+
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
 

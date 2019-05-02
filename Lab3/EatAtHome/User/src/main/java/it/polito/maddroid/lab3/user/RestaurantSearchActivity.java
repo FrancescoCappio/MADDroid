@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -36,6 +35,7 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     private static final String TAG = "RestaurantSearchActvty";
     
     private List<Restaurant> restaurants;
+    private List<String> restaurantsInCategory;
     
     private DatabaseReference dbRef;
     
@@ -83,7 +83,13 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         etSearch.requestFocus();
         
         // setup list
-        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback());
+        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
+            // open restaurant detail activity and close current activity
+            Intent i = new Intent(getApplicationContext(), RestaurantDetailActivity.class);
+            i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
+            startActivity(i);
+            finish();
+        });
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rvRestaurants.setAdapter(adapter);
         
@@ -127,7 +133,6 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     
     private void downloadRestaurantsInfo(String query) {
         
-        //TODO: download by category
         if (query == null || query.isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_search_empty);
             return;
@@ -151,13 +156,15 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     String description = (String) ds.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
                     String address = (String) ds.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
                     String phone = (String) ds.child(EAHCONST.RESTAURANT_PHONE).getValue();
+                    String email = (String) ds.child(EAHCONST.RESTAURANT_EMAIL).getValue();
+                    String categoriesIds = (String) ds.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
                     
-                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone);
+                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds);
                     
                     restaurants.add(r);
                 }
-                
-                adapter.submitList(restaurants);
+                // now that we have downloaded all the restaurants matching the name we need to filter them considering the chosen category
+                filterRestaurantsByCategory();
             }
             
             @Override
@@ -165,5 +172,30 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                 Log.e(TAG, "onCancelled called");
             }
         });
+    }
+    
+    private void filterRestaurantsByCategory() {
+        
+        if (restaurants.isEmpty()) {
+            Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
+            return;
+        }
+        
+        if (restaurantCategory == null) {
+            // no category filter: submit the list as is
+            adapter.submitList(restaurants);
+            return;
+        }
+        
+        List<Restaurant> newRests = new ArrayList<>();
+    
+        for (Restaurant r : restaurants) {
+            if (r.matchesCategoryId(restaurantCategory.getId()))
+                newRests.add(r);
+        }
+    
+        if (newRests.isEmpty())
+            Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
+        adapter.submitList(newRests);
     }
 }

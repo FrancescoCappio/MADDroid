@@ -2,7 +2,7 @@
     <string name="app_second_name">Restaurateur</string>
 
     <string name="restaurant_avatar_content_description">Restaurant\'s avatar image</string>
-    <string name="dish_avatar_content_description">Dish\'s avatar image</string>
+    <string name="dish_avatar_content_description">Dish\'s image</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
