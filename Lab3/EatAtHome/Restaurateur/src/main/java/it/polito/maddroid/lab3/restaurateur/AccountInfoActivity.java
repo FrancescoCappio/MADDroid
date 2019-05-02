@@ -748,6 +748,8 @@ public class AccountInfoActivity extends AppCompatActivity {
                             }
                         }
                         timeTableRest = s;
+                        
+                        //TODO: remove this
                         Toast.makeText(getBaseContext(), " Confirm pressed, timetable saved in DB", Toast.LENGTH_SHORT).show();
                         String s1 = Utility.extractTimeTable(s);
                         System.out.println(s1);
@@ -915,9 +917,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
-    
-        //TODO CONTROLLARE QUESTO INSERIMENTO
-        //updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
+        
+        // put timetable inside both restaurants and timetables subtree
+        updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
+        updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_TIMETABLES_SUB_TREE, userId), timeTableRest);
     
         //produce new categories string
         StringBuilder sb = new StringBuilder();
