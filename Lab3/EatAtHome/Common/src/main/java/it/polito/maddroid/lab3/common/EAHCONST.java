@@ -32,6 +32,7 @@ public class EAHCONST {
     public final static String CUSTOMERS_SUB_TREE = "customers";
     public final static String RIDERS_SUB_TREE = "riders";
     public final static String DISHES_SUB_TREE = "dishes";
+    public final static String RESTAURANTS_TIMETABLES_SUB_TREE = "restaurants_timetables";
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
@@ -44,6 +45,7 @@ public class EAHCONST {
     public final static String RESTAURANT_PHONE = "phone";
     public final static String RESTAURANT_EMAIL = "email";
     public final static String RESTAURANT_CATEGORIES = "restaurant_categories";
+    public final static String RESTAURANT_TIMETABLE = "time_table";
 
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";
@@ -61,8 +63,8 @@ public class EAHCONST {
     
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
-    
-    // dishes subtree nodes fields
+
+    // restaurants subtree nodes fields
     public final static String DISH_NAME = "name";
     public final static String DISH_PRICE = "price";
     public final static String DISH_DESCRIPTION = "description";

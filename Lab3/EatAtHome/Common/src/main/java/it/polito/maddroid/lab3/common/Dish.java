@@ -5,28 +5,40 @@ import java.io.Serializable;
 
 
 public class Dish implements Serializable {
-    
-    private String dishID;
+
+    private int dishID;
     private String name;
     private String description;
     private float price;
     private int quantity;
     
-    public Dish (String dishID, String name, float price, String description){
+    // necessary to mark the dish to be updated
+    private boolean update;
+
+    public Dish (int dishID, String name, float price, String description){
         this.dishID = dishID;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.update = false;
         this.quantity = 0;
     }
-    
-    public String getDishID() { return dishID; }
-    
+
+    public int getDishID() { return dishID; }
+
     public String getDescription() { return description; }
-    
+
     public String getName() { return name; }
-    
+
     public float getPrice() { return price; }
+    
+    public boolean getUpdate() {
+        return update;
+    }
+    
+    public void markUpdated() {
+        update = !update;
+    }
     
     public int getQuantity() {
         return quantity;
