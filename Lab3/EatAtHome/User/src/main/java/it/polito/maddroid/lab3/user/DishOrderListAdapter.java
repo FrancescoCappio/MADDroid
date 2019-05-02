@@ -127,7 +127,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
         
         private void setTotalCost(Dish dish) {
             float tot = dish.getQuantity()*dish.getPrice();
-            tvDishTotalCost.setText(tot + " €");
+            tvDishTotalCost.setText(String.format("%.02f", tot) + " €");
         }
         
     }
