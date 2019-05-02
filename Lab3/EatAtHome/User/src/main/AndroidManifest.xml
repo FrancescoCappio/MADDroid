@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MainAppTheme">
+        <activity android:name=".CompleteOrderActivity"></activity>
         <activity
             android:name=".RestaurantSearchActivity"
             android:windowSoftInputMode="stateVisible" />
@@ -27,7 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RestaurantDetailActivity" android:theme="@style/MainAppTheme.NoActionBar"/>
+        <activity
+            android:name=".RestaurantDetailActivity"
+            android:theme="@style/MainAppTheme.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

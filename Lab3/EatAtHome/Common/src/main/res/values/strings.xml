@@ -69,4 +69,9 @@
     <string name="restaurant_categories">Restaurant\'s categories</string>
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
 
+    <string name="delivery_time">Delivery time</string>
+    <string name="delivery_address">Delivery address</string>
+    <string name="payment_info">Payment info</string>
+    <string name="pay_at_delivery_time">Pay at delivery time</string>
+
 </resources>

@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.user;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,8 +76,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
     
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
@@ -95,8 +95,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         
         dishes = new ArrayList<>();
     
@@ -157,6 +155,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+                
+            case R.id.menu_order:
+                actionCompleteOrder();
                 return true;
         }
         
@@ -252,6 +254,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             });
             
         });
+        
+        cvTotalCost.setOnClickListener(v -> actionCompleteOrder());
     }
     
     private synchronized void setActivityLoading(boolean loading) {
@@ -388,6 +392,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             cvTotalCost.setVisibility(View.GONE);
             if (menuOrder != null)
                 menuOrder.setVisible(true);
+        }
+    }
+    
+    private void actionCompleteOrder() {
+        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+        
+        if (choosenDishes != null && !choosenDishes.isEmpty()) {
+            intent.putExtra(CompleteOrderActivity.DISHES_KEY, (Serializable) choosenDishes);
+            startActivity(intent);
+            finish();
         }
     }
 }
