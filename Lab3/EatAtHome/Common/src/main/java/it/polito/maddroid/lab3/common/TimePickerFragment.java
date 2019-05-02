@@ -1,5 +1,4 @@
-package it.polito.maddroid.lab2;
-
+package it.polito.maddroid.lab3.common;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -7,28 +6,32 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.ContextThemeWrapper;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
 
-import it.polito.maddroid.lab3.common.R;
-
 
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
+    
+    private TextView tvChiamante;
+    private EditText etCaller;
 
-    public TimePickerFragment(TextView tv_chiamante) {
-        this.tv_chiamante = tv_chiamante;
+    public TimePickerFragment(TextView tvChiamante) {
+        this.tvChiamante = tvChiamante;
     }
-
-    TextView tv_chiamante;
-
-
+    
+    public TimePickerFragment(EditText etCaller) {
+        this.etCaller = etCaller;
+    }
+    
+    public TimePickerFragment() {}
+    
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current time as the default values for the picker
@@ -45,11 +48,14 @@ public class TimePickerFragment extends DialogFragment
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Do something with the time chosen by the user
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
         DecimalFormat formatter = new DecimalFormat("00");
         String shour = formatter.format(hourOfDay);
         String sminutes = formatter.format(minute);
-        tv_chiamante.setText(""+shour+":"+sminutes);
+        
+        if (tvChiamante != null)
+            tvChiamante.setText(""+shour+":"+sminutes);
 
+        if (etCaller != null)
+            etCaller.setText(""+shour+":"+sminutes);
     }
 }

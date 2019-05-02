@@ -64,6 +64,7 @@ import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
+import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
 
@@ -1232,7 +1233,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
     public void showTimePickerDialog(TextView tv) {
-        DialogFragment newFragment = new it.polito.maddroid.lab2.TimePickerFragment(tv);
+        DialogFragment newFragment = new TimePickerFragment(tv);
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 }

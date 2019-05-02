@@ -11,6 +11,13 @@ import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import android.util.Log;
 
@@ -18,6 +25,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.Vector;
 
 
@@ -152,5 +161,50 @@ public class Utility {
         
         return (restaurantWeeklyOpen[minutes + (hour*60) + (1440 *day)]);
         
+    }
+    
+    public static String generateUUID() {
+        return UUID.randomUUID().toString();
+    }
+    
+    public interface RandomRiderCaller {
+        void generatedRiderId(String riderId);
+    }
+    
+    public static void generateRandomRiderId(DatabaseReference dbRef, RandomRiderCaller randomRiderCaller) {
+        Query queryRef = dbRef
+                .child(EAHCONST.USERS_SUB_TREE)
+                .orderByChild(EAHCONST.USERS_TYPE)
+                .startAt("RIDER").endAt("RIDER\uf8ff");
+        
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange Called");
+                List<String> ridersIds = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    ridersIds.add(ds.getKey());
+                }
+                
+                int index = getRandomNumberInRange(0, ridersIds.size());
+                randomRiderCaller.generatedRiderId(ridersIds.get(index));
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+                randomRiderCaller.generatedRiderId(null);
+            }
+        });
+    }
+    
+    private static int getRandomNumberInRange(int min, int max) {
+        
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 }

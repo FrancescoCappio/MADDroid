@@ -34,12 +34,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
+import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
+import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
 
@@ -113,7 +116,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
     
-            adapter = new DishOrderListAdapter(new DishDiffUtilCallback(), currentRestaurant, this::choosenDishesUpdated);
+            adapter = new DishOrderListAdapter(new DishDiffUtilCallBack(), currentRestaurant, this::choosenDishesUpdated);
             
             rvOrderDishes.setAdapter(adapter);
             
@@ -336,7 +339,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                     }
                     String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
                     
-                    Dish dish = new Dish(dishId,dishName,price,dishDescription);
+                    Dish dish = new Dish(Integer.parseInt(dishId),dishName,price,dishDescription);
                     
                     dishes.add(dish);
                     
@@ -400,6 +403,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         if (choosenDishes != null && !choosenDishes.isEmpty()) {
             intent.putExtra(CompleteOrderActivity.DISHES_KEY, (Serializable) choosenDishes);
+            intent.putExtra(CompleteOrderActivity.RESTAURANT_KEY, currentRestaurant);
             startActivity(intent);
             finish();
         }

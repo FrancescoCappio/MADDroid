@@ -82,4 +82,6 @@
     <string name="payment_info">Payment info</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
+    <string name="confirm_order">Confirm order</string>
+
 </resources>

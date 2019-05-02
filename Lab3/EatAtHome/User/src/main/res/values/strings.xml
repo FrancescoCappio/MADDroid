@@ -24,4 +24,13 @@
     <string name="your_delivery_address">Your delivery address</string>
 
     <string name="alert_order_problem">There was a problem with your order</string>
+    <string name="alert_order_no_dishes">No dishes have been selected</string>
+    <string name="alert_order_no_time">Please select a delivery time</string>
+    <string name="alert_order_time_not_valid">The restaurateur needs at least 1 hour to prepare your dishes</string>
+    <string name="alert_order_no_address">Please select a delivery address</string>
+    <string name="alert_order_no_rider">Cannot find a rider</string>
+
+    <string name="alert_error_ordering">There was an error while requesting your order</string>
+
+    <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
 </resources>
