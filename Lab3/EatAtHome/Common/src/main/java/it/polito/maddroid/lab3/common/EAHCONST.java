@@ -16,6 +16,7 @@ public class EAHCONST {
     
     public static String RESTAURANT_CATEGORY_EXTRA = "RESTAURANT_CATEGORY_EXTRA";
     
+    public static final float DELIVERY_COST = 4.50f;
     
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
@@ -23,6 +24,14 @@ public class EAHCONST {
         RESTAURATEUR,
         RIDER
     }
+    
+    public enum OrderStatus {
+        PENDING,
+        CONFIRMED,
+        DECLINED,
+        COMPLETED
+    }
+    
     
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
@@ -74,23 +83,21 @@ public class EAHCONST {
     public final static String DISH_ID = "dishID";
     
     // restaurants orders subtree nodes fields
-    public final static String REST_ORDER_COMPLETED = "completed";
-    public final static String REST_ORDER_CONFIRMED = "confirmed";
+    public final static String REST_ORDER_STATUS = "order_status";
     public final static String REST_ORDER_DATE = "date";
     public final static String REST_ORDER_DELIVERY_TIME = "delivery_time";
     public final static String REST_ORDER_CUSTOMER_ID = "customer_id";
     public final static String REST_ORDER_RIDER_ID = "riderId";
     public final static String REST_ORDER_DISHES_SUBTREE = "dishes";
+    public final static String REST_ORDER_TOTAL_COST = "total_cost";
     
     // customers order subtree nodes fields
-    public final static String CUST_ORDER_COMPLETED = "completed";
-    public final static String CUST_ORDER_CONFIRMED_REST = "confirmed_by_restaurateur";
+    public final static String CUST_ORDER_STATUS = "order_status";
     public final static String CUST_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String CUST_ORDER_RIDER_ID = "rider_id";
     
     // riders order subtree nodes fields
-    public final static String RIDER_ORDER_CONFIRMED = "confirmed";
-    public final static String RIDER_ORDER_COMPLETED = "completed";
+    public final static String RIDER_ORDER_STATUS = "order_status";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String RIDER_ORDER_CUSTOMER_ID = "customer_id";
     
