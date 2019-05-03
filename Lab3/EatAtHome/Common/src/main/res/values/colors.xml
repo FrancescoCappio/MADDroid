@@ -8,5 +8,6 @@
     <color name="eah_black">#000000</color>
 
     <color name="eah_background_dark">#282828</color>
+    <color name="eah_background_fair">#F1F1F1</color>
 
 </resources>

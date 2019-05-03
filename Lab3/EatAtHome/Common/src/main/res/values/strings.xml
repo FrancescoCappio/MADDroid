@@ -64,6 +64,7 @@
     <string name="orders">Orders</string>
 
     <string name="restaurants">Restaurants</string>
+    <string name="restaurant">Restaurant</string>
 
     <string name="delivery_detail">Delivery Details</string>
 
@@ -83,5 +84,15 @@
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
     <string name="confirm_order">Confirm order</string>
+
+    <string name="date">Date</string>
+
+    <string name="total_cost">Total cost</string>
+
+    <string name="order_status">Order status</string>
+
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_waiting_corfirm">Waiting restarateur'\s confirmation</string>
 
 </resources>
