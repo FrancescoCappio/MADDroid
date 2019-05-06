@@ -80,6 +80,8 @@
     <string name="delivery_time">Delivery time</string>
     <string name="delivery_address">Delivery address</string>
     <string name="payment_info">Payment info</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="rider_name">Rider Name</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 

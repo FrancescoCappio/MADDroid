@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static String TAG = "MainActivity";
 
     public static final int DISH_DETAIL_CODE = 124;
+    public static final int ORDER_DETAIL_CODE = 123;
 
 
     private int currentSelectedPosition;
