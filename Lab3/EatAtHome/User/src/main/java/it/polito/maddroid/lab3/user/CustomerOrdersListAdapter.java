@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class CustomerOrdersListAdapter extends ListAdapter<Order, CustomerOrdersListAdapter.MyViewHolder> {
+public class CustomerOrdersListAdapter extends ListAdapter<CustomerOrder, CustomerOrdersListAdapter.MyViewHolder> {
     
     
-    protected CustomerOrdersListAdapter(@NonNull DiffUtil.ItemCallback<Order> diffCallback) {
+    protected CustomerOrdersListAdapter(@NonNull DiffUtil.ItemCallback<CustomerOrder> diffCallback) {
         super(diffCallback);
     }
     
@@ -32,7 +32,7 @@ public class CustomerOrdersListAdapter extends ListAdapter<Order, CustomerOrders
     }
     
     public interface ItemClickListener {
-        void onItemClickListener(Order order);
+        void onItemClickListener(CustomerOrder order);
     }
     
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -51,7 +51,7 @@ public class CustomerOrdersListAdapter extends ListAdapter<Order, CustomerOrders
             ivRestaurantPhoto = itemView.findViewById(R.id.iv_restaurant_photo);
         }
         
-        public void setupOrder(Order order, CustomerOrdersListAdapter.ItemClickListener itemClickListener) {
+        public void setupOrder(CustomerOrder order, CustomerOrdersListAdapter.ItemClickListener itemClickListener) {
         
         }
         

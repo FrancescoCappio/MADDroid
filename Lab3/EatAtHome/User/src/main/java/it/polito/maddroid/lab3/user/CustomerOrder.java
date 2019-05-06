@@ -1,10 +1,10 @@
 package it.polito.maddroid.lab3.user;
 
 
-import java.io.Serializable;
+import it.polito.maddroid.lab3.common.Order;
 
 
-public class Order implements Serializable {
+public class CustomerOrder extends Order {
     
     private String orderId;
     private String customerId;

@@ -33,4 +33,9 @@ public class OrdersFragment extends Fragment {
         return view;
     }
     
+    
+    private void downloadOrdersInfo() {
+    
+    }
+    
 }
