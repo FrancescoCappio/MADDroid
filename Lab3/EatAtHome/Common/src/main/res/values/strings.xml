@@ -94,6 +94,8 @@
 
     <string name="status_confirmed">Confirmed</string>
     <string name="status_completed">Completed</string>
-    <string name="status_waiting_corfirm">Waiting restarateur'\s confirmation</string>
+    <string name="status_waiting_corfirm">Waiting restarateur\'s confirmation</string>
+
+    <string name="alert_no_orders_yet">There are no orders yet</string>
 
 </resources>

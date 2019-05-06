@@ -1,27 +1,36 @@
 package it.polito.maddroid.lab3.user;
 
 
-import it.polito.maddroid.lab3.common.Order;
+import it.polito.maddroid.lab3.common.EAHCONST;
 
 
-public class CustomerOrder extends Order {
+public class CustomerOrder {
     
     private String orderId;
-    private String customerId;
     private String restaurantId;
     private String riderId;
+    private EAHCONST.OrderStatus orderStatus;
     
-    private String deliveryTime;
-    private String date;
+    public CustomerOrder(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus) {
+        this.orderId = orderId;
+        this.restaurantId = restaurantId;
+        this.riderId = riderId;
+        this.orderStatus = orderStatus;
+    }
     
-    private String totalCost;
+    public String getOrderId() {
+        return orderId;
+    }
     
-    private OrderStatus orderStatus;
+    public String getRestaurantId() {
+        return restaurantId;
+    }
     
-    public enum OrderStatus {
-        PENDING,
-        CONFIRMED,
-        COMPLETED,
-        DECLINED
+    public String getRiderId() {
+        return riderId;
+    }
+    
+    public EAHCONST.OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 }

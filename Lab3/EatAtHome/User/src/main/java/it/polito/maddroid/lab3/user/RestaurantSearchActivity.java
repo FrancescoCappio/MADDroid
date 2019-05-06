@@ -151,7 +151,7 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     
                     // do somethind with the individual restaurant
-                    String restaurantId = (String) ds.getKey();
+                    String restaurantId = ds.getKey();
                     String name = (String) ds.child(EAHCONST.RESTAURANT_NAME).getValue();
                     String description = (String) ds.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
                     String address = (String) ds.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
