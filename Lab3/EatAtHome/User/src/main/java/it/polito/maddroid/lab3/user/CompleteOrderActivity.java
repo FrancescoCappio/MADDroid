@@ -229,6 +229,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         String deliveryTime = etDeliveryTime.getText().toString();
         
+        String deliveryAddress = etDeliveryAddress.getText().toString();
+        
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.PENDING;
         
         // put everything related to order from point of view of restaurateur
@@ -242,6 +244,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_RIDER_ID),randomRiderId);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost());
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
         
         for (Dish d : selectedDishes) {
             updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DISHES_SUBTREE, String.valueOf(d.getDishID())), d.getQuantity());

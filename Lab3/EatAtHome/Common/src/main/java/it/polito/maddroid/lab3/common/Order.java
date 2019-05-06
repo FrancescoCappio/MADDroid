@@ -83,7 +83,5 @@ public abstract class Order implements Serializable {
     public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
-
-
-
+    
 }
