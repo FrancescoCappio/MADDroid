@@ -66,6 +66,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private EditText etDeliveryTime;
     private EditText etDeliveryAddress;
     private Button btConfirmOrder;
+    private TextView tvDeliveryCost;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +103,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         selectedDishes = (List<Dish>) dishesExtra;
         String totalCost = computeTotalCost();
         tvTotalCost.setText(totalCost);
+        tvDeliveryCost.setText(String.format("%.02f", EAHCONST.DELIVERY_COST) + " €");
     
         etDeliveryTime.setFocusable(false);
         etDeliveryTime.setClickable(true);
@@ -123,6 +125,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         etDeliveryAddress = findViewById(R.id.et_delivery_address);
         etDeliveryTime = findViewById(R.id.et_time);
         btConfirmOrder = findViewById(R.id.bt_confirm);
+        tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         
     }
     
@@ -150,6 +153,9 @@ public class CompleteOrderActivity extends AppCompatActivity {
         for (Dish d : selectedDishes) {
             totalCost += d.getQuantity() * d.getPrice();
         }
+        
+        // consider delivery cost
+        totalCost += EAHCONST.DELIVERY_COST;
         
         return String.format("%.02f", totalCost) + " €";
     }
@@ -223,17 +229,22 @@ public class CompleteOrderActivity extends AppCompatActivity {
         String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         String deliveryTime = etDeliveryTime.getText().toString();
         
+        String deliveryAddress = etDeliveryAddress.getText().toString();
+        
+        EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.PENDING;
+        
         // put everything related to order from point of view of restaurateur
         String restOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
                 currentRestaurant.getRestaurantID(),
                 orderId);
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_COMPLETED),false);
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CONFIRMED),false);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_STATUS),orderStatus);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),date);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),deliveryTime);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_RIDER_ID),randomRiderId);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost());
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
         
         for (Dish d : selectedDishes) {
             updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DISHES_SUBTREE, String.valueOf(d.getDishID())), d.getQuantity());
@@ -244,8 +255,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 EAHCONST.ORDERS_CUST_SUBTREE,
                 currentUser.getUid(),
                 orderId);
-        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_COMPLETED), false);
-        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_CONFIRMED_REST), false);
+        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_RESTAURATEUR_ID), currentRestaurant.getRestaurantID());
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_RIDER_ID), randomRiderId);
         
@@ -254,8 +264,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 EAHCONST.ORDERS_RIDER_SUBTREE,
                 randomRiderId,
                 orderId);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_COMPLETED), false);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CONFIRMED), false);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentRestaurant.getRestaurantID());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentUser.getUid());
     
@@ -308,9 +317,4 @@ public class CompleteOrderActivity extends AppCompatActivity {
         DialogFragment newFragment = new TimePickerFragment(etDeliveryTime);
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
-    
-    
-    
-    
-    
 }
