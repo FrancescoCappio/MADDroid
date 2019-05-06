@@ -90,6 +90,7 @@ public class EAHCONST {
     public final static String REST_ORDER_RIDER_ID = "riderId";
     public final static String REST_ORDER_DISHES_SUBTREE = "dishes";
     public final static String REST_ORDER_TOTAL_COST = "total_cost";
+    public final static String REST_ORDER_DELIVERY_ADDRESS = "delivery_address";
     
     // customers order subtree nodes fields
     public final static String CUST_ORDER_STATUS = "order_status";
