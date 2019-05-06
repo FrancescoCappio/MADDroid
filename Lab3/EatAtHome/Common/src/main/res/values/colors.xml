@@ -7,6 +7,9 @@
     <color name="eah_white">#FFFFFF</color>
     <color name="eah_black">#000000</color>
 
+    <color name="eah_green">#009E05</color>
+    <color name="eah_red">#DF0A0A</color>
+
     <color name="eah_background_dark">#282828</color>
 
 </resources>

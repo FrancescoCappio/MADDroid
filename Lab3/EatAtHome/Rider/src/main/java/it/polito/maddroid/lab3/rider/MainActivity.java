@@ -10,6 +10,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -23,14 +27,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    
-    
+
+    private final static String TAG = "MainActivity";
+
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -38,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LinearLayout llNavHeaderMain;
     NavigationView navigationView;
     TextView tvAccountEmail;
+
+    private int currentSelectedPosition;
+    private CurrentOrderFragment currentFragment;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
     
@@ -160,6 +171,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    public void selectItem(int position) {
+
+        Fragment fragment = null;
+
+        // before creating a new fragment we should check if the already displayed one is the same we want to open
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        Log.d(TAG, "Fragments count: " + fragments.size());
+
+        for (Fragment fr : fragments) {
+            if ((fr instanceof CurrentOrderFragment)) {
+                fragment = fr;
+                break;
+            }
+        }
+
+        currentSelectedPosition = position;
+        navigationView.setCheckedItem(position);
+
+        boolean changed = false;
+        switch (position) {
+            case 0:
+
+                break;
+
+            case 1:
+                if (!(fragment instanceof CurrentOrderFragment)) {
+                    currentFragment = new CurrentOrderFragment();
+                    fragment = currentFragment;
+                    changed = true;
+                }
+
+                getSupportActionBar().setTitle(R.string.current_delivery);
+
+                break;
+            case 2:
+
+                break;
+
+            default:
+                break;
+        }
+
+
+        if (fragment != null && changed) {
+            fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
+        } else {
+            Log.d("MainActivity", "No need to change the fragment");
+        }
     }
     
     private void checkIfUserHasCompletedAccountInfo() {

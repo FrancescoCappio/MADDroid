@@ -66,6 +66,7 @@
     <string name="restaurants">Restaurants</string>
 
     <string name="delivery_detail">Delivery Details</string>
+    <string name="current_delivery">Current Delivery </string>
 
     <string name="dishes">Dishes</string>
 
@@ -83,6 +84,11 @@
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
+
     <string name="confirm_order">Confirm order</string>
+    <string name="decline_order">Decline order</string>
+    <string name="order_total_cost">Total cost</string>
+    <string name ="your_earning">Your earning</string>
+
 
 </resources>

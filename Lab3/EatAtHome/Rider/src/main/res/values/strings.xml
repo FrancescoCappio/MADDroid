@@ -1,6 +1,6 @@
 <resources>
     <string name="app_second_name">Rider</string>
-    
+
     <string name="rider_avatar_content_description">Rider\'s avatar image</string>
 
     <string name="rider_name">Name</string>
@@ -10,5 +10,8 @@
     <string name="rider_phone_number">Phone number</string>
 
     <string name="order_rider">Last deliveries</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
