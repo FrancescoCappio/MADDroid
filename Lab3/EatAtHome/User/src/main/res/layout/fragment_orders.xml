@@ -6,6 +6,15 @@
     android:background="@color/eah_background_fair"
     tools:context=".OrdersFragment">
 
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_orders"
         android:layout_width="match_parent"

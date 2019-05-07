@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.user;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +39,7 @@ public class OrdersFragment extends Fragment {
     private static final String TAG = "OrdersFragment";
     
     private RecyclerView rvOrders;
+    private ProgressBar pbLoading;
     private DatabaseReference dbRef;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -45,6 +48,7 @@ public class OrdersFragment extends Fragment {
     
     private List<CustomerOrder> customerOrders;
     private List<Order> orders;
+    private int waitingCount = 0;
     
     public OrdersFragment() {
         // Required empty public constructor
@@ -57,16 +61,16 @@ public class OrdersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_orders, container, false);
         
         rvOrders = view.findViewById(R.id.rv_orders);
+        pbLoading = view.findViewById(R.id.pb_loading);
     
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
     
-        adapter = new CustomerOrdersListAdapter(new OrderDiffUtilCallBack(), new CustomerOrdersListAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(Order order) {
-        
-            }
+        adapter = new CustomerOrdersListAdapter(new OrderDiffUtilCallBack(), order -> {
+            Intent i = new Intent(getContext(), OrderDetailActivity.class);
+            i.putExtra(OrderDetailActivity.ORDER_KEY, order);
+            startActivity(i);
         });
         
         rvOrders.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -79,6 +83,7 @@ public class OrdersFragment extends Fragment {
     
     
     private void downloadOrdersInfo() {
+        setFragmentLoading(true);
     
         Query queryRef = dbRef
                 .child(EAHCONST.ORDERS_CUST_SUBTREE)
@@ -174,6 +179,7 @@ public class OrdersFragment extends Fragment {
         }
         
         adapter.submitList(orders);
+        setFragmentLoading(false);
     }
     
     private void downloadRestaurantName(String restaurantId) {
@@ -199,5 +205,22 @@ public class OrdersFragment extends Fragment {
                 Log.e(TAG, "Database error");
             }
         });
+    }
+    
+    private synchronized void setFragmentLoading(boolean loading) {
+        // this method is necessary to show the user when the activity is doing a network operation
+        // as downloading data or uploading data
+        // how to use: call with loading = true to notify that a new transmission has been started
+        // call with loading = false to notify end of transmission
+        
+        if (loading) {
+            if (waitingCount == 0)
+                pbLoading.setVisibility(View.VISIBLE);
+            waitingCount++;
+        } else {
+            waitingCount--;
+            if (waitingCount == 0)
+                pbLoading.setVisibility(View.INVISIBLE);
+        }
     }
 }

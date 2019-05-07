@@ -15,11 +15,12 @@
         android:src="@drawable/ic_restaurant_menu_black_24dp"/>
 
     <LinearLayout
+        android:id="@+id/ll_dish_description"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/iv_menu_photo"
+        android:layout_toStartOf="@+id/ll_dish_price_quantity"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -46,18 +47,38 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_menu_price"
+    <LinearLayout
+        android:id="@+id/ll_dish_price_quantity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="5.50€"
-        android:textSize="20sp"
-        android:textColor="@android:color/black"
-        android:layout_marginStart="15dp"
+        android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:layout_marginEnd="15dp"
-        android:layout_centerVertical="true"
-        />
+        android:layout_marginStart="10dp">
+
+        <TextView
+            android:id="@+id/tv_menu_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="5.50€"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            />
+
+        <TextView
+            android:id="@+id/tv_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Quantity: 20"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"/>
+
+    </LinearLayout>
+
+
 
     <View
         android:layout_width="match_parent"

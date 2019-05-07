@@ -68,7 +68,11 @@
 
     <string name="delivery_detail">Delivery Details</string>
 
+    <string name="quantity">Quantity</string>
+
     <string name="dishes">Dishes</string>
+
+    <string name="order_detail">Order detail</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -97,5 +101,6 @@
     <string name="status_waiting_corfirm">Waiting restarateur\'s confirmation</string>
 
     <string name="alert_no_orders_yet">There are no orders yet</string>
+    <string name="alert_error_downloading_info">There was an error while downloading some data</string>
 
 </resources>
