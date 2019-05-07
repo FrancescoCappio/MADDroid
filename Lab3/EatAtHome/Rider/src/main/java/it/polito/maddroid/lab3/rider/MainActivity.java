@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.LoginActivity;
@@ -34,10 +37,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+    private StorageReference storageReference;
     
-    LinearLayout llNavHeaderMain;
-    NavigationView navigationView;
-    TextView tvAccountEmail;
+    private LinearLayout llNavHeaderMain;
+    private NavigationView navigationView;
+    private TextView tvAccountEmail;
+    private ImageView ivAvatar;
+    
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
     
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentUser = mAuth.getCurrentUser();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
         
         if (currentUser == null) {
             // this is probably an error, the user should be logged in to see this activity
@@ -72,7 +79,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //TODO: check that the logged in user is a Rider -> else alert and exit
         
         tvAccountEmail.setText(currentUser.getEmail());
-        //TODO: set avatar image as navigation view header's image
+    
+        StorageReference riversRef = storageReference.child("avatar_" + currentUser.getUid() +".jpg");
+        GlideApp.with(getApplicationContext())
+                .load(riversRef)
+                .into(ivAvatar);
     }
     
     @Override
@@ -98,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
         tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_rider_email);
+        ivAvatar = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_rider_avatar);
         
     }
     

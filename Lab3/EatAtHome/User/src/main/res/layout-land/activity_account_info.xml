@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="@string/rider_email"
+            android:text="@string/user_email"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
             android:maxLines="1"
@@ -68,10 +68,10 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_rider_info"
+            android:id="@+id/tv_user_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rider_info"
+            android:text="@string/user_info"
             android:textSize="30sp"
             android:gravity="center"
             android:layout_marginTop="@dimen/activity_margin"
@@ -89,8 +89,7 @@
             android:layout_marginBottom="@dimen/activity_margin"
 
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_rider_info"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_info"
 
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="@dimen/cards_corner_radius_login_phone"
@@ -101,7 +100,7 @@
                 android:layout_width="@dimen/detail_image_size_phone"
                 android:layout_height="@dimen/detail_image_size_phone"
                 android:src="@drawable/placeholder_avatar"
-                android:contentDescription="@string/rider_avatar_content_description" />
+                android:contentDescription="@string/user_avatar_content_description" />
 
         </androidx.cardview.widget.CardView>
 
@@ -118,7 +117,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_name"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_margin"
 
@@ -126,31 +125,31 @@
             android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cv_avatar_container"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
+            app:layout_constraintTop_toBottomOf="@+id/tv_user_info"
             >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/rider_name"
+                android:hint="@string/user_name"
                 android:inputType="textPersonName"
-                android:textColor="@drawable/et_color_selector"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_address"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
             app:layout_constraintTop_toBottomOf="@+id/til_name"
             >
 
@@ -158,23 +157,23 @@
                 android:id="@+id/et_address"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/rider_address"
+                android:hint="@string/user_address"
                 android:inputType="textPostalAddress"
-                android:textColor="@drawable/et_color_selector"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_phone"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
             app:layout_constraintTop_toBottomOf="@+id/til_address"
             >
 
@@ -182,23 +181,23 @@
                 android:id="@+id/et_phone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/rider_phone_number"
+                android:hint="@string/user_phone_number"
                 android:inputType="phone"
-                android:textColor="@drawable/et_color_selector"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_email"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
             app:layout_constraintTop_toBottomOf="@+id/til_phone"
             >
 
@@ -206,10 +205,10 @@
                 android:id="@+id/et_mail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/rider_email"
+                android:hint="@string/user_email"
                 android:inputType="textEmailAddress"
-                android:textColor="@drawable/et_color_selector"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -223,14 +222,14 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_description"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
             app:layout_constraintTop_toBottomOf="@+id/til_email"
             >
 
@@ -238,22 +237,12 @@
                 android:id="@+id/et_description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/rider_description"
+                android:hint="@string/user_description"
                 android:inputType="textMultiLine"
-                android:textColor="@drawable/et_color_selector"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <View
-            android:id="@+id/view_separator_timetable"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/til_description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

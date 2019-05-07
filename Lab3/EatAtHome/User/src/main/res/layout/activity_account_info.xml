@@ -136,7 +136,8 @@
                 android:layout_height="match_parent"
                 android:hint="@string/user_name"
                 android:inputType="textPersonName"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,7 +160,8 @@
                 android:layout_height="match_parent"
                 android:hint="@string/user_address"
                 android:inputType="textPostalAddress"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -182,7 +184,8 @@
                 android:layout_height="match_parent"
                 android:hint="@string/user_phone_number"
                 android:inputType="phone"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -205,7 +208,8 @@
                 android:layout_height="match_parent"
                 android:hint="@string/user_email"
                 android:inputType="textEmailAddress"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -213,7 +217,7 @@
             android:id="@+id/tv_description_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="144/200"
+            android:text="0/200"
             app:layout_constraintEnd_toEndOf="@id/til_description"
             app:layout_constraintTop_toTopOf="@+id/til_description" />
 
@@ -236,7 +240,8 @@
                 android:layout_height="match_parent"
                 android:hint="@string/user_description"
                 android:inputType="textMultiLine"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@drawable/et_color_selector"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
