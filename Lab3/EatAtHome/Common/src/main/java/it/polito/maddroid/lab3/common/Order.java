@@ -1,7 +1,6 @@
 package it.polito.maddroid.lab3.common;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 public class Order implements Serializable {
@@ -25,6 +24,8 @@ public class Order implements Serializable {
     private String riderId;
     private String customerId;
     private String restaurantId;
+    
+    private String restaurantName;
 
     private String deliveryTime;
 
@@ -84,4 +85,11 @@ public class Order implements Serializable {
         this.orderStatus = orderStatus;
     }
     
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+    
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
 }

@@ -35,6 +35,10 @@ public class Utility {
     private static final ArrayList<String> days = new ArrayList<>(Arrays.asList("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"));
 
     public static void showAlertToUser(Activity activity, int stringResId) {
+        if (activity == null) {
+            Log.e(TAG, "Cannot show alert because the activity is null");
+            return;
+        }
         String alert = activity.getResources().getString(stringResId);
         Snackbar.make(activity.findViewById(android.R.id.content),alert,Snackbar.LENGTH_SHORT).show();
     }

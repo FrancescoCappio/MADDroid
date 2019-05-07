@@ -64,11 +64,16 @@
     <string name="orders">Orders</string>
 
     <string name="restaurants">Restaurants</string>
+    <string name="restaurant">Restaurant</string>
 
     <string name="delivery_detail">Delivery Details</string>
     <string name="current_delivery">Current Delivery </string>
 
+    <string name="quantity">Quantity</string>
+
     <string name="dishes">Dishes</string>
+
+    <string name="order_detail">Order detail</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -91,5 +96,18 @@
     <string name ="your_earning">Your earning</string>
 
 
+
+    <string name="date">Date</string>
+
+    <string name="total_cost">Total cost</string>
+
+    <string name="order_status">Order status</string>
+
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_waiting_corfirm">Waiting restarateur\'s confirmation</string>
+
+    <string name="alert_no_orders_yet">There are no orders yet</string>
+    <string name="alert_error_downloading_info">There was an error while downloading some data</string>
 
 </resources>
