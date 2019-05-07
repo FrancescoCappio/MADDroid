@@ -155,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         
-        if (id == R.id.nav_delivery) {
+        if (id == R.id.nav_current_delivery) {
+            selectItem(0);
             // Handle the camera action
         }
         else if (id == R.id.nav_deliveries_done) {
@@ -198,10 +199,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean changed = false;
         switch (position) {
             case 0:
-
-                break;
-
-            case 1:
                 if (!(fragment instanceof CurrentOrderFragment)) {
                     currentFragment = new CurrentOrderFragment();
                     fragment = currentFragment;
@@ -209,6 +206,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 getSupportActionBar().setTitle(R.string.current_delivery);
+
+                break;
+
+            case 1:
+
 
                 break;
             case 2:

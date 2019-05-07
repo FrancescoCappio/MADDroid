@@ -16,19 +16,37 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+
     <TextView
+        android:id="@+id/et_no_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="8dp"
+        android:text="there is no order"
+        android:textSize="30sp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/et_time_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/delivery_time"
         android:textSize="18sp"
-
         android:layout_marginStart="@dimen/activity_margin"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/view_time_separator"/>
 
-    <EditText
+    <TextView
 
         android:id="@+id/et_time"
         android:layout_width="wrap_content"
@@ -53,6 +71,7 @@
         />
 
     <TextView
+        android:id="@+id/et_total_cost_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/order_total_cost"
@@ -63,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_time_separator"/>
 
-    <EditText
+    <TextView
 
         android:id="@+id/et_total_cost"
         android:layout_width="wrap_content"
@@ -87,6 +106,7 @@
         />
 
     <TextView
+        android:id="@+id/et_cost_delivery_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/your_earning"
@@ -97,7 +117,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_total_cost_separator"/>
 
-    <EditText
+    <TextView
 
         android:id="@+id/et_cost_delivery"
         android:layout_width="wrap_content"
@@ -136,7 +156,8 @@
         app:layout_constraintTop_toBottomOf="@id/view_cost_delivery"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <EditText
+
+    <TextView
 
         android:id="@+id/et_restaurant_address"
         android:layout_width="0dp"
@@ -163,7 +184,23 @@
         app:layout_constraintTop_toBottomOf="@id/et_restaurant_address"
         />
 
-    <TextView
+
+    <Button
+        android:id="@+id/bt_get_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text= "Get food"
+        android:background="@color/eah_orange"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_restaurant_address_separator"/>
+
+   <TextView
         android:id="@+id/tv_delivery_address_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -174,10 +211,10 @@
         android:layout_marginBottom="@dimen/activity_margin"
         android:layout_marginStart="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/view_restaurant_address_separator"
+        app:layout_constraintTop_toBottomOf="@id/bt_get_food"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <EditText
+    <TextView
 
         android:id="@+id/et_delivery_address"
         android:layout_width="0dp"
@@ -194,7 +231,7 @@
         />
 
     <View
-        android:id="@+id/view_address_separator"
+        android:id="@+id/view_delivery_address_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/eah_background_dark"
@@ -203,6 +240,25 @@
 
         app:layout_constraintTop_toBottomOf="@id/et_delivery_address"
         />
+
+    <Button
+        android:id="@+id/bt_give_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/give_food"
+        android:background="@color/eah_orange"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_delivery_address_separator"/>
+
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
