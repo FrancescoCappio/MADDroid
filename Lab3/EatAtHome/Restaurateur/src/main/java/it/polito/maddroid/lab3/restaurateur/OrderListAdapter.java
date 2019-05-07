@@ -18,14 +18,14 @@ import com.google.firebase.storage.StorageReference;
 import it.polito.maddroid.lab3.common.Order;
 
 
-public class OrderListAdapter extends ListAdapter<OrderRestaurant, OrderListAdapter.MyViewHolder> {
+public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyViewHolder> {
 
     private static StorageReference storageReference;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private OrderListAdapter.ItemClickListener itemClickListener;
 
-    protected OrderListAdapter(@NonNull DiffUtil.ItemCallback<OrderRestaurant> diffCallback, OrderListAdapter.ItemClickListener itemClickListener) {
+    protected OrderListAdapter(@NonNull DiffUtil.ItemCallback<Order> diffCallback, OrderListAdapter.ItemClickListener itemClickListener) {
         super(diffCallback);
         storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -49,7 +49,7 @@ public class OrderListAdapter extends ListAdapter<OrderRestaurant, OrderListAdap
     }
 
     public interface ItemClickListener {
-        void clickListener(OrderRestaurant order);
+        void clickListener(Order order);
     }
 
 
@@ -72,7 +72,7 @@ public class OrderListAdapter extends ListAdapter<OrderRestaurant, OrderListAdap
 
         }
 
-        public void setupOrder(OrderRestaurant order, OrderListAdapter.ItemClickListener itemClickListener, String userUID) {
+        public void setupOrder(Order order, OrderListAdapter.ItemClickListener itemClickListener, String userUID) {
             tvOrderId.setText(order.getOrderId());
             tvOrderRiderId.setText(order.getRiderId());
             tvOrderTotPrice.setText(String.valueOf(order.getTotalCost()));
