@@ -29,6 +29,7 @@ public class EAHCONST {
         PENDING,
         CONFIRMED,
         DECLINED,
+        ONGOING,
         COMPLETED
     }
     
