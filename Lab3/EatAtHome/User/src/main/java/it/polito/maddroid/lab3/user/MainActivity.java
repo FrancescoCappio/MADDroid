@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private int currentSelectedPosition; //0 = restaurant
     private RestaurantsFragment restaurantFragment;
+    private OrdersFragment ordersFragment;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         
         if (id == R.id.nav_orders) {
-            // Handle the camera action
+            selectItem(1);
         }
         else if (id == R.id.nav_restaurants) {
             selectItem(0);
@@ -185,15 +186,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof RestaurantsFragment)) {
+            if ((fr instanceof RestaurantsFragment) || (fr instanceof  OrdersFragment)) {
                 fragment = fr;
                 break;
             }
         }
 
         currentSelectedPosition = position;
-        navigationView.setCheckedItem(position);
-
+        
         boolean changed = false;
         switch (position) {
             case 0:
@@ -203,12 +203,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragment = restaurantFragment;
                     changed = true;
                 }
+    
+                navigationView.setCheckedItem(R.id.nav_restaurants);
 
                 getSupportActionBar().setTitle(R.string.restaurants);
                 
                 break;
 
             case 1:
+                
+                if (!(fragment instanceof  OrdersFragment)) {
+                    ordersFragment = new OrdersFragment();
+                    fragment = ordersFragment;
+                    changed = true;
+                }
+                
+                navigationView.setCheckedItem(R.id.nav_orders);
+    
+                getSupportActionBar().setTitle(R.string.orders);
 
                 break;
             case 2:

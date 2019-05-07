@@ -1,4 +1,4 @@
-package it.polito.maddroid.lab3.restaurateur;
+package it.polito.maddroid.lab3.user;
 
 
 import android.view.LayoutInflater;
@@ -97,8 +97,6 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
                 
                 tvQuantity.setText(quantity + ": " + dish.getQuantity());
             }
-
         }
-
     }
 }
