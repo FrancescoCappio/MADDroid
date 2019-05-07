@@ -83,7 +83,7 @@ public class MenuFragment extends Fragment {
             i.putExtra(DishDetailsActivity.DISH_KEY, dish);
             lastDishClicked = dish;
             startActivityForResult(i, MainActivity.DISH_DETAIL_CODE);
-        });
+        },currentUser.getUid(), MenuListAdapter.MODE_RESTAURANT_MENU);
 
         rvMenu.setAdapter(adapter);
         return view;
