@@ -77,7 +77,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         getReferencesToViews();
         setupClickListeners();
