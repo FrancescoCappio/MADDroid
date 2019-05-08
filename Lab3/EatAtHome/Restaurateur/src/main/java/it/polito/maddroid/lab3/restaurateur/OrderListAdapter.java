@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 
 
@@ -55,30 +58,47 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private View itemView;
-        private TextView tvOrderId;
+        private TextView tvOrderCustomer;
         private TextView tvOrderTotPrice;
-        private TextView tvOrderRiderId;
+        private TextView tvOrderDate;
         private TextView tvOrderTimeTable;
+        private TextView tvOrderStatus;
+        private CardView cardView;
 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvOrderId = itemView.findViewById(R.id.tv_order_id);
-            tvOrderRiderId = itemView.findViewById(R.id.tv_rider_id);
+            cardView = itemView.findViewById(R.id.cv_element_container);
+            tvOrderCustomer = itemView.findViewById(R.id.tv_customer_order_name);
+            tvOrderDate = itemView.findViewById(R.id.tv_order_date);
             tvOrderTotPrice = itemView.findViewById(R.id.tv_total_cost);
-            tvOrderTimeTable =  itemView.findViewById(R.id.tv_schedule);
+            tvOrderTimeTable =  itemView.findViewById(R.id.tv_delivery_time);
+            tvOrderStatus = itemView.findViewById(R.id.tv_order_status);
             this.itemView = itemView;
 
         }
 
         public void setupOrder(Order order, OrderListAdapter.ItemClickListener itemClickListener, String userUID) {
-            tvOrderId.setText(order.getOrderId());
-            tvOrderRiderId.setText(order.getRiderId());
-            tvOrderTotPrice.setText(String.valueOf(order.getTotalCost()));
+            tvOrderCustomer.setText(order.getCustomerName());
+            tvOrderDate.setText(order.getDate());
+            String [] suddivido = order.getTotalCost().split(" ");
+            float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
+            tvOrderTotPrice.setText(String.format("%.02f", costo) + " €");
             tvOrderTimeTable.setText(order.getDeliveryTime());
+            tvOrderStatus.setText(order.getOrderStatus().toString());
             itemView.setOnClickListener(v -> itemClickListener.clickListener(order));
-
+            switch ( order.getOrderStatus()) {
+                case PENDING:
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
+                    break;
+                case DECLINED:
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
+                    break;
+                case CONFIRMED:
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
+                    break;
+            }
         }
     }
 

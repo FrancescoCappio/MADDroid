@@ -72,7 +72,7 @@
 
     <string name="dishes">Dishes</string>
 
-    <string name="order_detail">Order detail</string>
+    <string name="order_detail">Order details</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -95,7 +95,7 @@
     <string name="date">Date</string>
 
     <string name="total_cost">Total cost</string>
-
+    <string name="rider_not_assigned">No riders assigned to this order yet</string>
     <string name="order_status">Order status</string>
 
     <string name="status_confirmed">Confirmed</string>

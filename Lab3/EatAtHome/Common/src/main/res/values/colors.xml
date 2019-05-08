@@ -13,5 +13,7 @@
     <color name="eah_orange_alert">#FF9800</color>
     <color name="eah_green_alert">#C98BC34A</color>
     <color name="eah_red_alert">#F44336</color>
+    <color name="eah_green_accept">#4EC021</color>
+    <color name="eah_red_decline">#E90606</color>
 
 </resources>

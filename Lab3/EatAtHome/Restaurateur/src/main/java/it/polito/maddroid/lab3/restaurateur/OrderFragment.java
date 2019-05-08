@@ -23,7 +23,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
@@ -49,6 +51,7 @@ public class OrderFragment extends Fragment {
     public List<Order> orders;
 
     private ProgressBar pbLoading;
+    private int countOrders = 0;
 
 
     public OrderFragment() {
@@ -64,7 +67,7 @@ public class OrderFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
 
         View view = inflater.inflate(R.layout.fragment_orders, container, false);
-        pbLoading = view.findViewById(R.id.pb_loading);
+        pbLoading = view.findViewById(R.id.pb_loading_order);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
 
@@ -91,11 +94,13 @@ public class OrderFragment extends Fragment {
         Query queryRef = dbRef
                 .child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid());
 
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //todo costo totale in float o in string?
                 Log.d(TAG, "onDataChange Called");
+                orders = new ArrayList<>();
+                countOrders = (int) dataSnapshot.getChildrenCount();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                     String orderId = ds.getKey();
@@ -108,16 +113,19 @@ public class OrderFragment extends Fragment {
                     String dateDelivery = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
                     EAHCONST.OrderStatus orderStatus = ds.child(EAHCONST.REST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
 
+                    Map<String, Integer> dishes = new HashMap<>();
+                    for (DataSnapshot dishesSnap : ds.child(EAHCONST.REST_ORDER_DISHES_SUBTREE).getChildren()) {
+                        String id = dishesSnap.getKey();
+                        int quantity = ((Long) dishesSnap.getValue()).intValue();
+                        dishes.put(id, quantity);
+                    }
 
                     Order order = new Order(orderId,totalPrice,riderId,customerId,currentUser.getUid(),timeDelivery,dateDelivery,deliveryAddress,orderStatus);
-                    /*
-                    if (lastOrderClicked != null && lastOrderClicked.getOrderId() == order.getOrderId()) {
-                        order.markUpdated();
-                        lastOrderClicked = null;
-                    }*/
+                    order.setDishesMap(dishes);
+
                     orders.add(order);
+                    downloadCustomerName(order);
                 }
-                setupAdapter();
                 setActivityLoading(false);
             }
 
@@ -130,7 +138,39 @@ public class OrderFragment extends Fragment {
 
 
     }
-    private void setupAdapter() { adapter.submitList(orders);}
+
+    private void downloadCustomerName(Order order) {
+        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(order.getCustomerId()).child(EAHCONST.CUSTOMER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    Log.e(TAG, "Cannot find name for customer: ");
+                    return;
+                }
+                order.setCustomerName((String) dataSnapshot.getValue());
+                checkAllOrdersDownloaded();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error");
+            }
+        });
+
+
+    }
+
+    private void checkAllOrdersDownloaded() {
+        if (orders.size() != countOrders)
+            return;
+
+        for(Order o : orders)
+            if(o.getCustomerName() == null || o.getCustomerName().isEmpty())
+                return;
+
+        adapter.submitList(orders);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
