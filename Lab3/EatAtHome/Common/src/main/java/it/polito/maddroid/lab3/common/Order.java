@@ -108,23 +108,27 @@ public class Order implements Serializable, Comparable<Order> {
     
     @Override
     public int compareTo(Order o) {
-        if (orderStatus == EAHCONST.OrderStatus.PENDING)
-            return -1;
         
-        if (o.orderStatus == EAHCONST.OrderStatus.PENDING)
-            return 1;
-        
-        if (orderStatus == EAHCONST.OrderStatus.CONFIRMED)
-            return -1;
-        
-        if (o.orderStatus == EAHCONST.OrderStatus.CONFIRMED)
-            return 1;
-        
-        
-        if (date.equals(o.date)) {
-            return deliveryTime.compareTo(o.deliveryTime);
+        if (orderStatus != o.orderStatus) {
+    
+            if (orderStatus == EAHCONST.OrderStatus.PENDING)
+                return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.PENDING)
+                return 1;
+    
+            if (orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return 1;
+    
         }
         
-        return date.compareTo(o.date);
+        if (date.equals(o.date)) {
+            return o.deliveryTime.compareTo(deliveryTime);
+        }
+        
+        return o.date.compareTo(date);
     }
 }
