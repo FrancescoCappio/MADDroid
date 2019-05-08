@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-        //TODO: check that the logged in user is a restaurateur -> else alert and exit
         
         tvAccountEmail.setText(currentUser.getEmail());
     
@@ -105,9 +105,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GlideApp.with(getApplicationContext())
                 .load(riversRef)
                 .into(ivAvatar);
-
-
+        
         selectItem(0);
+        
+        cancelAllTheNotifications();
+    }
+    
+    private void cancelAllTheNotifications() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
     }
     
     @Override

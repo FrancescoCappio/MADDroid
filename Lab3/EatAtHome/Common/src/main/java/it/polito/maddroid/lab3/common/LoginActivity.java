@@ -2,6 +2,7 @@ package it.polito.maddroid.lab3.common;
 
 
 import android.animation.LayoutTransition;
+import android.content.Context;
 import android.content.Intent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.regex.Matcher;
@@ -405,7 +407,17 @@ public class LoginActivity extends AppCompatActivity {
         Intent launchIntent = getIntent();
         Class<?> cl = (Class<?>) launchIntent.getSerializableExtra(EAHCONST.LAUNCH_ACTIVITY_KEY);
         Intent i = new Intent(getApplicationContext(), cl);
+        EAHFirebaseMessagingService.setActivityToLaunch(cl);
         startActivity(i);
+        
+        // save token on database
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, instanceIdResult -> {
+            String newToken = instanceIdResult.getToken();
+            Log.e(TAG, "New firebase token: " + newToken);
+            Utility.storeToken(dbRef, mAuth.getCurrentUser().getUid(),newToken);
+        });
+        
+        finish();
     }
     
     private void checkUserType() {
