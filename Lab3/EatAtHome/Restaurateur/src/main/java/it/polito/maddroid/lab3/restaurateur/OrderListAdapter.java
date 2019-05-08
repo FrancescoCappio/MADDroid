@@ -23,14 +23,12 @@ import it.polito.maddroid.lab3.common.Order;
 
 public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyViewHolder> {
 
-    private static StorageReference storageReference;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private OrderListAdapter.ItemClickListener itemClickListener;
 
     protected OrderListAdapter(@NonNull DiffUtil.ItemCallback<Order> diffCallback, OrderListAdapter.ItemClickListener itemClickListener) {
         super(diffCallback);
-        storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         this.itemClickListener = itemClickListener;

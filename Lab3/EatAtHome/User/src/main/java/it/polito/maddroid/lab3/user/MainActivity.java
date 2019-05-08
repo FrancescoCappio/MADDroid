@@ -247,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 
                 if (userEmail == null) {
                     //the user has not filled its account info yet
-                    //TODO: start account info
                     Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
                     i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
                     i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);

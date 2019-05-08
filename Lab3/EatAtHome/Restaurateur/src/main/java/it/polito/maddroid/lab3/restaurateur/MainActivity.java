@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragment = menuFragment;
                     changed = true;
                 }
+                navigationView.setCheckedItem(R.id.nav_menu);
 
                 getSupportActionBar().setTitle(R.string.menu);
 

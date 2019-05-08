@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.polito.maddroid.lab3.common.Dish;
-import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.OrderDiffUtilCallBack;
@@ -45,8 +43,6 @@ public class OrderFragment extends Fragment {
     private FirebaseUser currentUser;
     private OrderListAdapter adapter;
     private int waitingCount = 0;
-
-   // private Order lastOrderClicked;
 
     public List<Order> orders;
 
@@ -89,7 +85,7 @@ public class OrderFragment extends Fragment {
     }
 
     private void downloadOrdersInfo() {
-        setActivityLoading(true);
+        setFragmentLoading(true);
         orders = new ArrayList<>();
         Query queryRef = dbRef
                 .child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid());
@@ -97,16 +93,16 @@ public class OrderFragment extends Fragment {
         queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //todo costo totale in float o in string?
                 Log.d(TAG, "onDataChange Called");
+                
                 orders = new ArrayList<>();
                 countOrders = (int) dataSnapshot.getChildrenCount();
+                
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                     String orderId = ds.getKey();
                     String riderId = (String) ds.child(EAHCONST.REST_ORDER_RIDER_ID).getValue();
                     String customerId = (String) ds.child(EAHCONST.REST_ORDER_CUSTOMER_ID).getValue();
-                    //float totalPrice = Float.parseFloat( ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue().toString());
                     String totalPrice = (String) ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue();
                     String deliveryAddress = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS).getValue();
                     String timeDelivery = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_TIME).getValue();
@@ -126,13 +122,13 @@ public class OrderFragment extends Fragment {
                     orders.add(order);
                     downloadCustomerName(order);
                 }
-                setActivityLoading(false);
+                setFragmentLoading(false);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled called");
-                setActivityLoading(false);
+                setFragmentLoading(false);
             }
         });
 
@@ -140,6 +136,7 @@ public class OrderFragment extends Fragment {
     }
 
     private void downloadCustomerName(Order order) {
+        setFragmentLoading(true);
         dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(order.getCustomerId()).child(EAHCONST.CUSTOMER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -149,15 +146,15 @@ public class OrderFragment extends Fragment {
                 }
                 order.setCustomerName((String) dataSnapshot.getValue());
                 checkAllOrdersDownloaded();
+                setFragmentLoading(false);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "Database error");
+                setFragmentLoading(false);
             }
         });
-
-
     }
 
     private void checkAllOrdersDownloaded() {
@@ -194,7 +191,7 @@ public class OrderFragment extends Fragment {
 
     }
 
-    private void setActivityLoading(boolean b) {
+    private void setFragmentLoading(boolean b) {
         if (b) {
             if (waitingCount == 0)
                 pbLoading.setVisibility(View.VISIBLE);
