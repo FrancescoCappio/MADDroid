@@ -34,7 +34,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
@@ -42,7 +41,6 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
-import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
 
@@ -369,7 +367,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             totalCost += d.getQuantity() * d.getPrice();
         }
     
-        return String.format("%.02f", totalCost) + " €";
+        return String.format("%.02f", totalCost) + " € \uD83D\uDCB6️";
     }
     
     private void updateTotalVisibility() {

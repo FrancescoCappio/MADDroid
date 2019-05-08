@@ -110,8 +110,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         btConfirmOrder.setOnClickListener(v -> actionConfirmOrder());
         
-        setActivityLoading(true);
-        
     }
     
     private void getReferencesToViews() {
