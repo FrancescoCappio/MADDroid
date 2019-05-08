@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getReferencesToViews() {
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
-        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
+        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_user_email);
         
     }
     
