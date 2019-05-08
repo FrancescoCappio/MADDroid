@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.view.GravityCompat;
@@ -95,6 +97,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(ivAvatar);
         
         selectItem(0);
+        
+        cancelAllTheNotifications();
+    }
+    
+    private void cancelAllTheNotifications() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
     }
     
     @Override

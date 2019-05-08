@@ -4,6 +4,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
@@ -80,10 +82,15 @@ public class EAHFirebaseMessagingService extends FirebaseMessagingService {
     
     
     private void sendNotification(RemoteMessage.Notification remoteNotification) {
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(bm)
                 .setContentTitle(remoteNotification.getTitle())
                 .setContentText(remoteNotification.getBody())
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(remoteNotification.getBody()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
     
         // Create an explicit intent for an Activity in your app
