@@ -1,7 +1,6 @@
 package it.polito.maddroid.lab3.common;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 public class Order implements Serializable {

@@ -50,7 +50,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
-    private StorageReference mStorageRef;
 
     private String nextRiderId;
 
@@ -82,24 +81,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         getReferencesToViews();
         setupClickListeners();
-        Utility.generateRandomRiderId(dbRef, new Utility.RandomRiderCaller() {
-            @Override
-            public void generatedRiderId(String riderId) {
-                nextRiderId = riderId;
-            }
-        });
-
-
+        Utility.generateRandomRiderId(dbRef, riderId -> nextRiderId = riderId);
+        
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.order_detail);
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        Resources res = getResources();
-
-
 
         Intent i = getIntent();
 
@@ -112,25 +101,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
             finish();
         }
 
-        if(currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.PENDING)){
-            declineOrder.show();
-            confirmOrder.show();
-
-        }
-        else {
-            declineOrder.hide();
-            confirmOrder.hide();
-        }
-
-
-
-        tvOrderStatus.setText(currentOrder.getOrderStatus().toString());
         tvDeliveryData.setText(currentOrder.getDate());
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
+        
         String [] suddivido = currentOrder.getTotalCost().split(" ");
         float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
         tvTotPrice.setText(String.format("%.02f", costo) + " €");
+        
         getRiderName(currentOrder.getRiderId());
         tvCustomer.setText(currentOrder.getCustomerName());
 
@@ -142,12 +120,25 @@ public class OrderDetailsActivity extends AppCompatActivity {
         rvDishes.setAdapter(adapter);
 
         getDishesInfo();
-
+        
+        updateUIforOrderStatus();
 
     }
 
-
-
+    private void updateUIforOrderStatus() {
+        if(currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.PENDING)){
+            declineOrder.show();
+            confirmOrder.show();
+            
+            Utility.showAlertToUser(this, R.string.alert_confirm_decline_order);
+        
+        } else {
+            declineOrder.hide();
+            confirmOrder.hide();
+        }
+    
+        tvOrderStatus.setText(currentOrder.getOrderStatus().toString());
+    }
 
     private void setupClickListeners() {
         declineOrder.setOnClickListener( v -> {
@@ -159,6 +150,9 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 Log.d(TAG, "Success declined order");
                 Utility.showAlertToUser(this,R.string.notify_save_ok);
                 setActivityLoading(false);
+                
+                currentOrder.setOrderStatus(EAHCONST.OrderStatus.DECLINED);
+                updateUIforOrderStatus();
 
             }).addOnFailureListener(e -> {
 
@@ -170,6 +164,11 @@ public class OrderDetailsActivity extends AppCompatActivity {
         });
 
         confirmOrder.setOnClickListener(c-> {
+            if (nextRiderId == null) {
+                Utility.showAlertToUser(this, R.string.alert_not_ready);
+                return;
+            }
+            
             Map<String,Object> updateMap = new HashMap<>();
 
             updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_CUST_SUBTREE, currentOrder.getCustomerId(), currentOrder.getOrderId(), EAHCONST.CUST_ORDER_STATUS), EAHCONST.OrderStatus.CONFIRMED);
@@ -184,6 +183,9 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 Log.d(TAG, "Success confirmed order");
                 Utility.showAlertToUser(this,R.string.notify_save_ok);
                 setActivityLoading(false);
+    
+                currentOrder.setOrderStatus(EAHCONST.OrderStatus.CONFIRMED);
+                updateUIforOrderStatus();
 
             }).addOnFailureListener(e -> {
 
@@ -191,13 +193,9 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 Utility.showAlertToUser(this, R.string.notify_save_ko);
                 setActivityLoading(false);
             });
-
-
         });
-
     }
-
-
+    
     private void getReferencesToViews() {
             //get references to views
         tvRider = findViewById(R.id.tv_rider);
@@ -223,7 +221,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         setActivityLoading(true);
 
-        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).child(EAHCONST.RIDER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).child(EAHCONST.RIDER_NAME).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -241,9 +239,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
+    
     private synchronized void setActivityLoading(boolean loading) {
         // this method is necessary to show the user when the activity is doing a network operation
         // as downloading data or uploading data
@@ -312,8 +308,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         });
 
     }
-
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);

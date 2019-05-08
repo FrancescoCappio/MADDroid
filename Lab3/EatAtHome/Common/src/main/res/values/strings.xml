@@ -37,6 +37,7 @@
     <string name="login_alert">You need to login to use the app</string>
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
     <string name="logout_confirm_request">Are you sure do you want to logout?</string>
+    <string name="alert_confirm_decline_order">Please confirm or decline this order</string>
     <string name="notify_save_ok">Info saved</string>
     <string name="notify_avatar_upload_ok">Avatar uploaded</string>
     <string name="notify_save_ko">Error while saving</string>
