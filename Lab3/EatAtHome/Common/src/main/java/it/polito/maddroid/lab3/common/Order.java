@@ -24,8 +24,9 @@ public class Order implements Serializable, Comparable<Order> {
     private String riderId;
     private String customerId;
     private String restaurantId;
-    
+
     private String restaurantName;
+    private String customerName;
 
     private String deliveryTime;
 
@@ -47,6 +48,10 @@ public class Order implements Serializable, Comparable<Order> {
 
     public String getRiderId() {
         return riderId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
     }
 
     public String getCustomerId() {
@@ -84,13 +89,21 @@ public class Order implements Serializable, Comparable<Order> {
     public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
-    
+
     public String getRestaurantName() {
         return restaurantName;
     }
-    
+
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public void setRiderId(String s) {
+        this.riderId = s;
+    }
+
+    public void setCustomerName(String s) {
+        this.customerName = s;
     }
     
     @Override

@@ -190,7 +190,7 @@ public class Utility {
                     ridersIds.add(ds.getKey());
                 }
                 
-                int index = getRandomNumberInRange(0, ridersIds.size());
+                int index = getRandomNumberInRange(0, ridersIds.size()-1);
                 randomRiderCaller.generatedRiderId(ridersIds.get(index));
             }
             

@@ -43,6 +43,7 @@
     <string name="login_alert">You need to login to use the app</string>
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
     <string name="logout_confirm_request">Are you sure do you want to logout?</string>
+    <string name="alert_confirm_decline_order">Please confirm or decline this order</string>
     <string name="notify_save_ok">Info saved</string>
     <string name="notify_avatar_upload_ok">Avatar uploaded</string>
     <string name="notify_save_ko">Error while saving</string>
@@ -78,7 +79,7 @@
 
     <string name="dishes">Dishes</string>
 
-    <string name="order_detail">Order detail</string>
+    <string name="order_detail">Order details</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -91,6 +92,8 @@
     <string name="delivery_time">Delivery time</string>
     <string name="delivery_address">Delivery address</string>
     <string name="payment_info">Payment info</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="rider_name">Rider Name</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
@@ -99,7 +102,7 @@
     <string name="date">Date</string>
 
     <string name="total_cost">Total cost</string>
-
+    <string name="rider_not_assigned">No riders assigned to this order yet</string>
     <string name="order_status">Order status</string>
 
     <string name="status_confirmed">Confirmed</string>

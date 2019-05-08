@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/MainAppTheme">
         <activity android:name=".DishDetailsActivity"></activity>
+        <activity android:name=".OrderDetailsActivity"></activity>
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity
             android:name=".MainActivity"

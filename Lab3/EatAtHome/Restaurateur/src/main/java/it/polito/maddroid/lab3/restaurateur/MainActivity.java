@@ -45,11 +45,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static String TAG = "MainActivity";
 
     public static final int DISH_DETAIL_CODE = 124;
+    public static final int ORDER_DETAIL_CODE = 123;
 
 
     private int currentSelectedPosition;
     private MenuFragment menuFragment;
-    
+    private OrderFragment orderFragment;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -104,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .load(riversRef)
                 .into(ivAvatar);
 
+
+        selectItem(0);
     }
     
     @Override
@@ -165,12 +168,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setAddItem(){
+        if(addItem == null)
+            return;
         if (currentSelectedPosition == 1) {
             addItem.setVisible(true);
         } else {
             addItem.setVisible(false);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -226,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof MenuFragment)) {
+            if ((fr instanceof MenuFragment) || (fr instanceof  OrderFragment)) {
                 fragment = fr;
                 break;
             }
@@ -239,14 +245,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (position) {
             case 0:
 
+                if (!(fragment instanceof  OrderFragment)) {
+                    orderFragment = new OrderFragment();
+                    fragment = orderFragment;
+                    changed = true;
+                }
+
+                navigationView.setCheckedItem(R.id.nav_orders);
+
+                getSupportActionBar().setTitle(R.string.orders);
+
                 break;
 
             case 1:
-                if (!(fragment instanceof MenuFragment)) {
+                if (!(fragment instanceof MenuFragment) ) {
                     menuFragment = new MenuFragment();
                     fragment = menuFragment;
                     changed = true;
                 }
+                navigationView.setCheckedItem(R.id.nav_menu);
 
                 getSupportActionBar().setTitle(R.string.menu);
 
