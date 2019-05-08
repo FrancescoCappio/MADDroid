@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -208,11 +209,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectItem(1);
         
         }
-        else if (id == R.id.nav_settings) {
-        
-        }
         else if (id == R.id.nav_app_info) {
-        
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab3");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.user;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -126,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupClickListeners() {
         
         llNavHeaderMain.setOnClickListener(v -> {
-            //TODO: start account info
             Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
             i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
             startActivity(i);
@@ -172,11 +172,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.nav_restaurants) {
             selectItem(0);
         }
-        else if (id == R.id.nav_settings) {
-        
-        }
         else if (id == R.id.nav_app_info) {
-        
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab3");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
