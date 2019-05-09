@@ -45,6 +45,7 @@ import it.polito.maddroid.lab3.common.Utility;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "MainActivity";
+    private static String STATE_SELECTED_POSITION = "state_selected_position";
 
     public static final int DISH_DETAIL_CODE = 124;
     public static final int ORDER_DETAIL_CODE = 123;
@@ -339,5 +340,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     menuFragment.downloadDishesInfo();
                 break;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        selectItem(currentSelectedPosition);
     }
 }

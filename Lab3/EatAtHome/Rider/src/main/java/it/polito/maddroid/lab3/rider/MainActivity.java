@@ -210,5 +210,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
+    /*
+
+     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        selectItem(currentSelectedPosition);
+    }
+     */
     
 }

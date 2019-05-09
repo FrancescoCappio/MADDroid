@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +74,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     // static const
     private static final String TAG = "AccountInfoActivity";
     private static final int PHOTO_REQUEST_CODE = 121;
+
     private int DESCRIPTION_MAX_LENGTH;
     
     // general purpose attributes
@@ -121,7 +123,10 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
     private static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
     private static final String MANDATORY_INFO_KEY = "MANDATORY_INFO_KEY";
-    
+    private static final String CATEGORIES_AFTE ="CATEGORIES_AFTER";
+    private static final String CATEGORIES_BEFO ="CATEGORIES_BEFORE";
+    private static final String TIMETABLEINFO ="TIMETABLE_INFO";
+
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +185,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
-        
+        outState.putString(TIMETABLEINFO,timeTableRest);
+        outState.putStringArrayList(CATEGORIES_BEFO, (ArrayList<String>) previousSelectedCategoriesId);
+        outState.putStringArrayList(CATEGORIES_AFTE, (ArrayList<String>) currentSelectedCategoriesId);
+
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
         outState.putBoolean(EDIT_MODE_KEY, editMode);
         
@@ -197,7 +205,11 @@ public class AccountInfoActivity extends AppCompatActivity {
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
         etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
         etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
-        
+
+        previousSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_BEFO);
+        currentSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_AFTE);
+        timeTableRest = savedInstanceState.getString(TIMETABLEINFO);
+
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
         mandatoryAccountInfo = savedInstanceState.getBoolean(MANDATORY_INFO_KEY);
         
