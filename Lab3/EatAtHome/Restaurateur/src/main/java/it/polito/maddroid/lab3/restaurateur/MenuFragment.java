@@ -154,6 +154,9 @@ public class MenuFragment extends Fragment {
     }
 
     private synchronized void setActivityLoading(boolean loading) {
+        if(pbLoading == null)
+            return;
+        //pbLoading = view.findViewById(R.id.pb_loading1);
         if (loading) {
             if (waitingCount == 0)
                 pbLoading.setVisibility(View.VISIBLE);
