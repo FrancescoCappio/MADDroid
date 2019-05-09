@@ -47,8 +47,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     TextView tvAccountEmail;
 
+
+    private MenuItem refreshItem;
+
+    private Bundle orderHistoryBundle;
+
     private int currentSelectedPosition;
     private CurrentOrderFragment currentFragment;
+    private OrdersFragment ordersFragment;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
     
@@ -80,10 +86,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-        //TODO: check that the logged in user is a Rider -> else alert and exit
+
         
         tvAccountEmail.setText(currentUser.getEmail());
-        //TODO: set avatar image as navigation view header's image
+
+        selectItem(0);
     }
     
     @Override
@@ -133,17 +140,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
-    
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        refreshItem = menu.findItem(R.id.action_refresh);
+        if (currentSelectedPosition == 0 ) {
+            refreshItem.setVisible(true);
+        }
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == R.id.action_refresh){
+            if(currentSelectedPosition == 0){
+                CurrentOrderFragment fr = new CurrentOrderFragment();
+                ((CurrentOrderFragment) fr).CheckOrder();
+            }
+
+        }
         
         
         return super.onOptionsItemSelected(item);
@@ -160,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Handle the camera action
         }
         else if (id == R.id.nav_deliveries_done) {
+            selectItem(1);
         
         }
         else if (id == R.id.nav_settings) {
@@ -174,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
+    public void selectItem(int position,Bundle bundle){
+        if (bundle != null)
+            orderHistoryBundle = bundle;
+        selectItem(position);
+    }
 
     public void selectItem(int position) {
 
@@ -205,12 +232,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     changed = true;
                 }
 
+                if (orderHistoryBundle != null )
+                    fragment.setArguments(orderHistoryBundle);
+
                 getSupportActionBar().setTitle(R.string.current_delivery);
+
+                if(refreshItem != null)
+                    refreshItem.setVisible(true);
 
                 break;
 
             case 1:
+                if (!(fragment instanceof OrdersFragment)) {
+                    ordersFragment = new OrdersFragment();
+                    fragment = ordersFragment;
+                    changed = true;
+                }
 
+                getSupportActionBar().setTitle(R.string.history_delivery);
+
+                if(refreshItem != null)
+                    refreshItem.setVisible(false);
 
                 break;
             case 2:

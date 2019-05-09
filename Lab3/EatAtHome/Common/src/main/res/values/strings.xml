@@ -68,6 +68,7 @@
 
     <string name="delivery_detail">Delivery Details</string>
     <string name="current_delivery">Current Delivery </string>
+    <string name="history_delivery">History Delivery </string>
 
     <string name="quantity">Quantity</string>
 
@@ -84,7 +85,7 @@
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
 
     <string name="delivery_time">Delivery time</string>
-    <string name="delivery_address">Delivery address</string>
+    <string name="delivery_address">Delivery adres</string>
     <string name="payment_info">Payment info</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
@@ -100,7 +101,7 @@
     <string name="date">Date</string>
 
     <string name="total_cost">Total cost</string>
-
+    <string name="delivery_cost_order">Delivery cost</string>
     <string name="order_status">Order status</string>
 
     <string name="status_confirmed">Confirmed</string>

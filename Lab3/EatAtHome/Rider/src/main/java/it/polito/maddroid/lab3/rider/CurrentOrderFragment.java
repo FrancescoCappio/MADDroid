@@ -1,8 +1,6 @@
 package it.polito.maddroid.lab3.rider;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,8 +24,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
+import it.polito.maddroid.lab3.common.Utility;
 
 
 public class CurrentOrderFragment extends Fragment {
@@ -42,7 +46,7 @@ public class CurrentOrderFragment extends Fragment {
     public static final String ORDER_COST_DELIVERY = "ORDER_COST_DELIVERY";
     public static final String ORDER_TOTAL_COST = "ORDER_TOTAL_COST";
     public static final String ORDER_RESTAURANT_ADDRESS = "ORDER_RESTAURANT_ADDRESS";
-    public static final String ORDER_DELIVERY_ADDRESS = "ORDER_DELIVERY_ADDRESS";
+    public static final String ORDER_STATUS = "ORDER_STATUS";
     public static final String ORDER_RESTAURANT_UID = "ORDER_DELIVERY_ADDRESS";
     public static final String ORDER_CUSTOMER_UID = "ORDER_DELIVERY_ADDRESS";
 
@@ -80,8 +84,12 @@ public class CurrentOrderFragment extends Fragment {
     private View tvDeliveryAdressSeprator;
     private ProgressBar pbLoading;
 
+    private Button btGetFood;
+    private Button btDeliverFood;
 
-    private Boolean toConfirm = false;
+
+    private Boolean orderToConfirm = false;
+    private Boolean orderOnProgress = false;
 
     public CurrentOrderFragment() {
         // Required empty public constructor
@@ -96,8 +104,6 @@ public class CurrentOrderFragment extends Fragment {
 
         getReferencesToViews(view);
 
-
-
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -106,7 +112,74 @@ public class CurrentOrderFragment extends Fragment {
 
         setInvisible();
 
+
+        btGetFood.setOnClickListener(v -> getFoodAction());
+        btDeliverFood.setOnClickListener(v -> deliverFoodAction());
+
         return view;
+    }
+
+    private void deliverFoodAction() {
+
+        setActivityLoading(true);
+
+        Map<String,Object> updateMap = new HashMap<>();
+
+        EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.COMPLETED;
+        String riderOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_RIDER_SUBTREE,
+                riderUID,
+                orderID);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
+
+        // perform the update
+        dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+            setActivityLoading(false);
+            setInvisible();
+            checkOnGoingOrder();
+            Toast.makeText(getContext(), R.string.deliver_food_note, Toast.LENGTH_LONG).show();
+
+        }).addOnFailureListener(e -> {
+            setActivityLoading(false);
+            Utility.showAlertToUser(getActivity(), R.string.alert_error_deliver_food);
+        });
+    }
+
+    private void getFoodAction() {
+
+        setActivityLoading(true);
+
+        Map<String,Object> updateMap = new HashMap<>();
+
+        //update Rider SubTree
+        EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.ONGOING;
+        String riderOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_RIDER_SUBTREE,
+                riderUID,
+                orderID);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
+
+
+        //update Restaurant SubTree
+        orderStatus = EAHCONST.OrderStatus.COMPLETED;
+        String restaurantOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_REST_SUBTREE,
+                order.getRestaurantId(),
+                orderID);
+        updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_STATUS), orderStatus);
+
+
+        // perform the update
+        dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+            setActivityLoading(false);
+            btGetFood.setEnabled(false);
+            Toast.makeText(getContext(), R.string.get_food_note, Toast.LENGTH_LONG).show();
+
+        }).addOnFailureListener(e -> {
+            setActivityLoading(false);
+            Utility.showAlertToUser(getActivity(), R.string.alert_error_get_food);
+        });
+
     }
 
 
@@ -114,34 +187,56 @@ public class CurrentOrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        checkPendingOrder();
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            restaurantUID =  bundle.getString(CurrentOrderFragment.ORDER_RESTAURANT_UID); // Put anything what you want
+            customerUID = bundle.getString(CurrentOrderFragment.ORDER_CUSTOMER_UID);
+            orderID = bundle.getString(CurrentOrderFragment.ORDER_ID_KEY);
+            String orderStatus = bundle.getString(CurrentOrderFragment.ORDER_STATUS);
+            if (orderStatus == "PENDING") {
+                orderToConfirm = true;
+                orderOnProgress = false;
+            }
+            else if (orderStatus == "ONGOING"){
+                orderToConfirm = false;
+                orderOnProgress = true;
+            }
+
+            getRestaurantOrderDetail();
+
+        }
+
+        checkOnGoingOrder();
     }
 
-    private void checkPendingOrder() {
+    public void CheckOrder(){
+        checkOnGoingOrder();
+    }
 
+    public void checkOnGoingOrder() {
         setActivityLoading(true);
 
         Query queryRef = dbRef.child(EAHCONST.ORDERS_RIDER_SUBTREE)
-                .child(riderUID).orderByChild(EAHCONST.RIDER_ORDER_STATUS).equalTo("PENDING");
+                .child(riderUID).orderByChild(EAHCONST.RIDER_ORDER_STATUS).equalTo("ONGOING");
 
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange Called");
+
                 if (!dataSnapshot.hasChildren()){
-                    toConfirm = false;
-                    setInvisible();
+                    orderToConfirm = false;
+                    orderOnProgress = false;
                     checkConfirmedOrder();
                     return;
                 }
+                Log.d(TAG, "onDataChange Called");
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
-                    toConfirm = true;
+                    orderOnProgress = true;
                     orderID = ds.getKey();
                     customerUID = (String) ds.child(EAHCONST.RIDER_ORDER_CUSTOMER_ID).getValue();
                     restaurantUID = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
 
-                    if (customerUID != null && restaurantUID != null){
+                    if (customerUID != null && restaurantUID != null && orderID != null){
                         getRestaurantOrderDetail();
                     }
                 }
@@ -163,14 +258,13 @@ public class CurrentOrderFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (!dataSnapshot.hasChildren()){
-                    toConfirm = false;
-                    setInvisible();
-                    setActivityLoading(false);
+                    orderToConfirm = false;
+                    orderOnProgress = false;
+                    checkPendingOrder();
                     return;
                 }
                 Log.d(TAG, "onDataChange Called");
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
                     orderID = ds.getKey();
                     customerUID = (String) ds.child(EAHCONST.RIDER_ORDER_CUSTOMER_ID).getValue();
                     restaurantUID = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
@@ -187,11 +281,42 @@ public class CurrentOrderFragment extends Fragment {
         });
     }
 
+    private void checkPendingOrder() {
+
+        Query queryRef = dbRef.child(EAHCONST.ORDERS_RIDER_SUBTREE)
+                .child(riderUID).orderByChild(EAHCONST.RIDER_ORDER_STATUS).equalTo("PENDING");
+
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange Called");
+                if (!dataSnapshot.hasChildren()){
+                    orderToConfirm = false;
+                    orderOnProgress = false;
+                    setInvisible();
+                    setActivityLoading(false);
+                    return;
+                }
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    orderToConfirm = true;
+                    orderID = ds.getKey();
+                    customerUID = (String) ds.child(EAHCONST.RIDER_ORDER_CUSTOMER_ID).getValue();
+                    restaurantUID = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
+                }
+                if (customerUID != null && restaurantUID != null){
+                    getRestaurantOrderDetail();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+            }
+        });
+    }
 
 
 
     private void getRestaurantOrderDetail() {
-
 
         Query queryRef = dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(restaurantUID).child(orderID);
 
@@ -225,10 +350,9 @@ public class CurrentOrderFragment extends Fragment {
 
                 if (orderRestaurantAddress != null) {
 
-                    if (toConfirm) {
-                        String orderDeliveryAddress = order.getDeliveryAddress();
-                        Intent i = new Intent(getContext(), confirmOrderActivity.class);
+                    if (orderToConfirm) {
 
+                        Intent i = new Intent(getContext(), confirmOrderActivity.class);
                         i.putExtra(ORDER_KEY,order);
                         i.putExtra(ORDER_COST_DELIVERY, String.valueOf(EAHCONST.DELIVERY_COST)+ " €");
                         i.putExtra(ORDER_RESTAURANT_ADDRESS, orderRestaurantAddress);
@@ -238,6 +362,8 @@ public class CurrentOrderFragment extends Fragment {
                     else {
                         setVisible();
                         setDataToView();
+                        if(orderOnProgress)
+                            btGetFood.setEnabled(false);
                         setActivityLoading(false);
                     }
                 }
@@ -278,6 +404,9 @@ public class CurrentOrderFragment extends Fragment {
 
         pbLoading = view.findViewById(R.id.pb_loading);
 
+        btGetFood = view.findViewById(R.id.bt_get_food);
+        btDeliverFood = view.findViewById(R.id.bt_deliver_food);
+
     }
 
     private void setDataToView() {
@@ -289,6 +418,8 @@ public class CurrentOrderFragment extends Fragment {
     }
 
     private void setInvisible() {
+        btGetFood.setEnabled(true);
+        btDeliverFood.setEnabled(true);
         tvDeliveryTime.setVisibility(View.INVISIBLE);
         tvDeliveryTimeTitle.setVisibility(View.INVISIBLE);
         tvDeliveryTimeSeprator.setVisibility(View.INVISIBLE);
@@ -305,11 +436,17 @@ public class CurrentOrderFragment extends Fragment {
         tvDeliveryAdressTitle.setVisibility(View.INVISIBLE);
         tvDeliveryAdressSeprator.setVisibility(View.INVISIBLE);
 
+        btDeliverFood.setVisibility(View.INVISIBLE);
+        btGetFood.setVisibility(View.INVISIBLE);
+
         tvNoOrder.setVisibility(View.VISIBLE);
 
     }
 
     private void setVisible() {
+        btGetFood.setEnabled(true);
+        btDeliverFood.setEnabled(true);
+
         tvDeliveryTime.setVisibility(View.VISIBLE);
         tvDeliveryTimeTitle.setVisibility(View.VISIBLE);
         tvDeliveryTimeSeprator.setVisibility(View.VISIBLE);
@@ -325,6 +462,9 @@ public class CurrentOrderFragment extends Fragment {
         tvDeliveryAdress.setVisibility(View.VISIBLE);
         tvDeliveryAdressTitle.setVisibility(View.VISIBLE);
         tvDeliveryAdressSeprator.setVisibility(View.VISIBLE);
+
+        btDeliverFood.setVisibility(View.VISIBLE);
+        btGetFood.setVisibility(View.VISIBLE);
 
         tvNoOrder.setVisibility(View.INVISIBLE);
     }

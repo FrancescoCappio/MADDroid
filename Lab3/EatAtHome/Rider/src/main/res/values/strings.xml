@@ -11,14 +11,22 @@
 
     <string name="order_rider">Last deliveries</string>
     <string name="confirm_order_note">You have confirmed the order</string>
-    <string name="alert_error_confirming">There was an error while confirming the order</string>
 
+    <string name="alert_error_confirming">There was an error while confirming the order</string>
     <string name="declivne_order_note">You have declined the order</string>
 
-    <String name="got_food">Get food</String>
-
+    <string name="get_food">Get food</string>
     <string name="give_food">Deliver to client</string>
 
+    <string name="get_food_note">The food have got from Restaurant</string>
+    <string name="alert_error_get_food">There was an error while confirming to get the foods</string>
+
+    <string name="deliver_food_note">The order has finished completely</string>
+    <string name="alert_error_deliver_food">There was an error while finishing the order</string>
+    <string name="action_refresh">Refresh</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

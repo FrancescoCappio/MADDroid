@@ -189,7 +189,7 @@
         android:id="@+id/bt_get_food"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text= "Get food"
+        android:text= "@string/get_food"
         android:background="@color/eah_orange"
 
         android:layout_marginTop="@dimen/activity_margin"
@@ -242,7 +242,7 @@
         />
 
     <Button
-        android:id="@+id/bt_give_food"
+        android:id="@+id/bt_deliver_food"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/give_food"
