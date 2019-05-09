@@ -13,6 +13,6 @@ public class RiderOrderDeliveryDiffUtilCallback extends androidx.recyclerview.wi
     
     @Override
     public boolean areContentsTheSame(@NonNull RiderOrderDelivery oldItem, @NonNull RiderOrderDelivery newItem) {
-        return oldItem.getOrderId().equals(newItem.getOrderId());
+        return oldItem.getOrderId().equals(newItem.getOrderId()) && oldItem.getOrderStatus() == newItem.getOrderStatus();
     }
 }

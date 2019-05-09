@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private final static String TAG = "MainActivity";
     
+    private static String STATE_SELECTED_POSITION = "state_selected_position";
+    
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -57,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tvAccountEmail;
     private ImageView ivAvatar;
     
-    private MenuItem refreshItem;
     
     private Bundle orderHistoryBundle;
     
@@ -240,9 +241,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportActionBar().setTitle(R.string.current_deliveries);
                 navigationView.setCheckedItem(R.id.nav_current_deliveries);
 
-                if(refreshItem != null)
-                    refreshItem.setVisible(true);
-
                 break;
 
             case 1:
@@ -254,9 +252,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 getSupportActionBar().setTitle(R.string.all_deliveries);
                 navigationView.setCheckedItem(R.id.nav_all_deliveries);
-
-                if(refreshItem != null)
-                    refreshItem.setVisible(false);
 
                 break;
             case 2:
@@ -298,6 +293,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
             }
         });
+    }
+
+
+     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        selectItem(currentSelectedPosition);
     }
     
     
