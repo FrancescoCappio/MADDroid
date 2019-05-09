@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Locale;
+
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 
@@ -82,7 +84,7 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
             tvOrderDate.setText(order.getDate());
             String [] suddivido = order.getTotalCost().split(" ");
             float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
-            tvOrderTotPrice.setText(String.format("%.02f", costo) + " €");
+            tvOrderTotPrice.setText(String.format(Locale.US,"%.02f", costo) + " €");
             tvOrderTimeTable.setText(order.getDeliveryTime());
             tvOrderStatus.setText(order.getOrderStatus().toString());
             itemView.setOnClickListener(v -> itemClickListener.clickListener(order));

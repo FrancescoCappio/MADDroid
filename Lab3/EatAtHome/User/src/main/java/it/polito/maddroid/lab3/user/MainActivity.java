@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.EAHFirebaseMessagingService;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -90,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         }
         
+        EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
+        
         tvAccountEmail.setText(currentUser.getEmail());
     
         StorageReference riversRef = storageRef.child("avatar_" + currentUser.getUid() +".jpg");
@@ -97,7 +100,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .load(riversRef)
                 .into(ivAvatar);
         
-        selectItem(0);
+        Intent intent = getIntent();
+        
+        if (intent.getBooleanExtra(EAHCONST.NOTIFICATION_KEY,false)) {
+            selectItem(1);
+        } else
+            selectItem(0);
         
         cancelAllTheNotifications();
     }

@@ -12,6 +12,8 @@ public class EAHCONST {
     
     public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
     
+    public static String NOTIFICATION_KEY = "NOTIFICATION_KEY";
+    
     public static String LAUNCH_EDIT_ENABLED_KEY = "LAUNCH_EDIT_ENABLED_KEY";
     public static String ACCOUNT_INFO_EMPTY = "ACCOUNT_INFO_EMPTY";
     
@@ -27,11 +29,11 @@ public class EAHCONST {
     }
     
     public enum OrderStatus {
-        PENDING,
-        CONFIRMED,
-        DECLINED,
         ONGOING,
-        COMPLETED
+        CONFIRMED,
+        PENDING,
+        COMPLETED,
+        DECLINED
     }
     
     

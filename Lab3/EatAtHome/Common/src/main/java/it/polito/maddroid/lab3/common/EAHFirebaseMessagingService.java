@@ -82,7 +82,7 @@ public class EAHFirebaseMessagingService extends FirebaseMessagingService {
     
     
     private void sendNotification(RemoteMessage.Notification remoteNotification) {
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.round_logo);
         
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -100,6 +100,7 @@ public class EAHFirebaseMessagingService extends FirebaseMessagingService {
         } else {
             Intent intent = new Intent(this, activityToLaunch);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra(EAHCONST.NOTIFICATION_KEY, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
             builder.setContentIntent(pendingIntent);
         }

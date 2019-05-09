@@ -225,8 +225,16 @@ public class DishDetailsActivity extends AppCompatActivity {
                     return true;
                 }
     
-                float price = Float.parseFloat(sPrice);
-
+                float price;
+                
+                try {
+                    price = Float.parseFloat(sPrice);
+                } catch (NumberFormatException ex) {
+                    Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_price_not_valid);
+                    setActivityLoading(false);
+                    return true;
+                }
+                
                 if(pageType.equals(MODE_NEW)){
 
                     if (!photoPresent) {

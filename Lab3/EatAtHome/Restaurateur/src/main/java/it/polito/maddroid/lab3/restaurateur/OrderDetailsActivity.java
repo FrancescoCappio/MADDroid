@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.Dish;
@@ -106,7 +107,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         
         String [] suddivido = currentOrder.getTotalCost().split(" ");
         float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
-        tvTotPrice.setText(String.format("%.02f", costo) + " €");
+        tvTotPrice.setText(String.format(Locale.US,"%.02f", costo) + " €");
         
         getRiderName(currentOrder.getRiderId());
         tvCustomer.setText(currentOrder.getCustomerName());

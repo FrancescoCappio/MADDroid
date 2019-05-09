@@ -413,7 +413,7 @@ public class LoginActivity extends AppCompatActivity {
         // save token on database
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, instanceIdResult -> {
             String newToken = instanceIdResult.getToken();
-            Log.e(TAG, "New firebase token: " + newToken);
+            Log.d(TAG, "New firebase token: " + newToken);
             Utility.storeToken(dbRef, mAuth.getCurrentUser().getUid(),newToken);
         });
         

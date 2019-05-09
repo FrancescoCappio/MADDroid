@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -367,7 +368,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             totalCost += d.getQuantity() * d.getPrice();
         }
     
-        return String.format("%.02f", totalCost) + " € \uD83D\uDCB6️";
+        return String.format(Locale.US, "%.02f", totalCost) + " € \uD83D\uDCB6️";
     }
     
     private void updateTotalVisibility() {
