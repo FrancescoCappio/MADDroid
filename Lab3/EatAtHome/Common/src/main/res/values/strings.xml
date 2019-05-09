@@ -92,7 +92,7 @@
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
 
     <string name="delivery_time">Delivery time</string>
-    <string name="delivery_address">Delivery adres</string>
+    <string name="delivery_address">Delivery address</string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
     <string name="rider_name">Rider Name</string>

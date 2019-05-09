@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".confirmOrderActivity">
+    tools:context=".ConfirmOrderActivity">
 
     <ProgressBar
         android:id="@+id/pb_loading"
@@ -23,17 +23,18 @@
         android:textSize="18sp"
 
         android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="@dimen/activity_margin"
 
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/view_time_separator"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
 
-        android:id="@+id/et_time"
+        android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="00:00"
+        android:text="00:00"
+        android:textSize="18sp"
 
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
@@ -49,7 +50,7 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_time"
         />
 
     <TextView
@@ -64,11 +65,9 @@
         app:layout_constraintTop_toBottomOf="@id/view_time_separator"/>
 
     <TextView
-
-        android:id="@+id/et_cost_delivery"
+        android:id="@+id/tv_cost_delivery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="5.50$"
         android:textSize="18sp"
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
@@ -84,7 +83,7 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_cost_delivery"
+        app:layout_constraintTop_toBottomOf="@id/tv_cost_delivery"
         />
 
     <TextView
@@ -100,10 +99,10 @@
 
     <TextView
 
-        android:id="@+id/et_total_cost"
+        android:id="@+id/tv_total_cost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="95.50$"
+        android:text="95.50$"
         android:textSize="18sp"
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
@@ -119,7 +118,7 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_total_cost"
+        app:layout_constraintTop_toBottomOf="@id/tv_total_cost"
         />
 
     <TextView
@@ -137,7 +136,7 @@
 
     <TextView
 
-        android:id="@+id/et_restaurant_address"
+        android:id="@+id/tv_restaurant_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/restaurant_address"
@@ -159,7 +158,7 @@
 
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_restaurant_address"
+        app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address"
         />
 
     <TextView
@@ -178,7 +177,7 @@
 
     <TextView
 
-        android:id="@+id/et_delivery_address"
+        android:id="@+id/tv_delivery_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/delivery_address"
@@ -200,37 +199,29 @@
 
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_delivery_address"
+        app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
         />
 
-    <Button
-        android:id="@+id/bt_confirm"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_decline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/confirm_order"
-        android:background="@color/eah_green"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginStart="@dimen/activity_margin"
-
+        android:layout_gravity="end|bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_address_separator"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/ic_close_24dp"
+        app:backgroundTint="@color/eah_red_decline"
+        android:layout_margin="16dp" />
 
-    <Button
-        android:id="@+id/bt_decline"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_accept"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/decline_order"
-        android:background="@color/eah_red"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginStart="@dimen/activity_margin"
-
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_gravity="end|bottom"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bt_confirm"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/ic_check_white"
+        app:backgroundTint="@color/eah_green_accept"
+        android:layout_margin="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

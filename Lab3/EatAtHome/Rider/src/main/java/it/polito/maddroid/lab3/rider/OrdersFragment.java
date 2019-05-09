@@ -1,5 +1,6 @@
 package it.polito.maddroid.lab3.rider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -77,25 +78,18 @@ public class OrdersFragment extends Fragment {
         adapter = new RiderOrdersListAdapter(new OrderDiffUtilCallBack(), order -> {
 
             if (order.getOrderStatus() != EAHCONST.OrderStatus.COMPLETED ||order.getOrderStatus() != EAHCONST.OrderStatus.DECLINED ) {
-
-
-                //TODO : modify the code
+                
                 Bundle bundle = new Bundle();
                 bundle.putString(CurrentOrderFragment.ORDER_RESTAURANT_UID, order.getRestaurantId()); // Put anything what you want
                 bundle.putString(CurrentOrderFragment.ORDER_CUSTOMER_UID, order.getCustomerId());
                 bundle.putString(CurrentOrderFragment.ORDER_ID_KEY, order.getOrderId());
-                bundle.putString(CurrentOrderFragment.ORDER_STATUS, order.getOrderStatus().toString());
-//
-//                CurrentOrderFragment currentOrderFragment = new CurrentOrderFragment();
-//                currentOrderFragment.setArguments(bundle);
-
-//                getFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.main_container, currentOrderFragment)
-//                        .commit();
-
-                MainActivity main = new MainActivity();
-                main.selectItem(0, bundle);
+                bundle.putSerializable(CurrentOrderFragment.ORDER_STATUS, order.getOrderStatus());
+    
+                Activity activity = getActivity();
+                
+                if (activity instanceof MainActivity) {
+                    ((MainActivity) activity).openCurrentOrderWithBundle(bundle);
+                }
             }
         });
 

@@ -25,6 +25,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -111,8 +112,7 @@ public class CurrentOrderFragment extends Fragment {
         riderUID = currentUser.getUid();
 
         setInvisible();
-
-
+        
         btGetFood.setOnClickListener(v -> getFoodAction());
         btDeliverFood.setOnClickListener(v -> deliverFoodAction());
 
@@ -187,29 +187,29 @@ public class CurrentOrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        Bundle bundle = this.getArguments();
+        Bundle bundle = getArguments();
         if (bundle != null) {
             restaurantUID =  bundle.getString(CurrentOrderFragment.ORDER_RESTAURANT_UID); // Put anything what you want
             customerUID = bundle.getString(CurrentOrderFragment.ORDER_CUSTOMER_UID);
             orderID = bundle.getString(CurrentOrderFragment.ORDER_ID_KEY);
-            String orderStatus = bundle.getString(CurrentOrderFragment.ORDER_STATUS);
-            if (orderStatus == "PENDING") {
+            EAHCONST.OrderStatus orderStatus = (EAHCONST.OrderStatus) bundle.getSerializable(CurrentOrderFragment.ORDER_STATUS);
+            if (orderStatus == EAHCONST.OrderStatus.PENDING) {
                 orderToConfirm = true;
                 orderOnProgress = false;
             }
-            else if (orderStatus == "ONGOING"){
+            else if (orderStatus == EAHCONST.OrderStatus.ONGOING){
                 orderToConfirm = false;
                 orderOnProgress = true;
             }
 
+            setArguments(null);
             getRestaurantOrderDetail();
-
         }
 
         checkOnGoingOrder();
     }
 
-    public void CheckOrder(){
+    public void checkOrder(){
         checkOnGoingOrder();
     }
 
@@ -286,7 +286,7 @@ public class CurrentOrderFragment extends Fragment {
         Query queryRef = dbRef.child(EAHCONST.ORDERS_RIDER_SUBTREE)
                 .child(riderUID).orderByChild(EAHCONST.RIDER_ORDER_STATUS).equalTo("PENDING");
 
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
@@ -352,12 +352,14 @@ public class CurrentOrderFragment extends Fragment {
 
                     if (orderToConfirm) {
 
-                        Intent i = new Intent(getContext(), confirmOrderActivity.class);
+                        Intent i = new Intent(getContext(), ConfirmOrderActivity.class);
                         i.putExtra(ORDER_KEY,order);
-                        i.putExtra(ORDER_COST_DELIVERY, String.valueOf(EAHCONST.DELIVERY_COST)+ " €");
+                        i.putExtra(ORDER_COST_DELIVERY, String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
                         i.putExtra(ORDER_RESTAURANT_ADDRESS, orderRestaurantAddress);
                         startActivity(i);
                         setActivityLoading(false);
+                        
+                        orderToConfirm = false;
                     }
                     else {
                         setVisible();
@@ -380,25 +382,25 @@ public class CurrentOrderFragment extends Fragment {
 
     private void getReferencesToViews(View view){
 
-        tvNoOrder = view.findViewById(R.id.et_no_order);
+        tvNoOrder = view.findViewById(R.id.tv_no_order);
 
-        tvDeliveryTime = view.findViewById(R.id.et_time);
-        tvDeliveryTimeTitle = view.findViewById(R.id.et_time_title);
+        tvDeliveryTime = view.findViewById(R.id.tv_time);
+        tvDeliveryTimeTitle = view.findViewById(R.id.tv_time_title);
         tvDeliveryTimeSeprator = view.findViewById(R.id.view_time_separator);
 
-        tvCostDelivery = view.findViewById(R.id.et_cost_delivery);
-        tvCostDeliveryTitle = view.findViewById(R.id.et_cost_delivery_title);
+        tvCostDelivery = view.findViewById(R.id.tv_cost_delivery);
+        tvCostDeliveryTitle = view.findViewById(R.id.tv_cost_delivery_title);
         tvCostDeliverySeprator = view.findViewById(R.id.view_cost_delivery);
 
-        tvTotalCost = view.findViewById(R.id.et_total_cost);
+        tvTotalCost = view.findViewById(R.id.tv_total_cost);
         tvTotalCostTitle =  view.findViewById(R.id.et_total_cost_title);
         tvTotalCostSeprator = view.findViewById(R.id.view_total_cost_separator);
 
-        tvRestaurantAdress = view.findViewById(R.id.et_restaurant_address);
+        tvRestaurantAdress = view.findViewById(R.id.tv_restaurant_address);
         tvRestaurantAdressTitle = view.findViewById(R.id.tv_restaurante_address_title);
         tvRestaurantAdressSeprator =  view.findViewById(R.id.view_restaurant_address_separator);
 
-        tvDeliveryAdress = view.findViewById(R.id.et_delivery_address);
+        tvDeliveryAdress = view.findViewById(R.id.tv_delivery_address);
         tvDeliveryAdressTitle =  view.findViewById(R.id.tv_delivery_address_title);
         tvDeliveryAdressSeprator =  view.findViewById(R.id.view_delivery_address_separator);
 
@@ -412,7 +414,7 @@ public class CurrentOrderFragment extends Fragment {
     private void setDataToView() {
         tvDeliveryTime.setText(order.getDeliveryTime());
         tvTotalCost.setText(order.getTotalCost());
-        tvCostDelivery.setText(String.valueOf(EAHCONST.DELIVERY_COST) + " €");
+        tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
         tvRestaurantAdress.setText(orderRestaurantAddress);
         tvDeliveryAdress.setText(order.getDeliveryAddress());
     }

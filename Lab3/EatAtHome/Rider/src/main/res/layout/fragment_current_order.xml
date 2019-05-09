@@ -18,14 +18,14 @@
 
 
     <TextView
-        android:id="@+id/et_no_order"
+        android:id="@+id/tv_no_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="@dimen/activity_margin"
         android:layout_marginEnd="8dp"
-        android:text="there is no order"
+        android:text="@string/alert_no_orders_yet"
         android:textSize="30sp"
 
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,25 +33,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <TextView
-        android:id="@+id/et_time_title"
+        android:id="@+id/tv_time_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/delivery_time"
         android:textSize="18sp"
+
         android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="@dimen/activity_margin"
 
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/view_time_separator"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
 
-        android:id="@+id/et_time"
+        android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="00:00"
+        android:textSize="18sp"
+        android:text="00:00"
 
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
@@ -67,7 +68,7 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_time"
         />
 
     <TextView
@@ -84,10 +85,11 @@
 
     <TextView
 
-        android:id="@+id/et_total_cost"
+        android:id="@+id/tv_total_cost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="55.00$"
+        android:text="55 €"
+        android:textSize="18sp"
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
 
@@ -102,11 +104,11 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_total_cost"
+        app:layout_constraintTop_toBottomOf="@id/tv_total_cost"
         />
 
     <TextView
-        android:id="@+id/et_cost_delivery_title"
+        android:id="@+id/tv_cost_delivery_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/your_earning"
@@ -119,10 +121,11 @@
 
     <TextView
 
-        android:id="@+id/et_cost_delivery"
+        android:id="@+id/tv_cost_delivery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="5.50$"
+        android:text="4.50 €"
+        android:textSize="18sp"
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
 
@@ -137,7 +140,7 @@
         android:background="@color/eah_background_dark"
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_cost_delivery"
+        app:layout_constraintTop_toBottomOf="@id/tv_cost_delivery"
         />
 
 
@@ -159,7 +162,7 @@
 
     <TextView
 
-        android:id="@+id/et_restaurant_address"
+        android:id="@+id/tv_restaurant_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/restaurant_address"
@@ -173,6 +176,22 @@
         app:layout_constraintTop_toBottomOf="@id/tv_restaurante_address_title"
         />
 
+    <Button
+        android:id="@+id/bt_get_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text= "@string/get_food"
+        android:textColor="@color/eah_white"
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        android:background="@color/eah_green_accept"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address"/>
+
     <View
         android:id="@+id/view_restaurant_address_separator"
         android:layout_width="match_parent"
@@ -181,24 +200,8 @@
 
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_restaurant_address"
+        app:layout_constraintTop_toBottomOf="@id/bt_get_food"
         />
-
-
-    <Button
-        android:id="@+id/bt_get_food"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text= "@string/get_food"
-        android:background="@color/eah_orange"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginStart="@dimen/activity_margin"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_restaurant_address_separator"/>
 
    <TextView
         android:id="@+id/tv_delivery_address_title"
@@ -211,12 +214,12 @@
         android:layout_marginBottom="@dimen/activity_margin"
         android:layout_marginStart="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/bt_get_food"
+        app:layout_constraintTop_toBottomOf="@id/view_restaurant_address_separator"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
 
-        android:id="@+id/et_delivery_address"
+        android:id="@+id/tv_delivery_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/delivery_address"
@@ -230,6 +233,22 @@
         app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_title"
         />
 
+    <Button
+        android:id="@+id/bt_deliver_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/give_food"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:textColor="@color/eah_white"
+        android:background="@color/eah_green_accept"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"/>
+
     <View
         android:id="@+id/view_delivery_address_separator"
         android:layout_width="match_parent"
@@ -238,23 +257,8 @@
 
         android:layout_marginTop="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/et_delivery_address"
+        app:layout_constraintTop_toBottomOf="@id/bt_deliver_food"
         />
-
-    <Button
-        android:id="@+id/bt_deliver_food"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/give_food"
-        android:background="@color/eah_orange"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginStart="@dimen/activity_margin"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_delivery_address_separator"/>
 
 
 

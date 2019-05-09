@@ -61,7 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Bundle orderHistoryBundle;
     
     private int currentSelectedPosition;
-    private CurrentOrderFragment currentFragment;
+    
+    private Fragment selectedFragment;
+    private CurrentOrderFragment currentOrderFragment;
     private OrdersFragment ordersFragment;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
@@ -145,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupClickListeners() {
         
         llNavHeaderMain.setOnClickListener(v -> {
-            //TODO: start account info
             Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
             i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
             startActivity(i);
@@ -181,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.action_refresh){
             if(currentSelectedPosition == 0){
-                CurrentOrderFragment fr = new CurrentOrderFragment();
-                ((CurrentOrderFragment) fr).CheckOrder();
+                if (selectedFragment instanceof CurrentOrderFragment)
+                    ((CurrentOrderFragment) selectedFragment).checkOrder();
             }
 
         }
@@ -219,14 +220,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
-    public void selectItem(int position,Bundle bundle){
+    public void openCurrentOrderWithBundle(Bundle bundle) {
         if (bundle != null)
             orderHistoryBundle = bundle;
-        selectItem(position);
+        selectItem(0);
     }
 
-    public void selectItem(int position) {
+    private void selectItem(int position) {
 
         Fragment fragment = null;
 
@@ -238,28 +238,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof CurrentOrderFragment)) {
+            if ((fr instanceof CurrentOrderFragment) || (fr instanceof  OrdersFragment)) {
                 fragment = fr;
                 break;
             }
         }
 
         currentSelectedPosition = position;
-        navigationView.setCheckedItem(position);
 
         boolean changed = false;
         switch (position) {
             case 0:
                 if (!(fragment instanceof CurrentOrderFragment)) {
-                    currentFragment = new CurrentOrderFragment();
-                    fragment = currentFragment;
+                    currentOrderFragment = new CurrentOrderFragment();
+                    fragment = currentOrderFragment;
                     changed = true;
                 }
 
                 if (orderHistoryBundle != null )
                     fragment.setArguments(orderHistoryBundle);
+                
+                orderHistoryBundle = null;
 
                 getSupportActionBar().setTitle(R.string.current_delivery);
+                navigationView.setCheckedItem(R.id.nav_current_delivery);
 
                 if(refreshItem != null)
                     refreshItem.setVisible(true);
@@ -274,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 getSupportActionBar().setTitle(R.string.history_delivery);
+                navigationView.setCheckedItem(R.id.nav_deliveries_done);
 
                 if(refreshItem != null)
                     refreshItem.setVisible(false);
@@ -289,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         if (fragment != null && changed) {
+            selectedFragment = fragment;
             fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit();
         } else {
             Log.d("MainActivity", "No need to change the fragment");
