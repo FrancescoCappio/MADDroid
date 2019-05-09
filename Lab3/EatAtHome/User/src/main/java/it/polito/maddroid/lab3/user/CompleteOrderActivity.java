@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -102,7 +103,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         selectedDishes = (List<Dish>) dishesExtra;
         String totalCost = computeTotalCost();
         tvTotalCost.setText(totalCost);
-        tvDeliveryCost.setText(String.format("%.02f", EAHCONST.DELIVERY_COST) + " €");
+        tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
     
         etDeliveryTime.setFocusable(false);
         etDeliveryTime.setClickable(true);
@@ -150,7 +151,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         // consider delivery cost
         totalCost += EAHCONST.DELIVERY_COST;
         
-        return String.format("%.02f", totalCost) + " €";
+        return String.format(Locale.US, "%.02f", totalCost) + " €";
     }
     
     @Override

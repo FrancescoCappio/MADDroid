@@ -30,6 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.EAHFirebaseMessagingService;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         
         tvAccountEmail.setText(currentUser.getEmail());
+    
+        EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
     
         StorageReference riversRef = storageReference.child("avatar_" + currentUser.getUid() +".jpg");
         GlideApp.with(getApplicationContext())

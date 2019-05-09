@@ -98,6 +98,7 @@ public class OrdersFragment extends Fragment {
                 if (!dataSnapshot.hasChildren()) {
                     Log.d(TAG, "There are no orders for this user");
                     Utility.showAlertToUser(getActivity(), R.string.alert_no_orders_yet);
+                    setFragmentLoading(false);
                     return;
                 }
                 
