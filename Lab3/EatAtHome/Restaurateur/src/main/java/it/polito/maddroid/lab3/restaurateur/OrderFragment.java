@@ -31,6 +31,7 @@ import java.util.Map;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.OrderDiffUtilCallBack;
+import it.polito.maddroid.lab3.common.Utility;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -95,6 +96,13 @@ public class OrderFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
+    
+                if (!dataSnapshot.hasChildren()) {
+                    Log.d(TAG, "There are no orders for this restaurateur yet");
+                    Utility.showAlertToUser(getActivity(), R.string.alert_no_orders_yet);
+                    setFragmentLoading(false);
+                    return;
+                }
                 
                 orders = new ArrayList<>();
                 countOrders = (int) dataSnapshot.getChildrenCount();

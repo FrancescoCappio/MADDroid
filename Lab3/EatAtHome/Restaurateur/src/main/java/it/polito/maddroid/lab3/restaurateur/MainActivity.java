@@ -38,6 +38,7 @@ import java.util.List;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.EAHFirebaseMessagingService;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(ivAvatar);
         
         selectItem(0);
+    
+        EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
         
         cancelAllTheNotifications();
     }

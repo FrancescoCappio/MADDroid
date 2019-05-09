@@ -102,7 +102,7 @@ tools:context=".DishDetailsActivity">
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/dish_price"
-                android:inputType="textPostalAddress"
+                android:inputType="numberDecimal"
                 android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 

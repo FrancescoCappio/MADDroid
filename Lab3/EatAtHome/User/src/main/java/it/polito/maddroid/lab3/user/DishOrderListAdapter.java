@@ -13,6 +13,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -127,7 +128,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
         
         private void setTotalCost(Dish dish) {
             float tot = dish.getQuantity()*dish.getPrice();
-            tvDishTotalCost.setText(String.format("%.02f", tot) + " €");
+            tvDishTotalCost.setText(String.format(Locale.US,"%.02f", tot) + " €");
         }
         
     }

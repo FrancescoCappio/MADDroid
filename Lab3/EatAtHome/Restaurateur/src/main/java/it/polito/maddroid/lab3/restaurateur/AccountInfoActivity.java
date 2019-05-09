@@ -876,7 +876,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             return false;
         }
 
-        if (timeTableRest.isEmpty()){
+        if (timeTableRest == null || timeTableRest.isEmpty()){
             Utility.showAlertToUser(this, R.string.no_timetable_alert);
             return false;
         }
@@ -977,6 +977,8 @@ public class AccountInfoActivity extends AppCompatActivity {
                 String restaurantDescription = (String) dataSnapshot.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
                 
                 String categoriesRest = (String) dataSnapshot.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
+    
+                timeTableRest = (String) dataSnapshot.child(EAHCONST.RESTAURANT_TIMETABLE).getValue();
                 
                 if (restaurantName != null) {
                     etName.setText(restaurantName);
