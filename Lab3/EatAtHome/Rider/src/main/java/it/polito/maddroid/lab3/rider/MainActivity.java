@@ -310,14 +310,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                
+    
+                allDeliveries = new ArrayList<>();
                 if (!dataSnapshot.hasChildren()) {
                     Log.d(TAG, "There are no orders for this user");
                     Utility.showAlertToUser(MainActivity.this, R.string.alert_no_orders_yet);
+                    checkAllOrdersDownloaded();
                     return;
                 }
                 
-                allDeliveries = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     
                     String restaurantId = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
