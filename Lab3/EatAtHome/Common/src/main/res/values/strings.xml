@@ -74,6 +74,7 @@
     <string name="restaurant">Restaurant</string>
 
     <string name="delivery_detail">Delivery Details</string>
+    <string name="current_deliveries">Current Deliveries </string>
 
     <string name="quantity">Quantity</string>
 
@@ -93,18 +94,23 @@
     <string name="delivery_address">Delivery address</string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
+    <string name="customer">Customer</string>
     <string name="rider_name">Rider Name</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
+    <string name="order_delivery">Order delivery</string>
     <string name="confirm_order">Confirm order</string>
+    <string name="decline_order">Decline order</string>
+    <string name="order_total_cost">Total cost</string>
+    <string name ="your_earning">Your earning</string>
 
     <string name="date">Date</string>
 
     <string name="total_cost">Total cost</string>
     <string name="rider_not_assigned">No riders assigned to this order yet</string>
     <string name="order_status">Order status</string>
-
+    <string name="delivery_cost_order">Delivery cost</string>
     <string name="status_confirmed">Confirmed</string>
     <string name="status_completed">Completed</string>
     <string name="status_waiting_corfirm">Waiting restarateur\'s confirmation</string>

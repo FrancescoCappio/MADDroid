@@ -20,5 +20,6 @@ public class LaunchActivity extends AppCompatActivity {
         i.putExtra(EAHCONST.LAUNCH_ACTIVITY_KEY, MainActivity.class);
         
         startActivity(i);
+        finish();
     }
 }

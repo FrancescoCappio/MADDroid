@@ -19,5 +19,7 @@ public class LaunchActivity extends AppCompatActivity {
         i.putExtra(EAHCONST.LAUNCH_APP_KEY, EAHCONST.LAUNCH_APP_RIDER);
         i.putExtra(EAHCONST.LAUNCH_ACTIVITY_KEY, MainActivity.class);
         startActivity(i);
+        
+        finish();
     }
 }

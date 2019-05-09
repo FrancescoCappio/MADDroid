@@ -29,11 +29,11 @@ public class EAHCONST {
     }
     
     public enum OrderStatus {
-        PENDING,
-        CONFIRMED,
-        DECLINED,
         ONGOING,
-        COMPLETED
+        CONFIRMED,
+        PENDING,
+        COMPLETED,
+        DECLINED
     }
     
     
