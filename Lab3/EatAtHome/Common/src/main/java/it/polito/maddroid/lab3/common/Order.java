@@ -117,6 +117,12 @@ public class Order implements Serializable, Comparable<Order> {
             if (o.orderStatus == EAHCONST.OrderStatus.PENDING)
                 return 1;
     
+            if (orderStatus == EAHCONST.OrderStatus.ONGOING)
+                return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.ONGOING)
+                return 1;
+    
             if (orderStatus == EAHCONST.OrderStatus.CONFIRMED)
                 return -1;
     

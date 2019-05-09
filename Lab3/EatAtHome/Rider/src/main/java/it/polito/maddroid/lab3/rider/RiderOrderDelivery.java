@@ -102,6 +102,9 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
             
             if (orderStatus == EAHCONST.OrderStatus.ONGOING)
                 return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.ONGOING)
+                return 1;
             
             if (orderStatus == EAHCONST.OrderStatus.COMPLETED)
                 return -1;

@@ -61,9 +61,17 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
         rvDeliveries.setLayoutManager(new LinearLayoutManager(getContext()));
         
         adapter = new RiderOrdersListAdapter(new RiderOrderDeliveryDiffUtilCallback(), order -> {
-            Intent intent = new Intent(getContext(), OrderDeliveryActivity.class);
-            intent.putExtra(OrderDeliveryActivity.ORDER_DELIVERY_KEY, order);
-            startActivity(intent);
+            if (order.getOrderStatus() == EAHCONST.OrderStatus.ONGOING ||
+                    order.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED ) {
+        
+                Intent intent = new Intent(getContext(), OrderDeliveryActivity.class);
+                intent.putExtra(OrderDeliveryActivity.ORDER_DELIVERY_KEY, order);
+                startActivity(intent);
+            } else if (order.getOrderStatus() == EAHCONST.OrderStatus.PENDING) {
+                Intent intent = new Intent(getContext(), ConfirmOrderActivity.class);
+                intent.putExtra(ConfirmOrderActivity.RIDER_ORDER_DELIVERY_KEY, order);
+                startActivity(intent);
+            }
         });
         
         rvDeliveries.setAdapter(adapter);
@@ -124,7 +132,7 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
             acceptedDeliveries = new ArrayList<>();
             
             for (RiderOrderDelivery rod : allDeliveries) {
-                if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED)
+                if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED || rod.getOrderStatus() == EAHCONST.OrderStatus.PENDING)
                     acceptedDeliveries.add(rod);
             }
             
