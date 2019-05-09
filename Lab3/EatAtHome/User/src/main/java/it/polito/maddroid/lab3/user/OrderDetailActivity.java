@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -88,7 +89,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvOrderDate.setText(currentOrder.getDate());
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
-        tvDeliveryCost.setText(String.format("%.02f", EAHCONST.DELIVERY_COST) + " €");
+        tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
         tvTotalCost.setText(currentOrder.getTotalCost());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
         tvOrderStatus.setText(currentOrder.getOrderStatus().toString());
@@ -213,6 +214,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
         
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);

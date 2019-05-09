@@ -14,7 +14,6 @@ public class OrderDiffUtilCallBack extends androidx.recyclerview.widget.DiffUtil
     @Override
     public boolean areContentsTheSame(@NonNull Order oldItem, @NonNull Order newItem) {
         return oldItem.getOrderId().equals(newItem.getOrderId()) &&
-                oldItem.getRiderId().equals(newItem.getRiderId()) &&
                 oldItem.getDeliveryTime().equals(newItem.getDeliveryTime());
     }
 

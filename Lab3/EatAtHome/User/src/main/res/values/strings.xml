@@ -1,5 +1,6 @@
 <resources>
     <string name="app_second_name">User</string>
+    <string name="app_complete_name">Eat@Home User</string>
 
     <string name="user_avatar_content_description">Restaurant\'s avatar image</string>
 
@@ -10,7 +11,7 @@
     <string name="user_phone_number">Phone number</string>
 
     <string name="rider_name">Rider\'s name</string>
-    <string name="rider_not_assigned">No riders assigned to this order yet</string>
+
 
     <string name="restaurant_details">Restaurant details</string>
 

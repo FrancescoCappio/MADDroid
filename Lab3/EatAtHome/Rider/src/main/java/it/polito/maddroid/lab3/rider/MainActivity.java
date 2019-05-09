@@ -1,10 +1,13 @@
 package it.polito.maddroid.lab3.rider;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -16,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,10 +30,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.EAHFirebaseMessagingService;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -42,16 +49,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+    private StorageReference storageReference;
     
-    LinearLayout llNavHeaderMain;
-    NavigationView navigationView;
-    TextView tvAccountEmail;
-
-
+    private LinearLayout llNavHeaderMain;
+    private NavigationView navigationView;
+    private TextView tvAccountEmail;
+    private ImageView ivAvatar;
+    
     private MenuItem refreshItem;
-
+    
     private Bundle orderHistoryBundle;
-
+    
     private int currentSelectedPosition;
     private CurrentOrderFragment currentFragment;
     private OrdersFragment ordersFragment;
@@ -73,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentUser = mAuth.getCurrentUser();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
         
         if (currentUser == null) {
             // this is probably an error, the user should be logged in to see this activity
@@ -86,11 +95,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-
         
         tvAccountEmail.setText(currentUser.getEmail());
-
+    
+        EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
+    
+        StorageReference riversRef = storageReference.child("avatar_" + currentUser.getUid() +".jpg");
+        GlideApp.with(getApplicationContext())
+                .load(riversRef)
+                .into(ivAvatar);
+    
+        cancelAllTheNotifications();
+    
         selectItem(0);
+    }
+    
+    private void cancelAllTheNotifications() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
     }
     
     @Override
@@ -116,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
         tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_rider_email);
+        ivAvatar = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_rider_avatar);
         
     }
     
@@ -140,8 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
-
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -183,11 +205,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectItem(1);
         
         }
-        else if (id == R.id.nav_settings) {
-        
-        }
         else if (id == R.id.nav_app_info) {
-        
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab3");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -281,11 +305,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (userEmail == null) {
                     //the user has not filled its account info yet
                     
-                    //TODO: start account info
                     Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
                     i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
                     i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);
-//
                     startActivity(i);
                 }
             }

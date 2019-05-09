@@ -1,10 +1,13 @@
 package it.polito.maddroid.lab3.user;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.view.GravityCompat;
@@ -15,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,10 +29,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.EAHFirebaseMessagingService;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -44,10 +51,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+    private StorageReference storageRef;
     
-    LinearLayout llNavHeaderMain;
-    NavigationView navigationView;
-    TextView tvAccountEmail;
+    private LinearLayout llNavHeaderMain;
+    private NavigationView navigationView;
+    private TextView tvAccountEmail;
+    private ImageView ivAvatar;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.user";
     
@@ -66,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentUser = mAuth.getCurrentUser();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
+        storageRef = FirebaseStorage.getInstance().getReference();
         
         if (currentUser == null) {
             // this is probably an error, the user should be logged in to see this activity
@@ -79,12 +89,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-        //TODO: check that the logged in user is a User (not rider, not restaurateur) -> else alert and exit
+        
+        EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
         
         tvAccountEmail.setText(currentUser.getEmail());
-        //TODO: set avatar image as navigation view header's image
+    
+        StorageReference riversRef = storageRef.child("avatar_" + currentUser.getUid() +".jpg");
+        GlideApp.with(getApplicationContext())
+                .load(riversRef)
+                .into(ivAvatar);
         
-        selectItem(0);
+        Intent intent = getIntent();
+        
+        if (intent.getBooleanExtra(EAHCONST.NOTIFICATION_KEY,false)) {
+            selectItem(1);
+        } else
+            selectItem(0);
+        
+        cancelAllTheNotifications();
+    }
+    
+    private void cancelAllTheNotifications() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
     }
     
     @Override
@@ -109,14 +136,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getReferencesToViews() {
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
-        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
+        tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_user_email);
+        ivAvatar = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_user_avatar);
         
     }
     
     private void setupClickListeners() {
         
         llNavHeaderMain.setOnClickListener(v -> {
-            //TODO: start account info
             Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
             i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
             startActivity(i);
@@ -162,11 +189,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.nav_restaurants) {
             selectItem(0);
         }
-        else if (id == R.id.nav_settings) {
-        
-        }
         else if (id == R.id.nav_app_info) {
-        
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab3");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -247,7 +276,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 
                 if (userEmail == null) {
                     //the user has not filled its account info yet
-                    //TODO: start account info
                     Intent i = new Intent(getApplicationContext(), AccountInfoActivity.class);
                     i.putExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, true);
                     i.putExtra(EAHCONST.ACCOUNT_INFO_EMPTY, true);

@@ -2,7 +2,8 @@ package it.polito.maddroid.lab3.common;
 
 
 public class EAHCONST {
-    
+
+
     // String cost to use as keys and values for intents extras
     public static String LAUNCH_APP_KEY = "LAUNCH_APP_KEY";
     public static String LAUNCH_APP_RESTAURATEUR = "LAUNCH_APP_RESTAURATEUR";
@@ -10,6 +11,8 @@ public class EAHCONST {
     public static String LAUNCH_APP_RIDER = "LAUNCH_APP_RIDER";
     
     public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
+    
+    public static String NOTIFICATION_KEY = "NOTIFICATION_KEY";
     
     public static String LAUNCH_EDIT_ENABLED_KEY = "LAUNCH_EDIT_ENABLED_KEY";
     public static String ACCOUNT_INFO_EMPTY = "ACCOUNT_INFO_EMPTY";
@@ -50,6 +53,7 @@ public class EAHCONST {
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
     public final static String USERS_TYPE = "usertype";
+    public final static String USERS_TOKEN = "token";
     
     // restaurants subtree nodes fields
     public final static String RESTAURANT_NAME = "name";

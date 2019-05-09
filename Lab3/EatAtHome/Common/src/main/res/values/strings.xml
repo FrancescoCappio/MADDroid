@@ -31,12 +31,19 @@
 
     <string name="rider_info">Rider info</string>
 
+    <string name="alert_account_is_user">This account is associated with a customer.</string>
+    <string name="alert_account_is_restaurateur">This account is associated with a restaurateur.</string>
+    <string name="alert_account_is_rider">This account is associated with a rider.</string>
+    <string name="login_as_customer">Please login with a customer account.</string>
+    <string name="login_as_rider">Please login with a rider account.</string>
+    <string name="login_as_restaurateur">Please login with a restaurateur aaccount.</string>
 
     <string name="menu">Menu</string>
 
     <string name="login_alert">You need to login to use the app</string>
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
     <string name="logout_confirm_request">Are you sure do you want to logout?</string>
+    <string name="alert_confirm_decline_order">Please confirm or decline this order</string>
     <string name="notify_save_ok">Info saved</string>
     <string name="notify_avatar_upload_ok">Avatar uploaded</string>
     <string name="notify_save_ko">Error while saving</string>
@@ -74,7 +81,7 @@
 
     <string name="dishes">Dishes</string>
 
-    <string name="order_detail">Order detail</string>
+    <string name="order_detail">Order details</string>
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
@@ -87,6 +94,8 @@
     <string name="delivery_time">Delivery time</string>
     <string name="delivery_address">Delivery adres</string>
     <string name="payment_info">Payment info</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="rider_name">Rider Name</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
@@ -96,14 +105,12 @@
     <string name="order_total_cost">Total cost</string>
     <string name ="your_earning">Your earning</string>
 
-
-
     <string name="date">Date</string>
 
     <string name="total_cost">Total cost</string>
-    <string name="delivery_cost_order">Delivery cost</string>
+    <string name="rider_not_assigned">No riders assigned to this order yet</string>
     <string name="order_status">Order status</string>
-
+    <string name="delivery_cost_order">Delivery cost</string>
     <string name="status_confirmed">Confirmed</string>
     <string name="status_completed">Completed</string>
     <string name="status_waiting_corfirm">Waiting restarateur\'s confirmation</string>

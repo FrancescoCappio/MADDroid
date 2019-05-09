@@ -11,6 +11,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
@@ -78,7 +80,7 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
 
         public void setupDish(Dish dish, ItemClickListener itemClickListener, String restaurantId, String adapterMode) {
             tvDishName.setText(dish.getName());
-            tvDishPrice.setText(String.format("%.02f", dish.getPrice()) + " €");
+            tvDishPrice.setText(String.format(Locale.US,"%.02f", dish.getPrice()) + " €");
             tvDishDescription.setText(dish.getDescription());
 
             StorageReference riversRef = storageReference.child("dish_"+ restaurantId +"_" + dish.getDishID() +".jpg");

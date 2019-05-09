@@ -190,7 +190,7 @@ public class Utility {
                     ridersIds.add(ds.getKey());
                 }
                 
-                int index = getRandomNumberInRange(0, ridersIds.size());
+                int index = getRandomNumberInRange(0, ridersIds.size()-1);
                 randomRiderCaller.generatedRiderId(ridersIds.get(index));
             }
             
@@ -202,7 +202,7 @@ public class Utility {
         });
     }
     
-    private static int getRandomNumberInRange(int min, int max) {
+    public static int getRandomNumberInRange(int min, int max) {
         
         if (min >= max) {
             throw new IllegalArgumentException("max must be greater than min");
@@ -210,5 +210,11 @@ public class Utility {
         
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+    
+    public static void storeToken(DatabaseReference dbRef, String userId, String token) {
+        dbRef.child(EAHCONST.USERS_SUB_TREE).child(userId).child(EAHCONST.USERS_TOKEN).setValue(token)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Token saved"))
+                .addOnFailureListener(e -> Log.d(TAG, "Cannot store token"));
     }
 }

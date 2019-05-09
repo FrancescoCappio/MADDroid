@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -60,7 +61,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private Restaurant currentRestaurant;
     
     private String currentUserDefaultAddress;
-    private String randomRiderId;
     
     private TextView tvTotalCost;
     private EditText etDeliveryTime;
@@ -103,19 +103,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
         selectedDishes = (List<Dish>) dishesExtra;
         String totalCost = computeTotalCost();
         tvTotalCost.setText(totalCost);
-        tvDeliveryCost.setText(String.format("%.02f", EAHCONST.DELIVERY_COST) + " €");
+        tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
     
         etDeliveryTime.setFocusable(false);
         etDeliveryTime.setClickable(true);
         etDeliveryTime.setOnClickListener(v -> showTimePickerDialog());
         
         btConfirmOrder.setOnClickListener(v -> actionConfirmOrder());
-        
-        setActivityLoading(true);
-        Utility.generateRandomRiderId(dbRef, riderId -> {
-            randomRiderId = riderId;
-            setActivityLoading(false);
-        });
         
     }
     
@@ -157,7 +151,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         // consider delivery cost
         totalCost += EAHCONST.DELIVERY_COST;
         
-        return String.format("%.02f", totalCost) + " €";
+        return String.format(Locale.US, "%.02f", totalCost) + " €";
     }
     
     @Override
@@ -215,11 +209,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
             return;
         }
         
-        if (randomRiderId == null || randomRiderId.isEmpty()) {
-            Utility.showAlertToUser(this, R.string.alert_order_no_rider);
-            return;
-        }
-        
         setActivityLoading(true);
     
         Map<String,Object> updateMap = new HashMap<>();
@@ -242,7 +231,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),date);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),deliveryTime);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_RIDER_ID),randomRiderId);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
         
@@ -257,17 +245,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 orderId);
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_RESTAURATEUR_ID), currentRestaurant.getRestaurantID());
-        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_RIDER_ID), randomRiderId);
         
-        // now from point of view of rider
-        String riderOrderPath = EAHCONST.generatePath(
-                EAHCONST.ORDERS_RIDER_SUBTREE,
-                randomRiderId,
-                orderId);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentRestaurant.getRestaurantID());
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentUser.getUid());
-    
         
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {

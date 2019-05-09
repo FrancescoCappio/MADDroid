@@ -1,5 +1,6 @@
 <resources>
     <string name="app_second_name">Restaurateur</string>
+    <string name="app_complete_name">Eat@Home Restaurateur</string>
 
     <string name="restaurant_avatar_content_description">Restaurant\'s avatar image</string>
     <string name="dish_avatar_content_description">Dish\'s image</string>
@@ -15,6 +16,7 @@
     <string name="dish_description">Dish\'s description</string>
 
     <string name="fill_fields">Please fill all the fields</string>
+    <string name="alert_price_not_valid">The inserted price is not valid</string>
     <string name="insert_image">Please insert an image for your dish</string>
     <string name="alert_not_ready">Please wait, not ready to save</string>
     <string name="Deleted">The dish is successfully deleted</string>
@@ -34,5 +36,12 @@
     <string name="day4">Friday</string>
     <string name="day5">Saturday</string>
     <string name="day6">Sunday</string>
+
+    <string name="order_status">Order Status</string>
+    <string name="date">Date</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="customer_not_assigned">Customer Id not find</string>
+    <string name="restaurant_status">Pending Order</string>
+    <string name="customer">Customer Name</string>
 
 </resources>

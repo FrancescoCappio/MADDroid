@@ -29,6 +29,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,7 @@ public class OrdersFragment extends Fragment {
                 if (!dataSnapshot.hasChildren()) {
                     Log.d(TAG, "There are no orders for this user");
                     Utility.showAlertToUser(getActivity(), R.string.alert_no_orders_yet);
+                    setFragmentLoading(false);
                     return;
                 }
                 
@@ -177,7 +179,8 @@ public class OrdersFragment extends Fragment {
             if (o.getRestaurantName() == null)
                 return;
         }
-        
+    
+        Collections.sort(orders);
         adapter.submitList(orders);
         setFragmentLoading(false);
     }
