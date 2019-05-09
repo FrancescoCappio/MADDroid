@@ -3,7 +3,7 @@ package it.polito.maddroid.lab3.common;
 import java.io.Serializable;
 import java.util.Map;
 
-public class Order implements Serializable {
+public class Order implements Serializable, Comparable<Order> {
 
     public Order(String orderId, String totalCost, String riderId, String customerId, String restaurantId, String deliveryTime, String date, String deliveryAddress, EAHCONST.OrderStatus orderStatus) {
         this.orderId = orderId;
@@ -104,5 +104,31 @@ public class Order implements Serializable {
 
     public void setCustomerName(String s) {
         this.customerName = s;
+    }
+    
+    @Override
+    public int compareTo(Order o) {
+        
+        if (orderStatus != o.orderStatus) {
+    
+            if (orderStatus == EAHCONST.OrderStatus.PENDING)
+                return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.PENDING)
+                return 1;
+    
+            if (orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return -1;
+    
+            if (o.orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return 1;
+    
+        }
+        
+        if (date.equals(o.date)) {
+            return o.deliveryTime.compareTo(deliveryTime);
+        }
+        
+        return o.date.compareTo(date);
     }
 }

@@ -30,6 +30,7 @@ public class EAHCONST {
         PENDING,
         CONFIRMED,
         DECLINED,
+        ONGOING,
         COMPLETED
     }
     
@@ -50,6 +51,7 @@ public class EAHCONST {
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
     public final static String USERS_TYPE = "usertype";
+    public final static String USERS_TOKEN = "token";
     
     // restaurants subtree nodes fields
     public final static String RESTAURANT_NAME = "name";

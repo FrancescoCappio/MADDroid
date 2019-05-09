@@ -94,6 +94,8 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         rvRestaurants.setAdapter(adapter);
         
         setupClickListeners();
+        
+        downloadRestaurantsInfo("");
     }
     
     private void getReferencesToViews() {
@@ -133,15 +135,21 @@ public class RestaurantSearchActivity extends AppCompatActivity {
     
     private void downloadRestaurantsInfo(String query) {
         
-        if (query == null || query.isEmpty()) {
-            Utility.showAlertToUser(this, R.string.alert_search_empty);
-            return;
+        if (query == null) {
+            query = "";
         }
+    
+        Query queryRef;
         
-        Query queryRef = dbRef
-                .child(EAHCONST.RESTAURANTS_SUB_TREE)
-                .orderByChild(EAHCONST.RESTAURANT_NAME)
-                .startAt(query).endAt(query + "\uf8ff");
+        if (query.isEmpty()) {
+            if (restaurantCategory == null) {
+                queryRef = dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).orderByChild(EAHCONST.RESTAURANT_NAME).startAt(query).endAt(query + "\uf8ff").limitToFirst(10);
+            } else {
+                queryRef = dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).orderByChild(EAHCONST.RESTAURANT_NAME).startAt(query).endAt(query + "\uf8ff").limitToFirst(100);
+            }
+        } else {
+            queryRef = dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).orderByChild(EAHCONST.RESTAURANT_NAME).startAt(query).endAt(query + "\uf8ff");
+        }
         
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

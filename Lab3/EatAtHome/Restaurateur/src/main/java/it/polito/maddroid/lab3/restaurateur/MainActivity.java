@@ -1,12 +1,15 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -16,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -51,10 +57,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+    private StorageReference storageReference;
     
-    LinearLayout llNavHeaderMain;
-    NavigationView navigationView;
-    TextView tvAccountEmail;
+    private LinearLayout llNavHeaderMain;
+    private NavigationView navigationView;
+    private TextView tvAccountEmail;
+    private ImageView ivAvatar;
 
     private MenuItem addItem;
     private MenuItem confirmItem;
@@ -74,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        storageReference = FirebaseStorage.getInstance().getReference();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         
@@ -89,13 +98,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-        //TODO: check that the logged in user is a restaurateur -> else alert and exit
         
         tvAccountEmail.setText(currentUser.getEmail());
-        //TODO: set avatar image as navigation view header's image
-
-
+    
+        StorageReference riversRef = storageReference.child("avatar_" + currentUser.getUid() +".jpg");
+        GlideApp.with(getApplicationContext())
+                .load(riversRef)
+                .into(ivAvatar);
+        
         selectItem(0);
+        
+        cancelAllTheNotifications();
+    }
+    
+    private void cancelAllTheNotifications() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
     }
     
     @Override
@@ -121,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
         tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
+        ivAvatar = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_restaurant_avatar);
         
     }
     
@@ -196,11 +215,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectItem(1);
         
         }
-        else if (id == R.id.nav_settings) {
-        
-        }
         else if (id == R.id.nav_app_info) {
-        
+            AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
+            dialogInfo.setTitle("MAD lab3");
+    
+            dialogInfo.setCancelable(true);
+            dialogInfo.create().show();
         }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

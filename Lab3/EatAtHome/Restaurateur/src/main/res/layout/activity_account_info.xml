@@ -136,6 +136,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_name"
                 android:inputType="textPersonName"
+                android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -159,6 +160,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_address"
                 android:inputType="textPostalAddress"
+                android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -182,6 +184,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_phone_number"
                 android:inputType="phone"
+                android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -205,6 +208,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_email"
                 android:inputType="textEmailAddress"
+                android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -213,7 +217,7 @@
             android:id="@+id/tv_description_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="144/200"
+            android:text="0/200"
             app:layout_constraintEnd_toEndOf="@id/til_description"
             app:layout_constraintTop_toTopOf="@+id/til_description" />
 
@@ -236,6 +240,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_description"
                 android:inputType="textMultiLine"
+                android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>

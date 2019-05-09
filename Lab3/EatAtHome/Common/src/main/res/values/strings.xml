@@ -31,6 +31,12 @@
 
     <string name="rider_info">Rider info</string>
 
+    <string name="alert_account_is_user">This account is associated with a customer.</string>
+    <string name="alert_account_is_restaurateur">This account is associated with a restaurateur.</string>
+    <string name="alert_account_is_rider">This account is associated with a rider.</string>
+    <string name="login_as_customer">Please login with a customer account.</string>
+    <string name="login_as_rider">Please login with a rider account.</string>
+    <string name="login_as_restaurateur">Please login with a restaurateur aaccount.</string>
 
     <string name="menu">Menu</string>
 

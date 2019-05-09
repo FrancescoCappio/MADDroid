@@ -2,9 +2,12 @@ package it.polito.maddroid.lab3.common;
 
 
 import android.animation.LayoutTransition;
+import android.content.Context;
 import android.content.Intent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.cardview.widget.CardView;
@@ -15,10 +18,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,10 +64,12 @@ public class LoginActivity extends AppCompatActivity {
     
     // Firebase auth to manage signup and login
     private FirebaseAuth mAuth;
+    private DatabaseReference dbRef;
     
     // general purpose variables
     boolean loginContentVisible = false;
     boolean signupContentVisible = false;
+    private String appToLaunch;
     
     private static final String LOGIN_VISIBLE_KEY = "LOGIN_VISIBLE_KEY";
     private static final String SIGNUP_VISIBLE_KEY = "SIGNUP_VISIBLE_KEY";
@@ -92,6 +105,11 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             Snackbar.make(rlLoginTitle,"You need to login to use the app", Snackbar.LENGTH_SHORT).show();
         }
+        
+        Intent i = getIntent();
+        
+        appToLaunch = i.getStringExtra(EAHCONST.LAUNCH_APP_KEY);
+        dbRef = FirebaseDatabase.getInstance().getReference();
     }
     
     @Override
@@ -338,8 +356,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            Snackbar.make(rlLoginTitle, "Successfully logged in", Snackbar.LENGTH_SHORT).show();
-                            enterApp();
+                            checkUserType();
                         }
                     } else {
                         // If sign in fails, display a message to the user.
@@ -390,7 +407,83 @@ public class LoginActivity extends AppCompatActivity {
         Intent launchIntent = getIntent();
         Class<?> cl = (Class<?>) launchIntent.getSerializableExtra(EAHCONST.LAUNCH_ACTIVITY_KEY);
         Intent i = new Intent(getApplicationContext(), cl);
+        EAHFirebaseMessagingService.setActivityToLaunch(cl);
         startActivity(i);
+        
+        // save token on database
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(this, instanceIdResult -> {
+            String newToken = instanceIdResult.getToken();
+            Log.e(TAG, "New firebase token: " + newToken);
+            Utility.storeToken(dbRef, mAuth.getCurrentUser().getUid(),newToken);
+        });
+        
+        finish();
     }
     
+    private void checkUserType() {
+        
+        FirebaseUser loggedUser = mAuth.getCurrentUser();
+        
+        dbRef.child(EAHCONST.USERS_SUB_TREE).child(loggedUser.getUid()).child(EAHCONST.USERS_TYPE).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                
+                if (dataSnapshot.getValue() == null) {
+                    Log.e(TAG, "Error accessing database");
+                    return;
+                }
+    
+                EAHCONST.USER_TYPE currentType = dataSnapshot.getValue(EAHCONST.USER_TYPE.class);
+                
+                boolean correct = true;
+                StringBuilder sb = new StringBuilder();
+                
+                switch (currentType) {
+                    case CUSTOMER:
+                        if (!appToLaunch.equals(EAHCONST.LAUNCH_APP_USER)) {
+                            correct = false;
+                            sb.append(getString(R.string.alert_account_is_user)).append(" ");
+                        }
+                        break;
+                        
+                    case RIDER:
+                        if (!appToLaunch.equals(EAHCONST.LAUNCH_APP_RIDER)) {
+                            correct = false;
+                            sb.append(getString(R.string.alert_account_is_rider)).append(" ");
+                        }
+                        break;
+                        
+                    case RESTAURATEUR:
+                        if (!appToLaunch.equals(EAHCONST.LAUNCH_APP_RESTAURATEUR)) {
+                            correct = false;
+                            sb.append(getString(R.string.alert_account_is_restaurateur)).append(" ");
+                        }
+                        break;
+                        
+                }
+                
+                if (!correct) {
+                    if (appToLaunch.equals(EAHCONST.LAUNCH_APP_USER)) {
+                        sb.append(getString(R.string.login_as_customer));
+                    } else if (appToLaunch.equals(EAHCONST.LAUNCH_APP_RIDER)) {
+                        sb.append(getString(R.string.login_as_rider));
+                    } else if (appToLaunch.equals(EAHCONST.LAUNCH_APP_RESTAURATEUR)) {
+                        sb.append(getString(R.string.login_as_restaurateur));
+                    }
+    
+                    Toast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_LONG).show();
+                    mAuth.signOut();
+                    return;
+                }
+    
+                Snackbar.make(rlLoginTitle, "Successfully logged in", Snackbar.LENGTH_SHORT).show();
+                enterApp();
+            }
+    
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+            }
+        });
+    }
 }

@@ -22,7 +22,7 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/MainAppTheme.NoActionBar" />
-        <activity android:name=".LaunchActivity">
+        <activity android:name=".LaunchActivity" android:label="@string/app_complete_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
