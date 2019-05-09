@@ -147,13 +147,19 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentUser.getUid(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        
-        
+    
+        //update customer subtree
+        String custOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_CUST_SUBTREE,
+                currentOrder.getCustomerId(),
+                currentOrder.getOrderId());
+        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
+    
         //update Restaurant SubTree
         orderStatus = EAHCONST.OrderStatus.COMPLETED;
         String restaurantOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
-                currentUser.getUid(),
+                currentOrder.getRestaurantId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_STATUS), orderStatus);
         
@@ -184,6 +190,13 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentUser.getUid(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
+        
+        //update customer subtree
+        String custOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_CUST_SUBTREE,
+                currentOrder.getCustomerId(),
+                currentOrder.getOrderId());
+        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
         
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {

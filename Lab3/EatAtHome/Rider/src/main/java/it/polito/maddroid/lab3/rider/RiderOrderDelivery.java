@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 
-public class RiderOrderDelivery implements Serializable {
+public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDelivery> {
 
     private String orderId;
     private String restaurantId;
@@ -87,5 +87,37 @@ public class RiderOrderDelivery implements Serializable {
     
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+    
+    @Override
+    public int compareTo(RiderOrderDelivery o) {
+        
+        if (orderStatus != o.orderStatus) {
+            
+            if (orderStatus == EAHCONST.OrderStatus.PENDING)
+                return -1;
+            
+            if (o.orderStatus == EAHCONST.OrderStatus.PENDING)
+                return 1;
+            
+            if (orderStatus == EAHCONST.OrderStatus.ONGOING)
+                return -1;
+            
+            if (orderStatus == EAHCONST.OrderStatus.COMPLETED)
+                return -1;
+            
+            if (orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return -1;
+            
+            if (o.orderStatus == EAHCONST.OrderStatus.CONFIRMED)
+                return 1;
+            
+        }
+        
+        if (deliveryDate.equals(o.deliveryDate)) {
+            return o.deliveryTime.compareTo(deliveryTime);
+        }
+        
+        return o.deliveryDate.compareTo(deliveryDate);
     }
 }

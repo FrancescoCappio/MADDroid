@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -411,6 +412,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (o.getRestaurantName() == null)
                 return;
         }
+    
+        Collections.sort(allDeliveries);
         
         for (OrdersUpdateListener listener : ordersUpdateListeners) {
             try {
