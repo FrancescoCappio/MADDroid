@@ -74,8 +74,7 @@
     <string name="restaurant">Restaurant</string>
 
     <string name="delivery_detail">Delivery Details</string>
-    <string name="current_delivery">Current Delivery </string>
-    <string name="history_delivery">History Delivery </string>
+    <string name="current_deliveries">Current Deliveries </string>
 
     <string name="quantity">Quantity</string>
 
@@ -95,11 +94,12 @@
     <string name="delivery_address">Delivery address</string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
+    <string name="customer">Customer</string>
     <string name="rider_name">Rider Name</string>
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
-
+    <string name="order_delivery">Order delivery</string>
     <string name="confirm_order">Confirm order</string>
     <string name="decline_order">Decline order</string>
     <string name="order_total_cost">Total cost</string>

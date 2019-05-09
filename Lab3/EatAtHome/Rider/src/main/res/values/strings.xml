@@ -10,7 +10,7 @@
     <string name="rider_description">Description</string>
     <string name="rider_phone_number">Phone number</string>
 
-    <string name="order_rider">Last deliveries</string>
+    <string name="all_deliveries">All deliveries</string>
     <string name="confirm_order_note">You have confirmed the order</string>
 
     <string name="alert_error_confirming">There was an error while confirming the order</string>
@@ -25,5 +25,7 @@
     <string name="deliver_food_note">The order has been completed</string>
     <string name="alert_error_deliver_food">There was an error while completing the order</string>
     <string name="action_refresh">Refresh</string>
+
+    <string name="new_pending_order">There is a new pending order, please accept or decline it</string>
 
 </resources>

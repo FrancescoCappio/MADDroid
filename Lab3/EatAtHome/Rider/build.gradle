@@ -4,7 +4,6 @@ android {
     compileSdkVersion 28
 
 
-
     defaultConfig {
         applicationId "it.polito.maddroid.lab3.rider"
         minSdkVersion 23

@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
@@ -14,12 +16,11 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
-import it.polito.maddroid.lab3.common.Order;
 
-public class RiderOrdersListAdapter extends ListAdapter<Order, RiderOrdersListAdapter.MyViewHolder>{
+public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, RiderOrdersListAdapter.MyViewHolder>{
     private RiderOrdersListAdapter.ItemClickListener clickListener;
 
-    protected RiderOrdersListAdapter(@NonNull DiffUtil.ItemCallback<Order> diffCallback, ItemClickListener itemClickListener) {
+    protected RiderOrdersListAdapter(@NonNull DiffUtil.ItemCallback<RiderOrderDelivery> diffCallback, ItemClickListener itemClickListener) {
         super(diffCallback);
         clickListener = itemClickListener;
     }
@@ -38,7 +39,7 @@ public class RiderOrdersListAdapter extends ListAdapter<Order, RiderOrdersListAd
     }
 
     public interface ItemClickListener {
-        void onItemClick(Order order);
+        void onItemClick(RiderOrderDelivery order);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -65,13 +66,13 @@ public class RiderOrdersListAdapter extends ListAdapter<Order, RiderOrdersListAd
             tvOrderAddress = itemView.findViewById(R.id.tv_delivery_address);
         }
 
-        public void setupOrder(Order order, RiderOrdersListAdapter.ItemClickListener itemClickListener) {
+        public void setupOrder(RiderOrderDelivery order, RiderOrdersListAdapter.ItemClickListener itemClickListener) {
 
             itemView.setOnClickListener(v -> itemClickListener.onItemClick(order));
 
-            tvOrderDate.setText(order.getDate());
+            tvOrderDate.setText(order.getDeliveryDate());
             tvDeliveryTime.setText(order.getDeliveryTime());
-            tvDeliveryCost.setText(String.valueOf(EAHCONST.DELIVERY_COST) + "€");
+            tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + "€");
             tvOrderStatus.setText(order.getOrderStatus().toString());
             tvRestaurantName.setText(order.getRestaurantName());
             tvOrderAddress.setText(order.getDeliveryAddress());

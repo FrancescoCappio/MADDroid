@@ -11,14 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MainAppTheme">
-        <activity android:name=".ConfirmOrderActivity"></activity>
+        <activity android:name=".OrderDeliveryActivity"></activity>
+        <activity android:name=".ConfirmOrderActivity" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/MainAppTheme.NoActionBar"></activity>
-        <activity android:name=".AccountInfoActivity"/>
-        <activity android:name=".LaunchActivity" android:label="@string/app_complete_name">
+            android:theme="@style/MainAppTheme.NoActionBar" />
+        <activity android:name=".AccountInfoActivity" />
+        <activity
+            android:name=".LaunchActivity"
+            android:label="@string/app_complete_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

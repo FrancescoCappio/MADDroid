@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -27,7 +29,7 @@ import it.polito.maddroid.lab3.common.Utility;
 public class ConfirmOrderActivity extends AppCompatActivity {
     
     public static final String TAG = "ConfirmOrderActivity";
-    
+    public static final String RIDER_ORDER_DELIVERY_KEY = "RIDER_ORDER_DELIVERY_KEY";
     
     private int waitingCount = 0;
     
@@ -35,23 +37,15 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     
-    private String riderUID;
-    private String anotherRiderId;
-    private String customerUID;
-    private String restaurantUID;
-    
-    private String orderID;
-    private String orderTime;
-    private String orderTotalCost;
-    private String orderCost;
-    private String orderRestaurantAddress;
-    private String orderDeliveryAddress;
-    
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
     private TextView tvTotalCost;
     private TextView tvRestaurantAdress;
     private TextView tvDeliveryAdress;
+    
+    private String riderUID;
+    private String anotherRiderId;
+    private RiderOrderDelivery currentDelivery;
     
     private FloatingActionButton fabConfirm;
     private FloatingActionButton fabDecline;
@@ -79,21 +73,15 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         Intent i = getIntent();
         
-        Order order = (Order) i.getSerializableExtra(CurrentOrderFragment.ORDER_KEY);
-        orderID = order.getOrderId();
-        orderTime = order.getDeliveryTime();
-        orderTotalCost = order.getTotalCost();
-        orderDeliveryAddress = order.getDeliveryAddress();
-        restaurantUID = order.getRestaurantId();
-        customerUID = order.getCustomerId();
-        orderCost = i.getStringExtra(CurrentOrderFragment.ORDER_COST_DELIVERY);
-        orderRestaurantAddress = i.getStringExtra(CurrentOrderFragment.ORDER_RESTAURANT_ADDRESS);
-        
-        if (orderID.isEmpty() || orderID == null)
+        if (i.getSerializableExtra(RIDER_ORDER_DELIVERY_KEY) == null) {
+            Log.e(TAG, "Cannot show null order for confirm");
             finish();
-        else
-            setDataToView();
+            return;
+        }
         
+        currentDelivery = (RiderOrderDelivery) i.getSerializableExtra(RIDER_ORDER_DELIVERY_KEY);
+        
+        setDataToView();
         
         fabConfirm.setOnClickListener(v -> actionConfirmOrder());
         fabDecline.setOnClickListener(v -> actionDeclineOrder());
@@ -134,7 +122,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
                 riderUID,
-                orderID);
+                currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
         
         
@@ -142,10 +130,10 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
                 anotherRiderId,
-                orderID);
+                currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), restaurantUID);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), customerUID);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentDelivery.getRestaurantId());
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentDelivery.getCustomerId());
         
         
         // perform the update
@@ -170,21 +158,19 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
                 riderUID,
-                orderID);
+                currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), restaurantUID);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), customerUID);
     
         String restaurantOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
-                restaurantUID,
-                orderID);
+                currentDelivery.getRestaurantId(),
+                currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_RIDER_ID), riderUID);
     
         String customerOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_CUST_SUBTREE,
-                customerUID,
-                orderID);
+                currentDelivery.getCustomerId(),
+                currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(customerOrderPath, EAHCONST.CUST_ORDER_RIDER_ID), riderUID);
         
         // perform the update
@@ -200,11 +186,11 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     
     
     private void setDataToView() {
-        tvDeliveryTime.setText(orderTime);
-        tvTotalCost.setText(orderTotalCost);
-        tvCostDelivery.setText(orderCost);
-        tvRestaurantAdress.setText(orderRestaurantAddress);
-        tvDeliveryAdress.setText(orderDeliveryAddress);
+        tvDeliveryTime.setText(currentDelivery.getDeliveryTime());
+        tvTotalCost.setText(currentDelivery.getTotalCost());
+        tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
+        tvRestaurantAdress.setText(currentDelivery.getRestaurantAddress());
+        tvDeliveryAdress.setText(currentDelivery.getDeliveryAddress());
     }
     
     private void getReferencesToViews() {
@@ -216,7 +202,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         fabConfirm = findViewById(R.id.fab_accept);
         fabDecline = findViewById(R.id.fab_decline);
-        
     }
     
     private synchronized void setActivityLoading(boolean loading) {
