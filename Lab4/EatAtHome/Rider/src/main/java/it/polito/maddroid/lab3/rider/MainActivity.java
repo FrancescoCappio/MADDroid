@@ -1,13 +1,23 @@
 package it.polito.maddroid.lab3.rider;
 
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -47,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private final static String TAG = "MainActivity";
     
+    private final static int LOCATION_PERMISSION_CODE = 123;
+    
     private static String STATE_SELECTED_POSITION = "state_selected_position";
     
     private FirebaseAuth mAuth;
@@ -59,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tvAccountEmail;
     private ImageView ivAvatar;
     
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     
     private Bundle orderHistoryBundle;
     
@@ -124,6 +138,86 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         selectItem(0);
         
         downloadOrdersInfo();
+        
+        startLocation();
+    }
+    
+    private void startLocation() {
+    
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    
+        locationListener = new LocationListener() {
+        
+            @Override
+            public void onLocationChanged(Location location) {
+            
+                Log.d("Location", location.toString());
+            
+            }
+        
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+            
+            }
+        
+            @Override
+            public void onProviderEnabled(String s) {
+            
+            }
+        
+            @Override
+            public void onProviderDisabled(String s) {
+            
+            }
+        
+        };
+    
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        
+            // ask for permission
+        
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+            
+        } else {
+    
+            // we have permission!
+    
+            // getting GPS status
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+    
+            // getting network status
+            boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    
+            // ///Criteria //////////
+    
+            Criteria crta = new Criteria();
+            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
+            crta.setPowerRequirement(Criteria.POWER_LOW);
+            
+            String provider = locationManager.getBestProvider(crta, true);
+            locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            
+            Log.d(TAG, "Latitude: " + location.getLatitude() + " longitude " + location.getLongitude());
+    
+        }
+    
+    }
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+            }
+        }
+        
     }
     
     private void cancelAllTheNotifications() {
