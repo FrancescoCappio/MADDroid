@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".DishDetailsActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/activity_margin">
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_avatar_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cards_margin_login_phone"
+            android:layout_marginEnd="@dimen/cards_margin_login_phone"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pb_loading"
+
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="@dimen/cards_corner_radius_login_phone"
+            app:cardElevation="15dp">
+
+            <ImageView
+                android:id="@+id/iv_dish_Image"
+                android:layout_width="@dimen/detail_image_size_phone"
+                android:layout_height="@dimen/detail_image_size_phone"
+                android:src="@drawable/ic_restaurant_menu_black_24dp"
+                android:contentDescription="@string/dish_avatar_content_description" />
+
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            app:srcCompat="@drawable/ic_add_a_photo"
+            app:layout_constraintEnd_toEndOf="@id/cv_avatar_container"
+            app:layout_constraintBottom_toBottomOf="@id/cv_avatar_container"
+            app:elevation="25dp"
+            app:fabSize="mini" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cv_avatar_container"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_dish_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/dish_name"
+                android:inputType="textPersonName"
+                android:textColor="@drawable/et_color_selector"
+                android:singleLine="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_name"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_dish_price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/dish_price"
+                android:inputType="numberDecimal"
+                android:textColor="@drawable/et_color_selector"
+                android:singleLine="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_description_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0/200"
+            app:layout_constraintEnd_toEndOf="@id/til_description"
+            app:layout_constraintTop_toTopOf="@+id/til_description" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_price"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_dish_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/dish_description"
+                android:inputType="textMultiLine"
+                android:textColor="@drawable/et_color_selector"
+                android:singleLine="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/view_separator_timetable"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"
+            android:layout_marginTop="@dimen/activity_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/til_description" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
