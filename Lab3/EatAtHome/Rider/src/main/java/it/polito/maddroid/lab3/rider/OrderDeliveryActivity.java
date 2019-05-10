@@ -4,6 +4,7 @@ package it.polito.maddroid.lab3.rider;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -87,6 +88,27 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         }
         
         getCustomerName();
+        
+        setupButtonsEnable();
+    }
+    
+    private void setupButtonsEnable() {
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED) {
+            btDeliverFood.setEnabled(false);
+            btGetFood.setEnabled(true);
+            btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
+            btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_green_accept));
+        } else if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.ONGOING) {
+            btGetFood.setEnabled(false);
+            btDeliverFood.setEnabled(true);
+            btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
+            btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_green_accept));
+        } else {
+            btGetFood.setEnabled(false);
+            btDeliverFood.setEnabled(false);
+            btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
+            btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
+        }
     }
     
     private void getReferencesToViews(){
@@ -167,7 +189,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
-            btGetFood.setEnabled(false);
+            currentOrder.setOrderStatus(EAHCONST.OrderStatus.ONGOING);
+            setupButtonsEnable();
             Utility.showAlertToUser(this, R.string.get_food_note);
             
         }).addOnFailureListener(e -> {
@@ -201,8 +224,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
+            currentOrder.setOrderStatus(EAHCONST.OrderStatus.COMPLETED);
+            setupButtonsEnable();
             Utility.showAlertToUser(this, R.string.deliver_food_note);
-            
         }).addOnFailureListener(e -> {
             setActivityLoading(false);
             Utility.showAlertToUser(this, R.string.alert_error_deliver_food);

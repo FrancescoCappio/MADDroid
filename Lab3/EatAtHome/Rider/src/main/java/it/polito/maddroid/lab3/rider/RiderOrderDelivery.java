@@ -123,4 +123,8 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
         
         return o.deliveryDate.compareTo(deliveryDate);
     }
+    
+    public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
