@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_second_name">Rider</string>
+    <string name="app_complete_name">Eat@Home Rider</string>
+
+    <string name="rider_avatar_content_description">Rider\'s avatar image</string>
+
+    <string name="rider_name">Name</string>
+    <string name="rider_email">Email</string>
+    <string name="rider_address">Address</string>
+    <string name="rider_description">Description</string>
+    <string name="rider_phone_number">Phone number</string>
+
+    <string name="all_deliveries">All deliveries</string>
+    <string name="confirm_order_note">You have confirmed the order</string>
+
+    <string name="alert_error_confirming">There was an error while confirming the order</string>
+    <string name="declivne_order_note">You have declined the order</string>
+
+    <string name="get_food">Confirm food received</string>
+    <string name="give_food">Confirm food delivered</string>
+
+    <string name="get_food_note">The food was taken in charge</string>
+    <string name="alert_error_get_food">There was an error while taking in charge the food</string>
+
+    <string name="deliver_food_note">The order has been completed</string>
+    <string name="alert_error_deliver_food">There was an error while completing the order</string>
+    <string name="action_refresh">Refresh</string>
+
+    <string name="new_pending_order">There is a new pending order, please accept or decline it</string>
+
+</resources>
