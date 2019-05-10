@@ -114,10 +114,9 @@ public class Utility {
         for ( int i = 0; i < 7 ; ++i)
             s = s.replace("Day"+i, days.get(i));
         s = s.replace("_", " ");
-        s = s.replace(",", "    ");
+        s = s.replace(",", "\t");
         s = s.replace(";", "\n");
         
-        System.out.println(s);
         return s;
     }
     

@@ -50,6 +50,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String TAG = "CompleteOrderActivity";
     public static final String DISHES_KEY = "DISHES_KEY";
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
+    public static final String ADDRESS_KEY = "ADDRESS_KEY";
+    public static final String TIME_KEY = "TIME_KEY";
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -88,19 +90,41 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         getReferencesToViews();
         
-        downloadCurrentUserInfo();
-        
-        Intent i = getIntent();
-        Serializable dishesExtra = i.getSerializableExtra(DISHES_KEY);
-        Serializable restaurantExtra = i.getSerializableExtra(RESTAURANT_KEY);
-        if (dishesExtra == null || restaurantExtra == null) {
-            Utility.showAlertToUser(this, R.string.alert_order_problem);
-            finish();
-            return;
+        if (savedInstanceState == null) {
+            Intent i = getIntent();
+            Serializable dishesExtra = i.getSerializableExtra(DISHES_KEY);
+            Serializable restaurantExtra = i.getSerializableExtra(RESTAURANT_KEY);
+            if (dishesExtra == null || restaurantExtra == null) {
+                Utility.showAlertToUser(this, R.string.alert_order_problem);
+                finish();
+                return;
+            }
+    
+            currentRestaurant = (Restaurant) restaurantExtra;
+            selectedDishes = (List<Dish>) dishesExtra;
+    
+            downloadCurrentUserInfo();
+    
+        } else {
+            
+            Serializable dishesExtra = savedInstanceState.getSerializable(DISHES_KEY);
+            Serializable restaurantExtra = savedInstanceState.getSerializable(RESTAURANT_KEY);
+            if (dishesExtra == null || restaurantExtra == null) {
+                Utility.showAlertToUser(this, R.string.alert_order_problem);
+                finish();
+                return;
+            }
+    
+            currentRestaurant = (Restaurant) restaurantExtra;
+            selectedDishes = (List<Dish>) dishesExtra;
+            
+            etDeliveryAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+            etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
+            
+            if (etDeliveryAddress.getText().toString().isEmpty())
+                downloadCurrentUserInfo();
+            
         }
-        
-        currentRestaurant = (Restaurant) restaurantExtra;
-        selectedDishes = (List<Dish>) dishesExtra;
         String totalCost = computeTotalCost();
         tvTotalCost.setText(totalCost);
         tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
@@ -294,5 +318,21 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public void showTimePickerDialog() {
         DialogFragment newFragment = new TimePickerFragment(etDeliveryTime);
         newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+    
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putSerializable(DISHES_KEY, (Serializable) selectedDishes);
+        outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
+        
+        if (!etDeliveryAddress.getText().toString().isEmpty()) {
+            outState.putString(ADDRESS_KEY, etDeliveryAddress.getText().toString());
+        }
+    
+        if (!etDeliveryTime.getText().toString().isEmpty()) {
+            outState.putString(TIME_KEY, etDeliveryTime.getText().toString());
+        }
     }
 }

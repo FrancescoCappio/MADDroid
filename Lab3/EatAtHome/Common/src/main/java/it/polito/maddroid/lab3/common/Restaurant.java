@@ -13,8 +13,9 @@ public class Restaurant implements Serializable {
     private String phone;
     private String email;
     private String categoriesIds;
+    private String timeTableString;
 
-    public Restaurant(String restaurantID, String name, String description, String address, String phone, String email, String categoriesIds){
+    public Restaurant(String restaurantID, String name, String description, String address, String phone, String email, String categoriesIds, String timeTableString){
         this.restaurantID = restaurantID;
         this.name = name ;
         this.description = description;
@@ -22,6 +23,7 @@ public class Restaurant implements Serializable {
         this.phone = phone;
         this.email = email;
         this.categoriesIds = categoriesIds;
+        this.timeTableString = timeTableString;
     }
 
     public String getRestaurantID(){
@@ -58,5 +60,9 @@ public class Restaurant implements Serializable {
                 return true;
         }
         return false;
+    }
+    
+    public String getTimeTableString() {
+        return timeTableString;
     }
 }

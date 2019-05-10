@@ -166,8 +166,9 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     String phone = (String) ds.child(EAHCONST.RESTAURANT_PHONE).getValue();
                     String email = (String) ds.child(EAHCONST.RESTAURANT_EMAIL).getValue();
                     String categoriesIds = (String) ds.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
+                    String timetable = (String) ds.child(EAHCONST.RESTAURANT_TIMETABLE).getValue();
                     
-                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds);
+                    Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds, timetable);
                     
                     restaurants.add(r);
                 }

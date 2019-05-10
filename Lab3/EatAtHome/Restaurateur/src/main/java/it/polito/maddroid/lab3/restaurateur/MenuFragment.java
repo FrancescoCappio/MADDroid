@@ -67,7 +67,7 @@ public class MenuFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
-        pbLoading = view.findViewById(R.id.pb_loading1);
+        pbLoading = view.findViewById(R.id.pb_loading);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
 
