@@ -114,10 +114,9 @@ public class Utility {
         for ( int i = 0; i < 7 ; ++i)
             s = s.replace("Day"+i, days.get(i));
         s = s.replace("_", " ");
-        s = s.replace(",", "    ");
+        s = s.replace(",", "\t");
         s = s.replace(";", "\n");
         
-        System.out.println(s);
         return s;
     }
     
@@ -204,9 +203,12 @@ public class Utility {
     
     public static int getRandomNumberInRange(int min, int max) {
         
-        if (min >= max) {
+        if (min > max) {
             throw new IllegalArgumentException("max must be greater than min");
         }
+        
+        if (min == max)
+            return min;
         
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;

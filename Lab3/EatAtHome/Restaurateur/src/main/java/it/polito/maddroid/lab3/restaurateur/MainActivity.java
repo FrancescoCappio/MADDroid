@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         llNavHeaderMain = navigationView.getHeaderView(0).findViewById(R.id.ll_nav_header_main);
         tvAccountEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_nav_restaurant_email);
         ivAvatar = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_restaurant_avatar);
-        
     }
     
     private void setupClickListeners() {
@@ -173,7 +172,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         addItem = menu.findItem(R.id.action_add);
-        addItem.setVisible(false);
+        if((currentSelectedPosition == 1))
+            addItem.setVisible(true);
+        else
+            addItem.setVisible(false);
 
         return true;
     }

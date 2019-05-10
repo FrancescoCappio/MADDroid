@@ -86,7 +86,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private static final String EMAIL_KEY = "EMAIL_KEY";
     private static final String ADDRESS_KEY = "ADDRESS_KEY";
     private static final String CATEGORY_KEY = "CATEGORY_KEY";
-    private static final String TIMETABLE_KEY = "TIMETABLE_KEY";
+    private static final String DISHES_KEY = "DISHES_KEY";
     
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     
@@ -113,40 +113,59 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         setupEventListeners();
         
         if (savedInstanceState == null) {
+            
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
-    
-            adapter = new DishOrderListAdapter(new DishDiffUtilCallBack(), currentRestaurant, this::choosenDishesUpdated);
-            
-            rvOrderDishes.setAdapter(adapter);
-            
-            // download list of categories this restaurant belongs to
-            downloadCategoriesInfo();
-            
-            allCategories = new ArrayList<>();
-            //TODO: also download timetables info
-    
             tvDescription.setText(currentRestaurant.getDescription());
             tvAddress.setText(currentRestaurant.getAddress());
             tvPhoneNumber.setText(currentRestaurant.getPhone());
             tvEmail.setText(currentRestaurant.getEmail());
-    
-            //download and set restaurant image
-            StorageReference riversRef = mStorageRef.child("avatar_" + currentRestaurant.getRestaurantID() +".jpg");
-    
-            GlideApp.with(getApplicationContext())
-                    .load(riversRef)
-                    .into(ivPhoto);
-    
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setTitle(currentRestaurant.getName());
-                actionBar.setHomeButtonEnabled(true);
-                actionBar.setDisplayHomeAsUpEnabled(true);
-            }
             
-            downloadDishesInfo();
+        } else {
+            
+            currentRestaurant = (Restaurant) savedInstanceState.getSerializable(RESTAURANT_KEY);
+            tvDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
+            tvAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+            tvPhoneNumber.setText(savedInstanceState.getString(PHONE_KEY, ""));
+            tvEmail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
+            tvCategories.setText(savedInstanceState.getString(CATEGORY_KEY, ""));
+            
         }
         
+        if (currentRestaurant.getTimeTableString() != null)
+            tvTimetable.setText(Utility.extractTimeTable(currentRestaurant.getTimeTableString()));
+    
+        //download and set restaurant image
+        StorageReference riversRef = mStorageRef.child("avatar_" + currentRestaurant.getRestaurantID() +".jpg");
+    
+        GlideApp.with(getApplicationContext())
+                .load(riversRef)
+                .into(ivPhoto);
+    
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(currentRestaurant.getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    
+        adapter = new DishOrderListAdapter(new DishDiffUtilCallBack(), currentRestaurant, this::choosenDishesUpdated);
+    
+        rvOrderDishes.setAdapter(adapter);
+    
+        if (savedInstanceState != null) {
+            dishes = (List<Dish>) savedInstanceState.getSerializable(DISHES_KEY);
+            adapter.submitList(dishes);
+            
+            choosenDishes = adapter.getChosenDishes();
+            updateTotalVisibility();
+        } else {
+            downloadDishesInfo();
+        }
+    
+        allCategories = new ArrayList<>();
+    
+        // download list of categories this restaurant belongs to
+        downloadCategoriesInfo();
         
     }
     
@@ -176,29 +195,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         outState.putString(PHONE_KEY, tvPhoneNumber.getText().toString());
         outState.putString(EMAIL_KEY, tvEmail.getText().toString());
         outState.putString(ADDRESS_KEY, tvAddress.getText().toString());
-        outState.putString(TIMETABLE_KEY, tvTimetable.getText().toString());
         outState.putString(CATEGORY_KEY, tvCategories.getText().toString());
         outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
         
-    }
-    
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(currentRestaurant.getName());
-        }
-
-        tvDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
-        tvAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
-        tvPhoneNumber.setText(savedInstanceState.getString(PHONE_KEY, ""));
-        tvEmail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
-        tvTimetable.setText(savedInstanceState.getString(TIMETABLE_KEY, ""));
-        tvCategories.setText(savedInstanceState.getString(CATEGORY_KEY, ""));
-        
-        currentRestaurant = (Restaurant) savedInstanceState.getSerializable(RESTAURANT_KEY);
+        outState.putSerializable(DISHES_KEY, (Serializable) dishes);
         
     }
     
