@@ -2,9 +2,11 @@ package it.polito.maddroid.lab3.rider;
 
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -13,8 +15,12 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -27,9 +33,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private static String STATE_SELECTED_POSITION = "state_selected_position";
     
+    private SharedPreferences sharedPreferences;
+    private static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
+    
+    private static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
+    
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -74,9 +88,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LocationManager locationManager;
     private LocationListener locationListener;
     
+    private boolean riderOnDuty = false;
+    
     private Bundle orderHistoryBundle;
     
     private int currentSelectedPosition;
+    
+    private Intent myServiceIntent;
     
     private Fragment selectedFragment;
     private CurrentDeliveriesFragment currentDeliveriesFragment;
@@ -105,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+    
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+    
+        myServiceIntent = new Intent(this, RiderLocationService.class);
         
         ordersUpdateListeners = new ArrayList<>();
         
@@ -142,68 +164,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startLocation();
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        MenuInflater menuInflater = getMenuInflater();
+        
+        menuInflater.inflate(R.menu.activity_main_menu, menu);
+    
+        // Get the action view used in your toggleservice item
+        final MenuItem toggleservice = menu.findItem(R.id.action_toggle_service);
+        final Switch actionView = (Switch) toggleservice.getActionView();
+        
+        riderOnDuty = sharedPreferences.getBoolean(RIDER_ON_DUTY_KEY,false);
+        
+        if (riderOnDuty)
+            actionView.setChecked(true);
+        
+        actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            startStopService(isChecked);
+        });
+        
+        startStopService(riderOnDuty);
+        
+        return super.onCreateOptionsMenu(menu);
+    }
+    
     private void startLocation() {
-    
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    
-        locationListener = new LocationListener() {
-        
-            @Override
-            public void onLocationChanged(Location location) {
-            
-                Log.d("Location", location.toString());
-            
-            }
-        
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-            
-            }
-        
-            @Override
-            public void onProviderEnabled(String s) {
-            
-            }
-        
-            @Override
-            public void onProviderDisabled(String s) {
-            
-            }
-        
-        };
-    
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        
             // ask for permission
-        
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
-            
         } else {
-    
-            // we have permission!
-    
-            // getting GPS status
-            boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
-    
-            // getting network status
-            boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    
-            // ///Criteria //////////
-    
-            Criteria crta = new Criteria();
-            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
-            crta.setPowerRequirement(Criteria.POWER_LOW);
-            
-            String provider = locationManager.getBestProvider(crta, true);
-            locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            
-            Log.d(TAG, "Latitude: " + location.getLatitude() + " longitude " + location.getLongitude());
-    
+            startLocationService();
         }
+    }
     
+    private void startStopService(boolean start) {
+        ActionBar actionBar = getSupportActionBar();
+    
+        if (actionBar != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+        
+            riderOnDuty = start;
+            if (riderOnDuty) {
+                actionBar.setTitle(R.string.rider_on_duty);
+                startLocationService();
+            }
+            else {
+                actionBar.setTitle(R.string.rider_not_on_duty);
+                stopLocationService();
+            }
+            editor.putBoolean(RIDER_ON_DUTY_KEY, true);
+            editor.apply();
+        }
+    }
+    
+    private void startLocationService() {
+        
+        if (!isMyServiceRunning(RiderLocationService.class))
+            startService(myServiceIntent);
+        
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
+                .setValue(EAHCONST.RiderStatus.ON_DUTY)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
+                .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
+    }
+    
+    private void stopLocationService() {
+        stopService(myServiceIntent);
+    
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
+                .setValue(EAHCONST.RiderStatus.NOT_ON_DUTY)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
+                .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
     }
     
     @Override
@@ -213,8 +245,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-    
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+                startLocationService();
             }
         }
         
@@ -537,5 +568,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     public List<RiderOrderDelivery> getAllDeliveries() {
         return allDeliveries;
+    }
+    
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "Cannot check if service is running, activity manager is null");
+            return false;
+        }
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("isMyServiceRunning?", true+"");
+                return true;
+            }
+        }
+        Log.i ("isMyServiceRunning?", false+"");
+        return false;
     }
 }

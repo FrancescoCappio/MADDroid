@@ -36,6 +36,10 @@ public class EAHCONST {
         DECLINED
     }
     
+    public enum RiderStatus {
+        ON_DUTY,
+        NOT_ON_DUTY
+    }
     
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
@@ -49,6 +53,7 @@ public class EAHCONST {
     public final static String ORDERS_REST_SUBTREE = "orders_restaurateur";
     public final static String ORDERS_CUST_SUBTREE = "orders_customer";
     public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
+    public final static String RIDERS_POSITIONS_SUBTREE = "riders_positions";
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
@@ -77,6 +82,7 @@ public class EAHCONST {
     public final static String RIDER_DESCRIPTION = "decription";
     public final static String RIDER_PHONE = "phone";
     public final static String RIDER_EMAIL = "email";
+    public final static String RIDER_ON_DUTY = "on_duty_status";
     
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";

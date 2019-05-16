@@ -28,4 +28,7 @@
 
     <string name="new_pending_order">There is a new pending order, please accept or decline it</string>
 
+    <string name="rider_on_duty">On duty: current deliveries</string>
+    <string name="rider_not_on_duty">Not at work</string>
+
 </resources>
