@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private OrdersFragment ordersFragment;
     
     private List<RiderOrderDelivery> allDeliveries;
-    private boolean automaticChange = false;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
     
@@ -179,10 +178,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         onDutySwitch.setEnabled(false);
         
         actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (automaticChange) {
-                automaticChange = false;
-                return;
-            }
             startStopService(isChecked);
         });
         
@@ -209,9 +204,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
                 Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
                 
-                automaticChange = true;
                 if (onDutySwitch != null)
-                    onDutySwitch.setChecked(false);
+                    onDutySwitch.setChecked(true);
                 return;
             }
         }
