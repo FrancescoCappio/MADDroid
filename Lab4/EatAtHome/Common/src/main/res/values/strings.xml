@@ -18,6 +18,7 @@
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
     <string name="action_add">Add</string>
+    <string name="action_call_rider">Call a rider</string>
 
     <string name="app">App</string>
     <string name="settings">Settings</string>
@@ -117,5 +118,8 @@
 
     <string name="alert_no_orders_yet">There are no orders yet</string>
     <string name="alert_error_downloading_info">There was an error while downloading some data</string>
+
+    <string name="search_radius">Search radius (Km)</string>
+    <string name="choose_rider">Choose your rider</string>
 
 </resources>
