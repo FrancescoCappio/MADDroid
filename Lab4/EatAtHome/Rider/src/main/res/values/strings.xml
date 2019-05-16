@@ -31,4 +31,7 @@
     <string name="rider_on_duty">On duty: current deliveries</string>
     <string name="rider_not_on_duty">Not at work</string>
 
+    <string name="alert_complete_current_deliveries">You have to complete the current deliveries if you want to stop working</string>
+    <string name="alert_on_duty_switch">You need to be on duty if you want to be available for an order assignment</string>
+
 </resources>

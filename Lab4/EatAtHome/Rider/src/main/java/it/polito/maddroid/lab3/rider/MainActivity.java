@@ -8,16 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -71,9 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String STATE_SELECTED_POSITION = "state_selected_position";
     
     private SharedPreferences sharedPreferences;
-    private static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
-    
-    private static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
+    public static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
+    public static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -84,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private TextView tvAccountEmail;
     private ImageView ivAvatar;
+    private Switch onDutySwitch;
     
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -101,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private OrdersFragment ordersFragment;
     
     private List<RiderOrderDelivery> allDeliveries;
+    private boolean automaticChange = false;
     
     public static String FILE_PROVIDER_AUTHORITY = "it.polito.maddroid.eatathome.fileprovider.rider";
     
@@ -175,12 +171,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final MenuItem toggleservice = menu.findItem(R.id.action_toggle_service);
         final Switch actionView = (Switch) toggleservice.getActionView();
         
+        onDutySwitch = actionView;
         riderOnDuty = sharedPreferences.getBoolean(RIDER_ON_DUTY_KEY,false);
         
         if (riderOnDuty)
             actionView.setChecked(true);
+        onDutySwitch.setEnabled(false);
         
         actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (automaticChange) {
+                automaticChange = false;
+                return;
+            }
             startStopService(isChecked);
         });
         
@@ -200,6 +202,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private void startStopService(boolean start) {
         ActionBar actionBar = getSupportActionBar();
+        
+        if (!start) {
+            
+            if (!getCurrentDeliveries(allDeliveries).isEmpty()) {
+    
+                Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
+                
+                automaticChange = true;
+                if (onDutySwitch != null)
+                    onDutySwitch.setChecked(false);
+                return;
+            }
+        }
     
         if (actionBar != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -213,9 +228,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 actionBar.setTitle(R.string.rider_not_on_duty);
                 stopLocationService();
             }
-            editor.putBoolean(RIDER_ON_DUTY_KEY, true);
+            editor.putBoolean(RIDER_ON_DUTY_KEY, riderOnDuty);
             editor.apply();
         }
+        
+        checkAllOrdersDownloaded();
     }
     
     private void startLocationService() {
@@ -542,12 +559,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private synchronized void checkAllOrdersDownloaded() {
         
+        if (allDeliveries == null)
+            return;
+        
         for (RiderOrderDelivery o : allDeliveries) {
             if (o.getRestaurantName() == null)
                 return;
         }
     
         Collections.sort(allDeliveries);
+        
+        if (onDutySwitch != null)
+            onDutySwitch.setEnabled(true);
         
         for (OrdersUpdateListener listener : ordersUpdateListeners) {
             try {
@@ -584,5 +607,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         Log.i ("isMyServiceRunning?", false+"");
         return false;
+    }
+    
+    public static List<RiderOrderDelivery> getCurrentDeliveries(List<RiderOrderDelivery> allDeliveries) {
+        List<RiderOrderDelivery> currentDeliveries = new ArrayList<>();
+    
+        for (RiderOrderDelivery rod : allDeliveries) {
+            if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED || rod.getOrderStatus() == EAHCONST.OrderStatus.PENDING)
+                currentDeliveries.add(rod);
+        }
+        return currentDeliveries;
     }
 }
