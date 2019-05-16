@@ -6,7 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.location.Address;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.GeocodingLocation;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
@@ -85,6 +89,8 @@ public class AccountInfoActivity extends AppCompatActivity {
     private String timeTableRest;
     boolean photoChanged = false;
     boolean photoPresent = false;
+
+    private AlertDialog possiblePosition;
     private List<RestaurantCategory> categories;
     private List<String> previousSelectedCategoriesId;
     private List<String> currentSelectedCategoriesId;
@@ -910,6 +916,9 @@ public class AccountInfoActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
         }
+
+        GeocodingLocation locationAddress = new GeocodingLocation();
+        locationAddress.getAddressFromLocation(restaurantAddress, getApplicationContext(), new GeocoderHandler());
         
         // we also check if the photo has been set
         if (mandatoryAccountInfo && !photoChanged) {
@@ -1284,4 +1293,83 @@ public class AccountInfoActivity extends AppCompatActivity {
         DialogFragment newFragment = new TimePickerFragment(tv);
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
+
+
+    public class GeocoderHandler extends Handler {
+        String locationAddress = new String();
+        List<Address> addressList;
+        @Override
+        public void handleMessage(Message message) {
+
+            switch (message.what) {
+                case 0:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    etAddress.setText(locationAddress);
+                    break;
+                case 1:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+
+                    break;
+                case 2:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    String [] multiChoiceItems = new String[addressList.size()];
+                    for (int i = 0; i < addressList.size(); ++i)
+                    {
+                        multiChoiceItems[i]=""+ addressList.get(i).getThoroughfare();
+                        multiChoiceItems[i]=multiChoiceItems[i]+" "+ addressList.get(i).getSubThoroughfare();
+                        multiChoiceItems[i]=multiChoiceItems[i]+","+ addressList.get(i).getLocality();
+
+                    }
+                    int choice = setDialogPosition(multiChoiceItems,0);
+                    break;
+                default:
+                    locationAddress = null;
+            }
+        }
+    }
+
+    private int setDialogPosition(String[] multiChoiceItems, int checkedItems) {
+
+        final int[] choice = new int[1];
+        possiblePosition = new AlertDialog.Builder(this)
+                .setTitle("Select Your Address")
+                .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice[0] = which;
+                    }
+                })
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice[0] = which;
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Back",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
+
+
+        possiblePosition.show();
+
+
+    }
+
+
 }
+
+/*
+).append(" ");
+                                sb.append(address.getSubThoroughfare()).append(",");
+                                sb.append(address.getLocality()
+ */
+
+
+
