@@ -200,13 +200,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         if (!start) {
             
-            if (!getCurrentDeliveries(allDeliveries).isEmpty()) {
-    
-                Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
-                
-                if (onDutySwitch != null)
-                    onDutySwitch.setChecked(true);
-                return;
+            if (allDeliveries != null) {
+                if (!getCurrentDeliveries(allDeliveries).isEmpty()) {
+        
+                    Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
+        
+                    if (onDutySwitch != null)
+                        onDutySwitch.setChecked(true);
+                    return;
+                }
             }
         }
     
@@ -358,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
+        ActionBar actionBar = getSupportActionBar();
         currentSelectedPosition = position;
 
         boolean changed = false;
@@ -374,7 +377,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 
                 orderHistoryBundle = null;
 
-                getSupportActionBar().setTitle(R.string.current_deliveries);
+                if (actionBar != null) {
+                    if (riderOnDuty)
+                        actionBar.setTitle(R.string.rider_on_duty);
+                    else
+                        actionBar.setTitle(R.string.rider_not_on_duty);
+                }
                 navigationView.setCheckedItem(R.id.nav_current_deliveries);
 
                 break;
