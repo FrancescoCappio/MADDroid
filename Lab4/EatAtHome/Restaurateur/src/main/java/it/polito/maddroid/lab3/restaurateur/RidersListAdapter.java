@@ -62,7 +62,12 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
             tvRiderName.setText(rider.getName());
             tvRiderDistance.setText(String.format(Locale.US, "%.02f",rider.getDistance()) + " Km");
             
-            itemView.setOnClickListener(v -> itemClickListener.onItemClick(rider));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemClickListener.onItemClick(rider);
+                }
+            });
         }
     }
 }

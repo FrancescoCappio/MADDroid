@@ -70,6 +70,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
             Intent data = new Intent();
             data.putExtra(RIDER_RESULT, rider);
             setResult(RESULT_OK, data);
+            finish();
         });
         
         rvRiders.setAdapter(adapter);
@@ -205,13 +206,13 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 dist = dist/1000;
                 
                 Rider rider = new Rider(riderId, riderName, riderEmail, dist);
-                
-                riders.remove(rider);
-                
+    
                 if (riders.isEmpty())
                     riders = new ArrayList<>();
                 else
                     riders = new ArrayList<>(riders);
+                riders.remove(rider);
+                
                 riders.add(rider);
                 adapter.submitList(riders);
             }
