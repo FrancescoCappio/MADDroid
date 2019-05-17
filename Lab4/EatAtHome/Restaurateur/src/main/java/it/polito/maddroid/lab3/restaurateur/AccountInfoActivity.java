@@ -6,11 +6,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.location.Address;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -62,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.GeocodingLocation;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
@@ -70,13 +79,13 @@ import it.polito.maddroid.lab3.common.Utility;
 
 
 public class AccountInfoActivity extends AppCompatActivity {
-    
+
     // static const
     private static final String TAG = "AccountInfoActivity";
     private static final int PHOTO_REQUEST_CODE = 121;
 
     private int DESCRIPTION_MAX_LENGTH;
-    
+
     // general purpose attributes
     private boolean editMode = false;
     private boolean mandatoryAccountInfo = true;
@@ -85,20 +94,25 @@ public class AccountInfoActivity extends AppCompatActivity {
     private String timeTableRest;
     boolean photoChanged = false;
     boolean photoPresent = false;
+
+    private AlertDialog possiblePosition;
+    private List<Address> addressList;
+    private Address address;
     private List<RestaurantCategory> categories;
     private List<String> previousSelectedCategoriesId;
     private List<String> currentSelectedCategoriesId;
     private boolean timetableDialogOpen = false;
     private boolean categoriesDialogOpen = false;
-    
+    private int choice;
+
     private AlertDialog logoutDialog;
     private AlertDialog timetableDialog;
     private AlertDialog categoriesDialog;
-    
+
     // menu items
     private MenuItem menuEdit;
     private MenuItem menuConfirm;
-    
+
     // views
     private EditText etName;
     private EditText etPhone;
@@ -112,13 +126,13 @@ public class AccountInfoActivity extends AppCompatActivity {
     private Button btCategories;
     private Button btTimeTable;
     private TextView tvLoginEmail;
-    
+
     // Firebase attributes
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
-    
+
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
@@ -129,91 +143,91 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
     private static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
     private static final String MANDATORY_INFO_KEY = "MANDATORY_INFO_KEY";
-    private static final String CATEGORIES_AFTE ="CATEGORIES_AFTER";
-    private static final String CATEGORIES_BEFO ="CATEGORIES_BEFORE";
-    private static final String TIMETABLEINFO ="TIMETABLE_INFO";
-    private static final String TIMETABLE_DIALOG_KEY ="TIMETABLE_DIALOG_KEY";
-    private static final String CATEGORIES_DIALOG_KEY ="CATEGORIES_DIALOG_KEY";
-    private static final String CATEGORIES_LIST_KEY ="CATEGORIES_LIST_KEY";
+    private static final String CATEGORIES_AFTE = "CATEGORIES_AFTER";
+    private static final String CATEGORIES_BEFO = "CATEGORIES_BEFORE";
+    private static final String TIMETABLEINFO = "TIMETABLE_INFO";
+    private static final String TIMETABLE_DIALOG_KEY = "TIMETABLE_DIALOG_KEY";
+    private static final String CATEGORIES_DIALOG_KEY = "CATEGORIES_DIALOG_KEY";
+    private static final String CATEGORIES_LIST_KEY = "CATEGORIES_LIST_KEY";
 
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_info);
-        
+
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        
+
         downloadCategoriesInfo();
-        
+
         currentSelectedCategoriesId = new ArrayList<>();
         previousSelectedCategoriesId = new ArrayList<>();
-        
+
         if (currentUser == null) {
             // this should not be possible. The user should be logged in to be here
             Utility.showAlertToUser(this, R.string.login_alert);
-            
+
             // launch loginactivity
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             loginIntent.putExtra(EAHCONST.LAUNCH_ACTIVITY_KEY, MainActivity.class);
             startActivity(loginIntent);
-            
+
             // exit
             finish();
         }
-        
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.account_info);
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        
+
         getReferencesToViews();
-    
+
         Resources res = getResources();
         DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
-        
+
         tvLoginEmail.setText(currentUser.getEmail());
-        
+
         setupClickListeners();
-        
+
         if (savedInstanceState == null)
             manageLaunchIntent();
     }
-    
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        
+
         outState.putString(NAME_KEY, etName.getText().toString());
         outState.putString(DESCRIPTION_KEY, etDescription.getText().toString());
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
-        outState.putString(TIMETABLEINFO,timeTableRest);
+        outState.putString(TIMETABLEINFO, timeTableRest);
         outState.putStringArrayList(CATEGORIES_BEFO, (ArrayList<String>) previousSelectedCategoriesId);
         outState.putStringArrayList(CATEGORIES_AFTE, (ArrayList<String>) currentSelectedCategoriesId);
 
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
         outState.putBoolean(EDIT_MODE_KEY, editMode);
-        
+
         outState.putBoolean(PHOTO_PRESENT_KEY, photoPresent);
         outState.putBoolean(PHOTO_CHANGED_KEY, photoChanged);
-        
+
         outState.putBoolean(TIMETABLE_DIALOG_KEY, timetableDialogOpen);
         outState.putBoolean(CATEGORIES_DIALOG_KEY, categoriesDialogOpen);
-        
+
         outState.putSerializable(CATEGORIES_LIST_KEY, (Serializable) categories);
     }
-    
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        
+
         etName.setText(savedInstanceState.getString(NAME_KEY, ""));
         etDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
@@ -226,36 +240,36 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
         mandatoryAccountInfo = savedInstanceState.getBoolean(MANDATORY_INFO_KEY);
-        
+
         photoPresent = savedInstanceState.getBoolean(PHOTO_PRESENT_KEY);
         photoChanged = savedInstanceState.getBoolean(PHOTO_CHANGED_KEY);
-        
+
         if (photoPresent)
             updateAvatarImage();
-        
+
         setEditEnabled(editMode);
-        
+
         timetableDialogOpen = savedInstanceState.getBoolean(TIMETABLE_DIALOG_KEY, false);
         categoriesDialogOpen = savedInstanceState.getBoolean(CATEGORIES_DIALOG_KEY, false);
-    
+
         categories = (List<RestaurantCategory>) savedInstanceState.getSerializable(CATEGORIES_LIST_KEY);
-    
+
         if (timetableDialogOpen)
             launchTimetableDialog();
         if (categoriesDialogOpen)
             launchCategoriesDialog();
-        
+
     }
-    
+
     private void manageLaunchIntent() {
         Intent launchIntent = getIntent();
-        
+
         editMode = launchIntent.getBooleanExtra(EAHCONST.LAUNCH_EDIT_ENABLED_KEY, false);
-        
+
         setEditEnabled(editMode);
-        
+
         mandatoryAccountInfo = launchIntent.getBooleanExtra(EAHCONST.ACCOUNT_INFO_EMPTY, false);
-        
+
         if (!mandatoryAccountInfo) {
             // the user has probably already inserted some info in the past
             retrieveRestaurantsInfo();
@@ -264,95 +278,99 @@ public class AccountInfoActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.account_info_alert);
         }
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-    
+
         MenuInflater menuInflater = getMenuInflater();
-        
+
         menuInflater.inflate(R.menu.account_info_menu, menu);
-        
+
         menuEdit = menu.findItem(R.id.menu_edit);
         menuConfirm = menu.findItem(R.id.menu_confirm);
-        
+
         setEditEnabled(editMode);
-        
+
         return true;
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
         if (logoutDialog != null) {
             logoutDialog.dismiss();
         }
-        
+
         if (timetableDialog != null) {
             timetableDialog.dismiss();
         }
-        
+
         if (categoriesDialog != null) {
             categoriesDialog.dismiss();
         }
     }
-    
+
     private void getReferencesToViews() {
-        
+
         etName = findViewById(R.id.et_name);
         etAddress = findViewById(R.id.et_address);
         etDescription = findViewById(R.id.et_description);
         etMail = findViewById(R.id.et_mail);
         etPhone = findViewById(R.id.et_phone);
-        
+
         fabPhoto = findViewById(R.id.fab_add_photo);
         ivPhoto = findViewById(R.id.iv_avatar);
-        
+
         tvDescriptionCount = findViewById(R.id.tv_description_count);
-        
+
         tvLoginEmail = findViewById(R.id.tv_login_email);
         btLogout = findViewById(R.id.bt_logout);
         btCategories = findViewById(R.id.bt_restaurant_categories);
         btTimeTable = findViewById(R.id.bt_timetable);
     }
-    
+
     private void setupClickListeners() {
         btLogout.setOnClickListener(v -> {
-            
+
             //we create an alert dialog to ask user a confirmation before exiting
-            
+
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MainAppTheme_NoActionBar));
-            
+
             builder.setTitle(R.string.logout);
             builder.setMessage(R.string.logout_confirm_request);
-            
+
             builder.setPositiveButton(R.string.yes, (dialog, which) -> {
                 logoutAction();
                 dialog.dismiss();
                 logoutDialog = null;
             });
-            
+
             builder.setNegativeButton(R.string.no, (dialog, which) -> {
                 dialog.dismiss();
                 logoutDialog = null;
             });
-            
+
             // show the dialog
             logoutDialog = builder.create();
-            
+
             logoutDialog.show();
         });
-        
+
         ivPhoto.setOnClickListener(v -> {
             Utility.startActivityToGetImage(this, MainActivity.FILE_PROVIDER_AUTHORITY, getAvatarTmpFile(), PHOTO_REQUEST_CODE);
         });
-        
+
         etDescription.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 updateDescriptionCount();
@@ -361,34 +379,32 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         btCategories.setOnClickListener(v -> launchCategoriesDialog());
 
-        btTimeTable.setOnClickListener(v-> launchTimetableDialog());
+        btTimeTable.setOnClickListener(v -> launchTimetableDialog());
 
     }
-    
+
     private void launchCategoriesDialog() {
         if (categories.size() == 0) {
             Utility.showAlertToUser(this, R.string.no_category_alert);
             return;
         }
-        
+
         categoriesDialogOpen = true;
-        
-        String [] multiChoiceItems = new String[categories.size()];
+
+        String[] multiChoiceItems = new String[categories.size()];
         boolean[] checkedItems = new boolean[categories.size()];
-        for (int i = 0; i < categories.size();i++)
-        {
+        for (int i = 0; i < categories.size(); i++) {
             multiChoiceItems[i] = categories.get(i).getName();
             checkedItems[i] = currentSelectedCategoriesId.contains(categories.get(i).getId());
         }
-        
+
         categoriesDialog = new AlertDialog.Builder(this)
                 .setTitle("Select your restaurant categories")
                 .setMultiChoiceItems(multiChoiceItems, checkedItems, (dialog, index, isChecked) -> {
-                    if(isChecked){
+                    if (isChecked) {
                         if (!currentSelectedCategoriesId.contains(categories.get(index).getId()))
                             currentSelectedCategoriesId.add(categories.get(index).getId());
-                    }
-                    else{
+                    } else {
                         if (currentSelectedCategoriesId.contains(categories.get(index).getId()))
                             currentSelectedCategoriesId.remove(categories.get(index).getId());
                     }
@@ -403,25 +419,25 @@ public class AccountInfoActivity extends AppCompatActivity {
                     categoriesDialog = null;
                     dialog.dismiss();
                 }).create();
-        
+
         categoriesDialog.show();
-        
+
     }
-    
+
     private void launchTimetableDialog() {
-        
+
         timetableDialogOpen = true;
-        
+
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.timetable, null);
-        TextView days[] = new  TextView[7];
-        TextView openFirst[] = new  TextView[7];
-        TextView openSecond[] = new  TextView[7];
-        TextView closeFirst[] = new  TextView[7];
-        TextView closeSecond[] = new  TextView[7];
+        TextView days[] = new TextView[7];
+        TextView openFirst[] = new TextView[7];
+        TextView openSecond[] = new TextView[7];
+        TextView closeFirst[] = new TextView[7];
+        TextView closeSecond[] = new TextView[7];
         Switch swDays[] = new Switch[7];
         Switch swDaysCont[] = new Switch[7];
-        
+
         days[0] = alertLayout.findViewById(R.id.tv_day_0);
         days[1] = alertLayout.findViewById(R.id.tv_day_1);
         days[2] = alertLayout.findViewById(R.id.tv_day_2);
@@ -429,7 +445,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         days[4] = alertLayout.findViewById(R.id.tv_day_4);
         days[5] = alertLayout.findViewById(R.id.tv_day_5);
         days[6] = alertLayout.findViewById(R.id.tv_day_6);
-        
+
         swDays[0] = alertLayout.findViewById(R.id.sw_day_0);
         swDays[1] = alertLayout.findViewById(R.id.sw_day_1);
         swDays[2] = alertLayout.findViewById(R.id.sw_day_2);
@@ -437,7 +453,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         swDays[4] = alertLayout.findViewById(R.id.sw_day_4);
         swDays[5] = alertLayout.findViewById(R.id.sw_day_5);
         swDays[6] = alertLayout.findViewById(R.id.sw_day_6);
-        
+
         swDaysCont[0] = alertLayout.findViewById(R.id.sw_continued_day_0);
         swDaysCont[1] = alertLayout.findViewById(R.id.sw_continued_day_1);
         swDaysCont[2] = alertLayout.findViewById(R.id.sw_continued_day_2);
@@ -445,7 +461,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         swDaysCont[4] = alertLayout.findViewById(R.id.sw_continued_day_4);
         swDaysCont[5] = alertLayout.findViewById(R.id.sw_continued_day_5);
         swDaysCont[6] = alertLayout.findViewById(R.id.sw_continued_day_6);
-        
+
         openFirst[0] = alertLayout.findViewById(R.id.tv_openL_time0);
         closeFirst[0] = alertLayout.findViewById(R.id.tv_closeL_time0);
         openSecond[0] = alertLayout.findViewById(R.id.tv_openD_time0);
@@ -474,20 +490,18 @@ public class AccountInfoActivity extends AppCompatActivity {
         closeFirst[6] = alertLayout.findViewById(R.id.tv_closeL_time6);
         openSecond[6] = alertLayout.findViewById(R.id.tv_openD_time6);
         closeSecond[6] = alertLayout.findViewById(R.id.tv_closeD_time6);
-        
+
         swDays[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[0].setEnabled(true);
                     openSecond[0].setEnabled(true);
                     closeFirst[0].setEnabled(true);
                     closeSecond[0].setEnabled(true);
                     swDaysCont[0].setEnabled(true);
 
-                }
-                else {
+                } else {
 
                     openFirst[0].setEnabled(false);
                     openSecond[0].setEnabled(false);
@@ -498,17 +512,16 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[0].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[0].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[0].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[0].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[0].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[1].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[1].setEnabled(true);
                     openSecond[1].setEnabled(true);
                     closeFirst[1].setEnabled(true);
@@ -516,8 +529,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     swDaysCont[1].setEnabled(true);
 
 
-                }
-                else {
+                } else {
 
                     openFirst[1].setEnabled(false);
                     openSecond[1].setEnabled(false);
@@ -528,24 +540,22 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[1].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[1].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[1].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[1].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[1].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[2].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[2].setEnabled(true);
                     openSecond[2].setEnabled(true);
                     closeFirst[2].setEnabled(true);
                     closeSecond[2].setEnabled(true);
                     swDaysCont[2].setEnabled(true);
-                }
-                else {
+                } else {
                     //TODO resettare il tempo? o lasciarlo cosi?
                     openFirst[2].setEnabled(false);
                     openSecond[2].setEnabled(false);
@@ -556,25 +566,23 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[2].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[2].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[2].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[2].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[2].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[3].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[3].setEnabled(true);
                     openSecond[3].setEnabled(true);
                     closeFirst[3].setEnabled(true);
                     closeSecond[3].setEnabled(true);
                     swDaysCont[3].setEnabled(true);
 
-                }
-                else {
+                } else {
 
                     openFirst[3].setEnabled(false);
                     openSecond[3].setEnabled(false);
@@ -585,25 +593,23 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[3].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[3].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[3].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[3].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[3].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[4].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[4].setEnabled(true);
                     openSecond[4].setEnabled(true);
                     closeFirst[4].setEnabled(true);
                     closeSecond[4].setEnabled(true);
                     swDaysCont[4].setEnabled(true);
 
-                }
-                else {
+                } else {
 
                     openFirst[4].setEnabled(false);
                     openSecond[4].setEnabled(false);
@@ -614,25 +620,23 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[4].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[4].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[4].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[4].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[4].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[5].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[5].setEnabled(true);
                     openSecond[5].setEnabled(true);
                     closeFirst[5].setEnabled(true);
                     closeSecond[5].setEnabled(true);
                     swDaysCont[5].setEnabled(true);
 
-                }
-                else {
+                } else {
 
                     openFirst[5].setEnabled(false);
                     openSecond[5].setEnabled(false);
@@ -643,25 +647,23 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[5].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[5].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[5].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[5].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[5].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDays[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     openFirst[6].setEnabled(true);
                     openSecond[6].setEnabled(true);
                     closeFirst[6].setEnabled(true);
                     closeSecond[6].setEnabled(true);
                     swDaysCont[6].setEnabled(true);
 
-                }
-                else {
+                } else {
 
                     openFirst[6].setEnabled(false);
                     openSecond[6].setEnabled(false);
@@ -672,12 +674,12 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        openFirst[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        openSecond[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeFirst[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        closeSecond[6].setOnClickListener(tv-> showTimePickerDialog((TextView) tv) );
-        
+
+        openFirst[6].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        openSecond[6].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeFirst[6].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+        closeSecond[6].setOnClickListener(tv -> showTimePickerDialog((TextView) tv));
+
         swDaysCont[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -690,7 +692,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
         swDaysCont[1].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -698,12 +700,12 @@ public class AccountInfoActivity extends AppCompatActivity {
                     openSecond[1].setEnabled(false);
                     closeSecond[1].setEnabled(false);
                 } else {
-                     openSecond[1].setEnabled(true);
+                    openSecond[1].setEnabled(true);
                     closeSecond[1].setEnabled(true);
                 }
             }
         });
-        
+
         swDaysCont[2].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -716,7 +718,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
         swDaysCont[3].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -729,7 +731,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
         swDaysCont[4].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -742,7 +744,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
         swDaysCont[5].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -755,7 +757,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
         swDaysCont[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -768,8 +770,8 @@ public class AccountInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        
-        
+
+
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Restaurant Time Table");
         // this is set the view from XML inside AlertDialog
@@ -782,43 +784,37 @@ public class AccountInfoActivity extends AppCompatActivity {
             timetableDialog = null;
             dialog.dismiss();
         });
-        
+
         alert.setPositiveButton("Done", (dialog, which) -> {
             timetableDialogOpen = false;
             String s = new String();
-            for (int i = 0 ; i < 7; i++){
-                if(swDays[i].isChecked())
-                {
-                    s = s + "Day"+i+",";
+            for (int i = 0; i < 7; i++) {
+                if (swDays[i].isChecked()) {
+                    s = s + "Day" + i + ",";
 
-                    if(swDaysCont[i].isChecked())
-                    {
+                    if (swDaysCont[i].isChecked()) {
                        /* if(! control(openFirst[i], closeFirst[i]))
                         {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
-                        s = s + openFirst[i].getText()+"_";
-                        s = s + closeFirst[i].getText()+";";
+                        s = s + openFirst[i].getText() + "_";
+                        s = s + closeFirst[i].getText() + ";";
 
-                    }
-                    else
-                    {
+                    } else {
                        /* if((! control(openFirst[i], closeFirst[i]))&&(!control(openSecond[i],closeSecond[i])))
                         {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
-                        s = s + openFirst[i].getText()+"_";
-                        s = s + closeFirst[i].getText()+",";
-                        s = s + openSecond[i].getText()+"_";
-                        s = s + closeSecond[i].getText()+";";
+                        s = s + openFirst[i].getText() + "_";
+                        s = s + closeFirst[i].getText() + ",";
+                        s = s + openSecond[i].getText() + "_";
+                        s = s + closeSecond[i].getText() + ";";
 
                     }
-                }
-                else
-                {
-                    s = s + "Day"+i+" closed;";
+                } else {
+                    s = s + "Day" + i + " closed;";
                 }
             }
             timeTableRest = s;
@@ -829,7 +825,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         timetableDialog = alert.create();
         timetableDialog.show();
     }
-    
+
     private void logoutAction() {
         mAuth.signOut();
 
@@ -844,12 +840,12 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
     private void setEditEnabled(boolean enabled) {
-        
+
         if (menuConfirm != null)
             menuConfirm.setVisible(enabled);
         if (menuEdit != null)
             menuEdit.setVisible(!enabled);
-    
+
         etName.setEnabled(enabled);
         etDescription.setEnabled(enabled);
         etMail.setEnabled(enabled);
@@ -857,218 +853,239 @@ public class AccountInfoActivity extends AppCompatActivity {
         etAddress.setEnabled(enabled);
         btCategories.setEnabled(enabled);
         btTimeTable.setEnabled(enabled);
-        
+
         if (enabled)
             fabPhoto.show();
         else
             fabPhoto.hide();
-        
+
         ivPhoto.setEnabled(enabled);
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        
+
         switch (item.getItemId()) {
-            
+
             case android.R.id.home:
                 //emulate back pressed
                 onBackPressed();
                 break;
-            
+
             case R.id.menu_confirm:
-                if (manageUserConfirm()) {
-                    editMode = false;
-                    setEditEnabled(false);
+                String restaurantAddress = etAddress.getText().toString();
+                if(restaurantAddress.isEmpty())
+                {
+                    Utility.showAlertToUser(this, R.string.fields_empty_alert);
+                    return true;
+                }
+                else
+                {
+                    GeocodingLocation locationAddress = new GeocodingLocation();
+                    locationAddress.getAddressFromLocation(restaurantAddress, getApplicationContext(), new GeocoderHandler());
                 }
                 break;
-                
+
             case R.id.menu_edit:
                 editMode = true;
                 setEditEnabled(true);
                 break;
         }
-        
+
         return true;
     }
-    
+
     private boolean manageUserConfirm() {
-        
+
         // first we get info from edittexts
         String restaurantName = etName.getText().toString();
         String restaurantPhone = etPhone.getText().toString();
         String restaurantAddress = etAddress.getText().toString();
         String restaurantEmail = etMail.getText().toString();
         String restaurantDescription = etDescription.getText().toString();
-        
-        
+
+
         // now we check if at leat one category has been selected
         boolean categorySelected = !currentSelectedCategoriesId.isEmpty();
-        
+
         if (restaurantPhone.isEmpty() || restaurantName.isEmpty() || restaurantAddress.isEmpty() || restaurantDescription.isEmpty() || restaurantEmail.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
         }
-        
+
+
         // we also check if the photo has been set
         if (mandatoryAccountInfo && !photoChanged) {
             Utility.showAlertToUser(this, R.string.image_empty_alert);
             return false;
         }
-        
+
         if (!categorySelected) {
             Utility.showAlertToUser(this, R.string.no_category_alert);
             return false;
         }
 
-        if (timeTableRest == null || timeTableRest.isEmpty()){
+        if (timeTableRest == null || timeTableRest.isEmpty()) {
             Utility.showAlertToUser(this, R.string.no_timetable_alert);
             return false;
         }
-        
+
         setActivityLoading(true);
-        
+
         // now add users info in users tree
         EAHCONST.USER_TYPE userType = EAHCONST.USER_TYPE.RESTAURATEUR;
-        
+
         String userEmail = currentUser.getEmail();
-        
+
         userId = currentUser.getUid();
-    
-        Map<String,Object> updateMap = new HashMap<>();
-        
+
+        Map<String, Object> updateMap = new HashMap<>();
+
         // check categories to be removed
         for (String id : previousSelectedCategoriesId) {
             if (!currentSelectedCategoriesId.contains(id))
                 updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, id, userId), null);
         }
-        
+
         // check categories to be added
         for (String id : currentSelectedCategoriesId) {
             if (!previousSelectedCategoriesId.contains(id))
                 updateMap.put(EAHCONST.generatePath(EAHCONST.CATEGORIES_ASSOCIATIONS_SUB_TREE, id, userId), userId);
         }
-        
+
         if (photoChanged)
             uploadAvatar(userId);
-        
+
         // userEmail cannot be null because we permit only registration by email
         assert userEmail != null;
-        
+
         updateMap.put(EAHCONST.generatePath(EAHCONST.USERS_SUB_TREE, userId, EAHCONST.USERS_MAIL), userEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.USERS_SUB_TREE, userId, EAHCONST.USERS_TYPE), userType);
-        
+
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_NAME), restaurantName);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_ADDRESS), restaurantAddress);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
-        
+
         // put timetable inside both restaurants and timetables subtree
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_TIMETABLES_SUB_TREE, userId), timeTableRest);
-    
+
         //produce new categories string
         StringBuilder sb = new StringBuilder();
         for (String id : currentSelectedCategoriesId)
             sb.append(id).append(";");
-    
+
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_CATEGORIES), sb.toString());
-        
+
 
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
-            
+
             Log.d(TAG, "Success registering user info");
             setActivityLoading(false);
-            
+
             //now align the 2 categories lists
             previousSelectedCategoriesId.clear();
             previousSelectedCategoriesId.addAll(currentSelectedCategoriesId);
-            
-            Utility.showAlertToUser(this,R.string.notify_save_ok);
-            
+
+            DatabaseReference dbRef1 = dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).child(currentUser.getUid());
+            GeoFire geoFire = new GeoFire(dbRef1);
+            geoFire.setLocation(EAHCONST.RESTAURANT_POSITION, new GeoLocation(address.getLatitude(), address.getLongitude()), new GeoFire.CompletionListener() {
+                @Override
+                public void onComplete(String key, DatabaseError error) {
+                    if (error != null) {
+                        Log.d("Location GeoFire", "There was an error saving the location to GeoFire: " + error);
+                    } else {
+                        Log.d("Location GeoFire", "Location saved on server successfully!");
+                    }
+                }
+            });
+
+            Utility.showAlertToUser(this, R.string.notify_save_ok);
+
         }).addOnFailureListener(e -> {
-            
+
             Log.e(TAG, "Database error while registering user info: " + e.getMessage());
             setActivityLoading(false);
             Utility.showAlertToUser(this, R.string.notify_save_ko);
-            
+
         });
         return true;
     }
-    
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
     }
-    
+
     private void retrieveRestaurantsInfo() {
         // first we check if the user has already inserted info in the past, in this case we load them
-        
+
         setActivityLoading(true);
-        
+
         String userId = currentUser.getUid();
-        
+
         // we want to read but we are not interested in updates
         dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                
+
                 String restaurantName = (String) dataSnapshot.child(EAHCONST.RESTAURANT_NAME).getValue();
                 String restaurantAddress = (String) dataSnapshot.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
                 String restaurantEmail = (String) dataSnapshot.child(EAHCONST.RESTAURANT_EMAIL).getValue();
                 String restaurantPhone = (String) dataSnapshot.child(EAHCONST.RESTAURANT_PHONE).getValue();
                 String restaurantDescription = (String) dataSnapshot.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
-                
+
                 String categoriesRest = (String) dataSnapshot.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
-    
+
                 timeTableRest = (String) dataSnapshot.child(EAHCONST.RESTAURANT_TIMETABLE).getValue();
-                
+
                 if (restaurantName != null) {
                     etName.setText(restaurantName);
                 }
-                
+
                 if (restaurantAddress != null) {
                     etAddress.setText(restaurantAddress);
                 }
-                
+
                 if (restaurantEmail != null) {
                     etMail.setText(restaurantEmail);
                 }
-                
+
                 if (restaurantPhone != null) {
                     etPhone.setText(restaurantPhone);
                 }
-                
+
                 if (restaurantDescription != null) {
                     etDescription.setText(restaurantDescription);
                 }
-                
+
                 if (categoriesRest != null) {
                     for (String id : categoriesRest.split(";")) {
                         currentSelectedCategoriesId.add(id);
                         previousSelectedCategoriesId.add(id);
                     }
                 }
-                
+
                 setActivityLoading(false);
             }
-            
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 setActivityLoading(false);
             }
         });
     }
-    
+
     private synchronized void setActivityLoading(boolean loading) {
         // this method is necessary to show the user when the activity is doing a network operation
         // as downloading data or uploading data
         // how to use: call with loading = true to notify that a new transmission has been started
         // call with loading = false to notify end of transmission
-        
+
         ProgressBar pbLoading = findViewById(R.id.pb_loading);
         if (loading) {
             if (waitingCount == 0)
@@ -1080,7 +1097,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 pbLoading.setVisibility(View.INVISIBLE);
         }
     }
-    
+
     private File getAvatarTmpFile() {
         // Determine Uri of camera image to save.
         final File root = new File(getApplicationContext().getFilesDir() + File.separator + "images" + File.separator);
@@ -1088,16 +1105,16 @@ public class AccountInfoActivity extends AppCompatActivity {
         final String fname = "RestaurantAvatar_tmp.jpg";
         return new File(root, fname);
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    
+
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "Result not ok");
             return;
         }
-    
+
         if (requestCode == PHOTO_REQUEST_CODE) {
             final boolean isCamera;
             if (data == null || data.getData() == null) {
@@ -1105,36 +1122,36 @@ public class AccountInfoActivity extends AppCompatActivity {
             } else {
                 isCamera = false;
             }
-        
+
             Uri selectedImageUri;
             if (!isCamera) {
                 selectedImageUri = data.getData();
-            
+
                 if (selectedImageUri == null) {
                     Log.e(TAG, "Selectedimageuri is null");
                     return;
                 }
                 Log.d(TAG, "Result URI: " + selectedImageUri.toString());
-            
+
                 try {
                     // we need to copy the image into our directory, we try 2 methods to do this:
                     // 1. if possible we copy manually with input stream and output stream so that the exif interface is not lost
                     // 2. if we can't access the exif interface then we try to decode the bitmap and we encode it again in our directory
                     copyImageToTmpLocation(selectedImageUri);
-                
+
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read bitmap");
                     e.printStackTrace();
                 }
-            
-            
+
+
             } else {
                 Log.d(TAG, "Image successfully captured with camera");
                 //update shown image
             }
             startActivityToCropImage();
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-        
+
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             Uri resultUri = result.getUri();
             Log.d(TAG, "Result uri: " + resultUri);
@@ -1149,27 +1166,27 @@ public class AccountInfoActivity extends AppCompatActivity {
             updateAvatarImage();
         }
     }
-    
+
     private void updateAvatarImage() {
         File img = getAvatarTmpFile();
-    
+
         if (!img.exists() || !img.isFile()) {
             Log.d(TAG, "Cannot load unexisting file as avatar");
             return;
         }
-    
+
         Glide.with(getApplicationContext())
                 .load(img)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivPhoto);
-        
+
     }
-    
+
     private void copyImageToTmpLocation(Uri selectedImageUri) throws IOException {
         InputStream is = getContentResolver().openInputStream(selectedImageUri);
         FileOutputStream fs = new FileOutputStream(getAvatarTmpFile());
-        
+
         if (is == null) {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 99, fs);
@@ -1182,31 +1199,31 @@ public class AccountInfoActivity extends AppCompatActivity {
                 fs.write(buffer, 0, bytesRead);
             }
         }
-        
+
         fs.flush();
         fs.close();
     }
-    
+
     private void startActivityToCropImage() {
         File myImageFile = getAvatarTmpFile();
-        
+
         final Uri outputFileUri = FileProvider.getUriForFile(this,
                 MainActivity.FILE_PROVIDER_AUTHORITY,
                 myImageFile);
-        
+
         CropImage.activity(outputFileUri)
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1,1)
+                .setAspectRatio(1, 1)
                 .start(this);
-        
+
     }
-    
+
     private void uploadAvatar(String UID) {
         Uri file = Uri.fromFile(getAvatarTmpFile());
-        StorageReference riversRef = mStorageRef.child("avatar_" + UID+".jpg");
-        
+        StorageReference riversRef = mStorageRef.child("avatar_" + UID + ".jpg");
+
         setActivityLoading(true);
-        
+
         riversRef.putFile(file)
                 .addOnSuccessListener(taskSnapshot -> {
                     Log.d(TAG, "Avatar uploaded successfully");
@@ -1219,14 +1236,14 @@ public class AccountInfoActivity extends AppCompatActivity {
                     setActivityLoading(false);
                 });
     }
-    
+
     private void downloadAvatar(String UID) {
         File localFile = getAvatarTmpFile();
-        
-        StorageReference riversRef = mStorageRef.child("avatar_" + UID +".jpg");
-        
+
+        StorageReference riversRef = mStorageRef.child("avatar_" + UID + ".jpg");
+
         setActivityLoading(true);
-    
+
         riversRef.getFile(localFile)
                 .addOnSuccessListener(taskSnapshot -> {
                     Log.d(TAG, "Avatar downloaded successfully");
@@ -1239,40 +1256,40 @@ public class AccountInfoActivity extends AppCompatActivity {
             setActivityLoading(false);
         });
     }
-    
+
     private void updateDescriptionCount() {
         int count = etDescription.getText().length();
-        
+
         String cnt = count + "/" + DESCRIPTION_MAX_LENGTH;
-        
+
         tvDescriptionCount.setText(cnt);
     }
 
     private void downloadCategoriesInfo() {
-        
+
         Query queryRef = dbRef
                 .child(EAHCONST.CATEGORIES_SUB_TREE)
                 .orderByChild(EAHCONST.CATEGORIES_NAME);
-        
+
         queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
-                
+
                 List<RestaurantCategory> tmpList = new ArrayList<>();
-                
+
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    
+
                     String catId = ds.getKey();
                     String catName = (String) ds.child(EAHCONST.CATEGORIES_NAME).getValue();
-                    
+
                     tmpList.add(new RestaurantCategory(catId, catName));
                 }
-                
+
                 categories = tmpList;
             }
-            
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled called");
@@ -1284,4 +1301,95 @@ public class AccountInfoActivity extends AppCompatActivity {
         DialogFragment newFragment = new TimePickerFragment(tv);
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
+
+
+    public class GeocoderHandler extends Handler {
+        String locationAddress = new String();
+
+        @Override
+        public void handleMessage(Message message) {
+
+            switch (message.what) {
+                case 0:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    etAddress.setText("");
+                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found );
+                    launchConfirm();
+                    break;
+                case 1:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
+                    address = addressList.get(0);
+                    launchConfirm();
+                    break;
+                case 2:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    String[] multiChoiceItems = new String[addressList.size()];
+                    for (int i = 0; i < addressList.size(); ++i) {
+                        multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + "," + addressList.get(i).getLocality();
+
+                    }
+                    showPositionDialog(multiChoiceItems, 0);
+                    break;
+                default:
+                    locationAddress = null;
+                    break;
+            }
+
+
+        }
+    }
+
+    private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
+
+        possiblePosition = new AlertDialog.Builder(this)
+                .setTitle("Select Your Address")
+                .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice = which;
+                    }
+                })
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etAddress.setText(multiChoiceItems[choice]);
+                        Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
+                        address = addressList.get(choice);
+                        launchConfirm();
+                    }
+                })
+                .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etAddress.setText("");
+                        launchConfirm();
+                    }
+                }).create();
+
+
+        possiblePosition.show();
+
+    }
+
+
+    private void launchConfirm(){
+        if (manageUserConfirm()) {
+            editMode = false;
+            setEditEnabled(false);
+        }
+
+    }
+
 }
+
+
+
+

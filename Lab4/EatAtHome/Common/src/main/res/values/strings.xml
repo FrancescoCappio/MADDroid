@@ -18,6 +18,7 @@
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
     <string name="action_add">Add</string>
+    <string name="action_call_rider">Call a rider</string>
 
     <string name="app">App</string>
     <string name="settings">Settings</string>
@@ -84,14 +85,14 @@
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
-    <string name="restaurant_address">Restaurant\'s address</string>
+    <string name="restaurant_address">Restaurant\'s address (also city)</string>
     <string name="restaurant_description">Restaurant\'s description</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
     <string name="restaurant_categories">Restaurant\'s categories</string>
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
 
     <string name="delivery_time">Delivery time</string>
-    <string name="delivery_address">Delivery address</string>
+    <string name="delivery_address">Delivery address (also city)</string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
     <string name="customer">Customer</string>
@@ -117,5 +118,8 @@
 
     <string name="alert_no_orders_yet">There are no orders yet</string>
     <string name="alert_error_downloading_info">There was an error while downloading some data</string>
+
+    <string name="search_radius">Search radius (Km)</string>
+    <string name="choose_rider">Choose your rider</string>
 
 </resources>

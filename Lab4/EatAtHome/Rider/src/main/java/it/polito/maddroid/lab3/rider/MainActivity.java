@@ -2,9 +2,11 @@ package it.polito.maddroid.lab3.rider;
 
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -18,6 +20,7 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -30,9 +33,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,32 +66,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private final static String TAG = "MainActivity";
     private static MainActivity instance;
-    
+
     private final static int LOCATION_PERMISSION_CODE = 123;
     
     private static String STATE_SELECTED_POSITION = "state_selected_position";
     
+    private SharedPreferences sharedPreferences;
+    public static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
+    public static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference storageReference;
 
     private String riderUID ;
-    
+
     private LinearLayout llNavHeaderMain;
     private NavigationView navigationView;
     private TextView tvAccountEmail;
     private ImageView ivAvatar;
-    
+    private Switch onDutySwitch;
+
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location lastLocation;
 
-    
+
+    private boolean riderOnDuty = false;
+
     private Bundle orderHistoryBundle;
     
     private int currentSelectedPosition;
     
+    private Intent myServiceIntent;
+
     private Fragment selectedFragment;
     private CurrentDeliveriesFragment currentDeliveriesFragment;
     private OrdersFragment ordersFragment;
@@ -114,7 +129,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        
+
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+
+        myServiceIntent = new Intent(this, RiderLocationService.class);
+
         ordersUpdateListeners = new ArrayList<>();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -134,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         riderUID = currentUser.getUid();
-        
+
         tvAccountEmail.setText(currentUser.getEmail());
     
         EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
@@ -155,82 +174,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     private void startLocation() {
-
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        locationListener = new LocationListener() {
-
-            @Override
-            public void onLocationChanged(Location location) {
-
-                lastLocation = location;
-
-                String riderOrderPath = EAHCONST.generatePath(
-                        EAHCONST.RIDERS_POSITION);
-
-                DatabaseReference dbRef1 = FirebaseDatabase.getInstance().getReference(riderOrderPath);
-                GeoFire geoFire = new GeoFire(dbRef1);
-                geoFire.setLocation(riderUID, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
-                    @Override
-                    public void onComplete(String key, DatabaseError error) {
-                        if (error != null) {
-                            Log.d("Location GeoFire","There was an error saving the location to GeoFire: " + error);
-                        } else {
-                            Log.d("Location GeoFire","Location saved on server successfully!");
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-
-        };
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             // ask for permission
-
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
-
         } else {
+            startLocationService();
+        }
+    }
 
-            // we have permission!
+    private void startStopService(boolean start) {
+        ActionBar actionBar = getSupportActionBar();
 
-            // getting GPS status
-            boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!start) {
 
-            // getting network status
-            boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (allDeliveries != null) {
+                if (!getCurrentDeliveries(allDeliveries).isEmpty()) {
 
-            // ///Criteria //////////
+                    Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
 
-            Criteria crta = new Criteria();
-            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
-            crta.setPowerRequirement(Criteria.POWER_LOW);
-
-            String provider = locationManager.getBestProvider(crta, true);
-            locationManager.requestLocationUpdates(provider, 10000, 20, locationListener);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            Log.d(TAG, "Latitude: " + location.getLatitude() + " longitude " + location.getLongitude());
-
+                    if (onDutySwitch != null)
+                        onDutySwitch.setChecked(true);
+                    return;
+                }
+            }
         }
 
+        if (actionBar != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            riderOnDuty = start;
+            if (riderOnDuty) {
+                actionBar.setTitle(R.string.rider_on_duty);
+                startLocationService();
+            }
+            else {
+                actionBar.setTitle(R.string.rider_not_on_duty);
+                stopLocationService();
+            }
+            editor.putBoolean(RIDER_ON_DUTY_KEY, riderOnDuty);
+            editor.apply();
+        }
+
+        checkAllOrdersDownloaded();
+    }
+
+    private void startLocationService() {
+
+        if (!isMyServiceRunning(RiderLocationService.class))
+            startService(myServiceIntent);
+
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
+                .setValue(EAHCONST.RiderStatus.ON_DUTY)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
+                .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
+    }
+
+    private void stopLocationService() {
+        stopService(myServiceIntent);
+
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
+                .setValue(EAHCONST.RiderStatus.NOT_ON_DUTY)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
+                .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.activity_main_menu, menu);
+
+        // Get the action view used in your toggleservice item
+        final MenuItem toggleservice = menu.findItem(R.id.action_toggle_service);
+        final Switch actionView = (Switch) toggleservice.getActionView();
+
+        onDutySwitch = actionView;
+        riderOnDuty = sharedPreferences.getBoolean(RIDER_ON_DUTY_KEY,false);
+
+        if (riderOnDuty)
+            actionView.setChecked(true);
+        onDutySwitch.setEnabled(false);
+
+        actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            startStopService(isChecked);
+        });
+
+        startStopService(riderOnDuty);
+
+        return super.onCreateOptionsMenu(menu);
     }
     
     @Override
@@ -240,8 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-    
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+                startLocationService();
             }
         }
         
@@ -343,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
+        ActionBar actionBar = getSupportActionBar();
         currentSelectedPosition = position;
 
         boolean changed = false;
@@ -359,7 +392,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 
                 orderHistoryBundle = null;
 
-                getSupportActionBar().setTitle(R.string.current_deliveries);
+                if (actionBar != null) {
+                    if (riderOnDuty)
+                        actionBar.setTitle(R.string.rider_on_duty);
+                    else
+                        actionBar.setTitle(R.string.rider_not_on_duty);
+                }
                 navigationView.setCheckedItem(R.id.nav_current_deliveries);
 
                 break;
@@ -538,6 +576,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private synchronized void checkAllOrdersDownloaded() {
         
+        if (allDeliveries == null)
+            return;
+
         for (RiderOrderDelivery o : allDeliveries) {
             if (o.getRestaurantName() == null)
                 return;
@@ -545,6 +586,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
         Collections.sort(allDeliveries);
         
+        if (onDutySwitch != null)
+            onDutySwitch.setEnabled(true);
+
         for (OrdersUpdateListener listener : ordersUpdateListeners) {
             try {
                 listener.manageOrdersUpdate();
@@ -565,10 +609,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public List<RiderOrderDelivery> getAllDeliveries() {
         return allDeliveries;
     }
-    public Location getLastLocation() {
-            return lastLocation;
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            Log.e(TAG, "Cannot check if service is running, activity manager is null");
+            return false;
+        }
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("isMyServiceRunning?", true+"");
+                return true;
+            }
+        }
+        Log.i ("isMyServiceRunning?", false+"");
+        return false;
     }
-    public static MainActivity getInstance(){
-        return instance;
+
+    public static List<RiderOrderDelivery> getCurrentDeliveries(List<RiderOrderDelivery> allDeliveries) {
+        List<RiderOrderDelivery> currentDeliveries = new ArrayList<>();
+
+        for (RiderOrderDelivery rod : allDeliveries) {
+            if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED || rod.getOrderStatus() == EAHCONST.OrderStatus.PENDING)
+                currentDeliveries.add(rod);
+        }
+        return currentDeliveries;
     }
 }

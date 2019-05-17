@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,13 +49,13 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private Order currentOrder;
     private int waitingCount;
     public final static String ORDER_KEY = "ORDER_KEY";
+    
+    public final static int CHOOSE_RIDER_REQUEST_CODE = 2452;
 
     // Firebase attributes
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
-
-    private String nextRiderId;
 
     private MenuListAdapter adapter;
 
@@ -66,6 +69,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private RecyclerView rvDishes;
     private FloatingActionButton confirmOrder;
     private FloatingActionButton declineOrder;
+    
+    private MenuItem callRiderItem;
 
 
     private List<Dish> dishList;
@@ -81,7 +86,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         getReferencesToViews();
         setupClickListeners();
-        Utility.generateRandomRiderId(dbRef, riderId -> nextRiderId = riderId);
         
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -124,6 +128,19 @@ public class OrderDetailsActivity extends AppCompatActivity {
         updateUIforOrderStatus();
 
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        MenuInflater menuInflater = getMenuInflater();
+        
+        menuInflater.inflate(R.menu.order_detail_menu, menu);
+        
+        callRiderItem = menu.findItem(R.id.action_call_rider);
+        
+        return super.onCreateOptionsMenu(menu);
+    }
+    
 
     private void updateUIforOrderStatus() {
         if(currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.PENDING)){
@@ -138,6 +155,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
         }
     
         tvOrderStatus.setText(currentOrder.getOrderStatus().toString());
+        
+        if (callRiderItem != null) {
+            callRiderItem.setVisible(currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.CONFIRMED));
+        }
     }
 
     private void setupClickListeners() {
@@ -164,35 +185,51 @@ public class OrderDetailsActivity extends AppCompatActivity {
         });
 
         confirmOrder.setOnClickListener(c-> {
-            if (nextRiderId == null) {
-                Utility.showAlertToUser(this, R.string.alert_not_ready);
-                return;
-            }
             
             Map<String,Object> updateMap = new HashMap<>();
 
             updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_CUST_SUBTREE, currentOrder.getCustomerId(), currentOrder.getOrderId(), EAHCONST.CUST_ORDER_STATUS), EAHCONST.OrderStatus.CONFIRMED);
             updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_REST_SUBTREE, currentUser.getUid(), currentOrder.getOrderId(), EAHCONST.REST_ORDER_STATUS), EAHCONST.OrderStatus.CONFIRMED);
-            // now from point of view of rider
-            String riderOrderPath = EAHCONST.generatePath(EAHCONST.ORDERS_RIDER_SUBTREE, nextRiderId, currentOrder.getOrderId());
-            updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), currentOrder.getOrderStatus());
-            updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentUser.getUid());
-            updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentOrder.getCustomerId());
-
+    
             dbRef.updateChildren(updateMap).addOnSuccessListener(s -> {
                 Log.d(TAG, "Success confirmed order");
                 Utility.showAlertToUser(this,R.string.notify_save_ok);
                 setActivityLoading(false);
-    
+        
                 currentOrder.setOrderStatus(EAHCONST.OrderStatus.CONFIRMED);
                 updateUIforOrderStatus();
-
+        
             }).addOnFailureListener(e -> {
-
                 Log.e(TAG, "Database error while confirmed order: " + e.getMessage());
                 Utility.showAlertToUser(this, R.string.notify_save_ko);
                 setActivityLoading(false);
             });
+        });
+    }
+    
+    private void assignOrderToRider(String riderId) {
+        // now from point of view of rider
+    
+        Map<String,Object> updateMap = new HashMap<>();
+    
+        updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_REST_SUBTREE, currentUser.getUid(), currentOrder.getOrderId(), EAHCONST.REST_ORDER_STATUS), EAHCONST.OrderStatus.WAITING_RIDER);
+        String riderOrderPath = EAHCONST.generatePath(EAHCONST.ORDERS_RIDER_SUBTREE, riderId, currentOrder.getOrderId());
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), currentOrder.getOrderStatus());
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentUser.getUid());
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentOrder.getCustomerId());
+    
+        dbRef.updateChildren(updateMap).addOnSuccessListener(s -> {
+            Log.d(TAG, "Success confirmed order");
+            Utility.showAlertToUser(this,R.string.notify_save_ok);
+            setActivityLoading(false);
+        
+            currentOrder.setOrderStatus(EAHCONST.OrderStatus.WAITING_RIDER);
+            updateUIforOrderStatus();
+        
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Database error while confirmed order: " + e.getMessage());
+            Utility.showAlertToUser(this, R.string.notify_save_ko);
+            setActivityLoading(false);
         });
     }
     
@@ -319,60 +356,47 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 //emulate back pressed
                 onBackPressed();
                 return true;
+                
+            case R.id.action_call_rider:
+                if (currentOrder.getOrderStatus() != EAHCONST.OrderStatus.CONFIRMED) {
+                    Log.e(TAG, "Illegal status");
+                    return true;
+                }
+                startChooseRiderActivity();
+                
         }
         return false;
     }
-
-    /*@Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        String name = etName.getText().toString();
-        String description = etDescription.getText().toString();
-        String price = etPrice.getText().toString();
-
-        if (!name.isEmpty()) {
-            outState.putString(NAME_KEY, name);
-        }
-
-        if (!description.isEmpty()) {
-            outState.putString(DESCRIPTION_KEY, description);
-        }
-
-        if (!price.isEmpty()) {
-            outState.putString(PRICE_KEY, price);
-        }
-
-        //save edit mode status
-        outState.putBoolean(EDIT_MODE_KEY, editMode);
-        //save CURRENT dish
-        outState.putSerializable(DISH_KEY, currentDish);
-        // if to save image or not
-        outState.putBoolean(SAVE_IMAGE_KEY,photoPresent);
-        // if image change or not
-        outState.putBoolean(SAVE_CHANGE_IMAGE_KEY,photoChanged);
-
+    
+    private void startChooseRiderActivity() {
+        
+        Intent intent = new Intent(getApplicationContext(), ChooseRiderActivity.class);
+        startActivityForResult(intent, CHOOSE_RIDER_REQUEST_CODE);
+    
     }
-
+    
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        String name = savedInstanceState.getString(NAME_KEY, "");
-        String description = savedInstanceState.getString(DESCRIPTION_KEY, "");
-        String price = savedInstanceState.getString(PRICE_KEY, "");
-
-        if (!name.isEmpty()) {
-            etName.setText(name);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
         }
-
-        if (!description.isEmpty()) {
-            etDescription.setText(description);
+        
+        if (data == null) {
+            Log.e(TAG, "Data extra null");
+            return;
         }
-
-        if (!price.isEmpty()) {
-            etPrice.setText(price);
+        
+        if (requestCode == CHOOSE_RIDER_REQUEST_CODE) {
+            Rider rider = (Rider) data.getSerializableExtra(ChooseRiderActivity.RIDER_RESULT);
+            
+            if (rider == null) {
+                Log.e(TAG, "The received rider is null");
+            } else {
+                assignOrderToRider(rider.getId());
+            }
         }
-
-    }*/
-
+    }
 }

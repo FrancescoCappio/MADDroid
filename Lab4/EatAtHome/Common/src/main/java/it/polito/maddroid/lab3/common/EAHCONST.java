@@ -31,12 +31,17 @@ public class EAHCONST {
     public enum OrderStatus {
         ONGOING,
         CONFIRMED,
+        WAITING_RIDER,
         PENDING,
         COMPLETED,
         DECLINED
     }
     
-    
+    public enum RiderStatus {
+        ON_DUTY,
+        NOT_ON_DUTY
+    }
+
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
     public final static String CATEGORIES_ASSOCIATIONS_SUB_TREE = "categories_associations";
@@ -49,8 +54,8 @@ public class EAHCONST {
     public final static String ORDERS_REST_SUBTREE = "orders_restaurateur";
     public final static String ORDERS_CUST_SUBTREE = "orders_customer";
     public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
-    public final static String RIDERS_POSITION = "riders_positions";
-    
+    public final static String RIDERS_POSITIONS_SUBTREE = "riders_positions";
+
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
     public final static String USERS_TYPE = "usertype";
@@ -64,6 +69,7 @@ public class EAHCONST {
     public final static String RESTAURANT_EMAIL = "email";
     public final static String RESTAURANT_CATEGORIES = "restaurant_categories";
     public final static String RESTAURANT_TIMETABLE = "time_table";
+    public final static String RESTAURANT_POSITION = "position";
 
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";
@@ -78,7 +84,8 @@ public class EAHCONST {
     public final static String RIDER_DESCRIPTION = "decription";
     public final static String RIDER_PHONE = "phone";
     public final static String RIDER_EMAIL = "email";
-    
+    public final static String RIDER_ON_DUTY = "on_duty_status";
+
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
 

@@ -1,36 +1,23 @@
 package it.polito.maddroid.lab3.rider;
 
+import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.EAHCONST;
-import it.polito.maddroid.lab3.common.Order;
 
 
 public class CurrentDeliveriesFragment extends Fragment implements MainActivity.OrdersUpdateListener {
@@ -38,14 +25,16 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
     private static final String TAG = "CurrentDeliveriesFragment";
 
     private int waitingCount = 0;
-
+    
     private TextView tvNoOrdersPlaceHolder;
     private ProgressBar pbLoading;
     private RecyclerView rvDeliveries;
     
     private RiderOrdersListAdapter adapter;
     
-    private List<RiderOrderDelivery> acceptedDeliveries;
+    private List<RiderOrderDelivery> currentDeliveries;
+
+    private SharedPreferences sharedPreferences;
 
     public CurrentDeliveriesFragment() {
         // Required empty public constructor
@@ -59,6 +48,10 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
 
         getReferencesToViews(view);
         
+        if (getContext() != null) {
+            sharedPreferences = getContext().getSharedPreferences(MainActivity.SHARED_PREFS, Context.MODE_PRIVATE);
+        }
+
         rvDeliveries.setLayoutManager(new LinearLayoutManager(getContext()));
         
         adapter = new RiderOrdersListAdapter(new RiderOrderDeliveryDiffUtilCallback(), order -> {
@@ -94,12 +87,23 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
     }
 
     private void manageVisibility() {
-        if (acceptedDeliveries == null || acceptedDeliveries.isEmpty()) {
-            tvNoOrdersPlaceHolder.setVisibility(View.VISIBLE);
-            rvDeliveries.setVisibility(View.GONE);
+
+        boolean onDuty = sharedPreferences.getBoolean(MainActivity.RIDER_ON_DUTY_KEY, false);
+
+        if (onDuty) {
+            if (currentDeliveries == null || currentDeliveries.isEmpty()) {
+                tvNoOrdersPlaceHolder.setVisibility(View.VISIBLE);
+                tvNoOrdersPlaceHolder.setText(R.string.alert_no_orders_yet);
+                rvDeliveries.setVisibility(View.GONE);
+            }
+            else {
+                tvNoOrdersPlaceHolder.setVisibility(View.GONE);
+                rvDeliveries.setVisibility(View.VISIBLE);
+            }
         } else {
-            tvNoOrdersPlaceHolder.setVisibility(View.GONE);
-            rvDeliveries.setVisibility(View.VISIBLE);
+            tvNoOrdersPlaceHolder.setVisibility(View.VISIBLE);
+            tvNoOrdersPlaceHolder.setText(R.string.alert_on_duty_switch);
+            rvDeliveries.setVisibility(View.GONE);
         }
     }
 
@@ -128,17 +132,11 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
         setActivityLoading(false);
     
         if (getActivity() instanceof MainActivity) {
-            List<RiderOrderDelivery> allDeliveries = ((MainActivity) getActivity()).getAllDeliveries();
+
+            currentDeliveries = MainActivity.getCurrentDeliveries(((MainActivity) getActivity()).getAllDeliveries());
             
-            acceptedDeliveries = new ArrayList<>();
-            
-            for (RiderOrderDelivery rod : allDeliveries) {
-                if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED || rod.getOrderStatus() == EAHCONST.OrderStatus.PENDING)
-                    acceptedDeliveries.add(rod);
-            }
-            
-            adapter.submitList(acceptedDeliveries);
-            
+            adapter.submitList(currentDeliveries);
+
             manageVisibility();
         }
     }
