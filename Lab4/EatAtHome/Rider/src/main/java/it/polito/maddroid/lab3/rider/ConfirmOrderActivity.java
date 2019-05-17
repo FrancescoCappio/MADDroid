@@ -36,7 +36,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     
     private int waitingCount = 0;
     
-    private static final int CHOOSE_RIDER_REQUEST_CODE = 315153;
+    private static final int CHOOSE_RIDER_REQUEST_CODE = 313;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
