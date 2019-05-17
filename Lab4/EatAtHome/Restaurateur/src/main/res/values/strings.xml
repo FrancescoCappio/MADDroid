@@ -44,4 +44,6 @@
     <string name="restaurant_status">Pending Order</string>
     <string name="customer">Customer Name</string>
 
+    <string name="address_not_found"> Address NOT found</string>
+
 </resources>

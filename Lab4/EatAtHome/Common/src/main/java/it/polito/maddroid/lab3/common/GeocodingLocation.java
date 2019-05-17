@@ -38,18 +38,18 @@ public class GeocodingLocation {
                 } finally {
                     Message message = Message.obtain();
                     message.setTarget(handler);
-                    if ((result != null)&&(!needDialog)) {
-                        message.what = 1;
-                    } else if ((result != null)&&(needDialog)) {
-                        message.what = 2;
-                       }else{
+                    message.what = 1;
+
+                    if(addressList.size() < 1)
                         message.what = 0;
-                        }
+
+                    if(needDialog)
+                        message.what = 2;
+
                     Bundle bundle = new Bundle();
                     if( message.what == 0)
                     {
-                        result = "Address: " + locationAddress +
-                                "\n Unable to get Latitude and Longitude for this address location. " +
+                        result = "Unable to get Latitude and Longitude for this address location. " +
                                 "You must be accurate";
                         bundle.putString("address", result);
 
