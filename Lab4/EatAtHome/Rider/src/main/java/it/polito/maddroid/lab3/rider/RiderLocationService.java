@@ -33,6 +33,8 @@ import it.polito.maddroid.lab3.common.EAHCONST;
 
 public class RiderLocationService extends Service {
     
+    private static RiderLocationService instance;
+    
     private LocationManager locationManager;
     private LocationListener locationListener;
     private static final String TAG = "RiderLocationService";
@@ -45,6 +47,8 @@ public class RiderLocationService extends Service {
     private DatabaseReference dbRef;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    
+    private Location lastLocation;
     
     public RiderLocationService() {
     
@@ -84,6 +88,8 @@ public class RiderLocationService extends Service {
         startLocation();
         
         Log.d(TAG, "Service started");
+        
+        instance = this;
         
         return START_STICKY;
     }
@@ -179,6 +185,8 @@ public class RiderLocationService extends Service {
     private void uploadLocation(Location location) {
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.RIDERS_POSITIONS_SUBTREE);
+        
+        lastLocation = location;
     
         DatabaseReference dbRef1 = dbRef.child(riderOrderPath);
         GeoFire geoFire = new GeoFire(dbRef1);
@@ -189,5 +197,13 @@ public class RiderLocationService extends Service {
                 Log.d(TAG,"Location saved on server successfully!");
             }
         });
+    }
+    
+    public static RiderLocationService getInstance() {
+        return instance;
+    }
+    
+    public Location getLastLocation() {
+        return lastLocation;
     }
 }
