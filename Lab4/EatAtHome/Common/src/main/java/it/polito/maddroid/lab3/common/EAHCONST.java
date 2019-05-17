@@ -68,6 +68,7 @@ public class EAHCONST {
     public final static String RESTAURANT_EMAIL = "email";
     public final static String RESTAURANT_CATEGORIES = "restaurant_categories";
     public final static String RESTAURANT_TIMETABLE = "time_table";
+    public final static String RESTAURANT_POSITION = "position";
 
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";
