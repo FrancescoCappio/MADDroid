@@ -1,5 +1,6 @@
 package it.polito.maddroid.lab3.rider;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,8 +23,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import it.polito.maddroid.lab3.common.ChooseRiderActivity;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
+import it.polito.maddroid.lab3.common.Rider;
 import it.polito.maddroid.lab3.common.Utility;
 
 public class ConfirmOrderActivity extends AppCompatActivity {
@@ -32,6 +35,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     public static final String RIDER_ORDER_DELIVERY_KEY = "RIDER_ORDER_DELIVERY_KEY";
     
     private int waitingCount = 0;
+    
+    private static final int CHOOSE_RIDER_REQUEST_CODE = 313;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -44,7 +49,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private TextView tvDeliveryAdress;
     
     private String riderUID;
-    private String anotherRiderId;
+    private String nextRiderId;
     private RiderOrderDelivery currentDelivery;
     
     private FloatingActionButton fabConfirm;
@@ -86,15 +91,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         fabConfirm.setOnClickListener(v -> actionConfirmOrder());
         fabDecline.setOnClickListener(v -> actionDeclineOrder());
         
-        Utility.generateRandomRiderId(dbRef, new Utility.RandomRiderCaller() {
-            @Override
-            public void generatedRiderId(String riderId) {
-                if (riderId.equals(riderUID)) {
-                    Utility.generateRandomRiderId(dbRef, this);
-                } else
-                    anotherRiderId = riderId;
-            }
-        });
         setActivityLoading(false);
     
         Utility.showAlertToUser(this, R.string.alert_confirm_decline_order);
@@ -114,28 +110,67 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     }
     
     private void actionDeclineOrder() {
+        startChooseRiderActivity();
+        
+    }
+    
+    private void startChooseRiderActivity() {
+        
+        Intent intent = new Intent(getApplicationContext(), ChooseRiderActivity.class);
+        intent.putExtra(ChooseRiderActivity.RESTAURANT_ID_KEY, currentDelivery.getRestaurantId());
+        startActivityForResult(intent, CHOOSE_RIDER_REQUEST_CODE);
+        
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Result not ok");
+            return;
+        }
+        
+        if (data == null) {
+            Log.e(TAG, "Data extra null");
+            return;
+        }
+        
+        if (requestCode == CHOOSE_RIDER_REQUEST_CODE) {
+            Rider rider = (Rider) data.getSerializableExtra(ChooseRiderActivity.RIDER_RESULT);
+            
+            if (rider == null) {
+                Log.e(TAG, "The received rider is null");
+            } else {
+                nextRiderId = rider.getId();
+                saveNewRidersInfo();
+            }
+        }
+    }
+    
+    private void saveNewRidersInfo() {
         setActivityLoading(true);
-        
+    
         Map<String,Object> updateMap = new HashMap<>();
-        
+    
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.DECLINED;
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
                 riderUID,
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        
-        
+    
+    
         orderStatus = EAHCONST.OrderStatus.PENDING;
         riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
-                anotherRiderId,
+                nextRiderId,
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentDelivery.getRestaurantId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentDelivery.getCustomerId());
-        
-        
+    
+    
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
@@ -145,7 +180,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
             setActivityLoading(false);
             Utility.showAlertToUser(ConfirmOrderActivity.this, R.string.alert_error_confirming);
         });
-        
     }
     
     private void actionConfirmOrder() {

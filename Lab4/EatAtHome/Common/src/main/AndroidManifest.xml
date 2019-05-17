@@ -14,6 +14,8 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".ChooseRiderActivity"></activity>
+
         <activity
             android:name=".SplashScreenActivity"
             android:screenOrientation="portrait"

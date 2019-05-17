@@ -1,4 +1,4 @@
-package it.polito.maddroid.lab3.restaurateur;
+package it.polito.maddroid.lab3.common;
 
 
 import androidx.annotation.NonNull;
@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
 import android.location.Location;
@@ -16,11 +17,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.LocationCallback;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +33,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -35,6 +42,10 @@ public class ChooseRiderActivity extends AppCompatActivity {
     
     public static final String TAG = "ChooseRiderActivity";
     public static final String RIDER_RESULT = "RIDER_RESULT";
+    public static final String RESTAURANT_ID_KEY = "RESTAURANT_ID_KEY";
+    private static final String RESTAURANT_LAT_KEY = "RESTAURANT_LAT_KEY";
+    private static final String RESTAURANT_LONG_KEY = "RESTAURANT_LONG_KEY";
+    private static final String CURRENT_RADIUS_KEY = "CURRENT_RADIUS_KEY";
     
     private RecyclerView rvRiders;
     private ImageButton ibIncrease;
@@ -51,8 +62,8 @@ public class ChooseRiderActivity extends AppCompatActivity {
     
     private DatabaseReference dbRef;
     
-    private float currentLat = 37.421998333333335f;
-    private float currentLong = -122.08400000000002f;
+    private GeoLocation currentRestaurantLocation;
+    private String restaurantId;
     
     
     @Override
@@ -82,13 +93,44 @@ public class ChooseRiderActivity extends AppCompatActivity {
     
         riders = new ArrayList<>();
         
-        updateListCurrentRadius();
+        if (savedInstanceState == null) {
+            Intent intent = getIntent();
+            restaurantId = intent.getStringExtra(RESTAURANT_ID_KEY);
+    
+            getRestaurantLocation();
+            
+        } else {
+            restaurantId = savedInstanceState.getString(RESTAURANT_ID_KEY);
+            float restLat = savedInstanceState.getFloat(RESTAURANT_LAT_KEY, -500);
+            float restLong = savedInstanceState.getFloat(RESTAURANT_LONG_KEY, -500);
+            
+            currentRadius = savedInstanceState.getInt(CURRENT_RADIUS_KEY);
+            if (restLat < -450 || restLong < -450) {
+                getRestaurantLocation();
+            } else {
+                currentRestaurantLocation = new GeoLocation(restLat, restLong);
+                updateListCurrentRadius();
+            }
+        }
     
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.choose_rider);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+        }
+    }
+    
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        outState.putString(RESTAURANT_ID_KEY, restaurantId);
+        outState.putInt(CURRENT_RADIUS_KEY, currentRadius);
+        
+        if (currentRestaurantLocation != null) {
+            outState.putFloat(RESTAURANT_LAT_KEY, (float) currentRestaurantLocation.latitude);
+            outState.putFloat(RESTAURANT_LONG_KEY, (float) currentRestaurantLocation.longitude);
         }
     }
     
@@ -103,6 +145,32 @@ public class ChooseRiderActivity extends AppCompatActivity {
         }
         
         return false;
+    }
+    
+    private void getRestaurantLocation() {
+        DatabaseReference dbRef1 = dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).child(restaurantId);
+        GeoFire geof = new GeoFire(dbRef1);
+        geof.getLocation(EAHCONST.RESTAURANT_POSITION, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location != null) {
+                    Log.d(TAG, "Downloaded restaurant location");
+                    currentRestaurantLocation = location;
+                    updateListCurrentRadius();
+                } else {
+                    Log.e(TAG, "Cannot download restaurant location");
+                    Toast.makeText(getApplicationContext(), R.string.alert_restaurant_location, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Cannot download restaurant location. DatabaseError: " + databaseError.getMessage());
+                Toast.makeText(getApplicationContext(), R.string.alert_restaurant_location, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
     
     private void getReferencesToViews() {
@@ -135,7 +203,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
             geoQuery.removeAllListeners();
         }
         
-        geoQuery = geoFire.queryAtLocation(new GeoLocation(currentLat, currentLong), currentRadius);
+        geoQuery = geoFire.queryAtLocation(currentRestaurantLocation, currentRadius);
         
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
@@ -175,6 +243,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
         Rider r = new Rider(riderId);
         riders.remove(r);
         riders = new ArrayList<>(riders);
+        Collections.sort(riders);
         adapter.submitList(riders);
     }
     
@@ -194,8 +263,8 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 Location me   = new Location("");
                 Location dest = new Location("");
     
-                me.setLatitude(currentLat);
-                me.setLongitude(currentLong);
+                me.setLatitude(currentRestaurantLocation.latitude);
+                me.setLongitude(currentRestaurantLocation.longitude);
     
                 dest.setLatitude(location.latitude);
                 dest.setLongitude(location.longitude);
@@ -214,6 +283,9 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 riders.remove(rider);
                 
                 riders.add(rider);
+    
+                Collections.sort(riders);
+                
                 adapter.submitList(riders);
             }
     

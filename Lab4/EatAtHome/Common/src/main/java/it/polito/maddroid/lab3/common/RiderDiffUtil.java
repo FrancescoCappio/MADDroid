@@ -1,7 +1,8 @@
-package it.polito.maddroid.lab3.restaurateur;
+package it.polito.maddroid.lab3.common;
 
 
 import androidx.annotation.NonNull;
+import it.polito.maddroid.lab3.common.Rider;
 
 
 public class RiderDiffUtil extends androidx.recyclerview.widget.DiffUtil.ItemCallback<Rider> {
