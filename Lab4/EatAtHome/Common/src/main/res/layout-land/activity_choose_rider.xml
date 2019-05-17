@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChooseRiderActivity">
+    tools:context="it.polito.maddroid.lab3.common.ChooseRiderActivity">
 
     <TextView
         android:id="@+id/tv_radius_title"
@@ -73,7 +73,6 @@
         android:id="@+id/rv_riders"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="@dimen/activity_margin"
         android:paddingBottom="@dimen/activity_margin"
 
         app:layout_constraintTop_toBottomOf="@id/view_separator"

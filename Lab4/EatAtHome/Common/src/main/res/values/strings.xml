@@ -110,6 +110,7 @@
 
     <string name="total_cost">Total cost</string>
     <string name="rider_not_assigned">No riders assigned to this order yet</string>
+    <string name="waiting_rider_confirm">Waiting for rider confirmation</string>
     <string name="order_status">Order status</string>
     <string name="delivery_cost_order">Delivery cost</string>
     <string name="status_confirmed">Confirmed</string>
@@ -121,5 +122,7 @@
 
     <string name="search_radius">Search radius (Km)</string>
     <string name="choose_rider">Choose your rider</string>
+
+    <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
 </resources>
