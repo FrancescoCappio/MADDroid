@@ -1,10 +1,10 @@
-package it.polito.maddroid.lab3.restaurateur;
+package it.polito.maddroid.lab3.common;
 
 
 import java.io.Serializable;
 
 
-public class Rider implements Serializable {
+public class Rider implements Serializable, Comparable<Rider> {
     
     private String id;
     private String name;
@@ -53,5 +53,13 @@ public class Rider implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+    
+    
+    @Override
+    public int compareTo(Rider o) {
+        if (getDistance() <= o.getDistance())
+            return -1;
+        return 1;
     }
 }

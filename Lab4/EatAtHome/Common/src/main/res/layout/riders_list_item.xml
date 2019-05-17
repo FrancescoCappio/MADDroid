@@ -33,4 +33,12 @@
         android:layout_marginEnd="@dimen/activity_margin"
 
         android:layout_centerVertical="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/eah_black"
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_below="@+id/tv_rider_name"
+        />
 </RelativeLayout>

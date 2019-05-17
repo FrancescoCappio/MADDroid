@@ -41,7 +41,7 @@ public class EAHCONST {
         ON_DUTY,
         NOT_ON_DUTY
     }
-
+    
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
     public final static String CATEGORIES_ASSOCIATIONS_SUB_TREE = "categories_associations";
@@ -55,7 +55,7 @@ public class EAHCONST {
     public final static String ORDERS_CUST_SUBTREE = "orders_customer";
     public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
     public final static String RIDERS_POSITIONS_SUBTREE = "riders_positions";
-
+    
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
     public final static String USERS_TYPE = "usertype";
@@ -78,7 +78,7 @@ public class EAHCONST {
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
     public final static String CUSTOMER_POSITION = "position";
-  
+
     // riders subtree nodes fields
     public final static String RIDER_NAME = "name";
     public final static String RIDER_ADDRESS = "address";
@@ -86,7 +86,7 @@ public class EAHCONST {
     public final static String RIDER_PHONE = "phone";
     public final static String RIDER_EMAIL = "email";
     public final static String RIDER_ON_DUTY = "on_duty_status";
-
+    
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
 
@@ -110,7 +110,8 @@ public class EAHCONST {
     public final static String CUST_ORDER_STATUS = "order_status";
     public final static String CUST_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String CUST_ORDER_RIDER_ID = "rider_id";
-    
+    public final static String CUST_ORDER_DELIVERY_POS = "position";
+
     // riders order subtree nodes fields
     public final static String RIDER_ORDER_STATUS = "order_status";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";

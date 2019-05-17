@@ -1,7 +1,6 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,8 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,10 +34,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import it.polito.maddroid.lab3.common.ChooseRiderActivity;
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
+import it.polito.maddroid.lab3.common.Rider;
 import it.polito.maddroid.lab3.common.Utility;
 
 public class OrderDetailsActivity extends AppCompatActivity {
@@ -124,8 +123,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
         rvDishes.setAdapter(adapter);
 
         getDishesInfo();
-        
-        updateUIforOrderStatus();
 
     }
     
@@ -137,6 +134,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.order_detail_menu, menu);
         
         callRiderItem = menu.findItem(R.id.action_call_rider);
+        
+        updateUIforOrderStatus();
         
         return super.onCreateOptionsMenu(menu);
     }
@@ -214,7 +213,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     
         updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_REST_SUBTREE, currentUser.getUid(), currentOrder.getOrderId(), EAHCONST.REST_ORDER_STATUS), EAHCONST.OrderStatus.WAITING_RIDER);
         String riderOrderPath = EAHCONST.generatePath(EAHCONST.ORDERS_RIDER_SUBTREE, riderId, currentOrder.getOrderId());
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), currentOrder.getOrderStatus());
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), EAHCONST.OrderStatus.PENDING);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentOrder.getCustomerId());
     
@@ -224,6 +223,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
             setActivityLoading(false);
         
             currentOrder.setOrderStatus(EAHCONST.OrderStatus.WAITING_RIDER);
+            getRiderName(riderId);
             updateUIforOrderStatus();
         
         }).addOnFailureListener(e -> {
@@ -253,6 +253,11 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         if (riderId == null || riderId.isEmpty()) {
             tvRider.setText(R.string.rider_not_assigned);
+            return;
+        }
+        
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.WAITING_RIDER) {
+            tvRider.setText(R.string.waiting_rider_confirm);
             return;
         }
 
@@ -371,6 +376,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private void startChooseRiderActivity() {
         
         Intent intent = new Intent(getApplicationContext(), ChooseRiderActivity.class);
+        intent.putExtra(ChooseRiderActivity.RESTAURANT_ID_KEY, currentUser.getUid());
         startActivityForResult(intent, CHOOSE_RIDER_REQUEST_CODE);
     
     }

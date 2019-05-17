@@ -1,4 +1,4 @@
-package it.polito.maddroid.lab3.restaurateur;
+package it.polito.maddroid.lab3.common;
 
 
 import android.view.LayoutInflater;

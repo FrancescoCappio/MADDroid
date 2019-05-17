@@ -191,13 +191,19 @@ public class RiderLocationService extends Service {
     
         DatabaseReference dbRef1 = dbRef.child(riderOrderPath);
         GeoFire geoFire = new GeoFire(dbRef1);
-        geoFire.setLocation(currentUser.getUid(), new GeoLocation(location.getLatitude(), location.getLongitude()), (key, error) -> {
-            if (error != null) {
-                Log.e(TAG,"There was an error saving the location to GeoFire: " + error);
-            } else {
-                Log.d(TAG,"Location saved on server successfully!");
-            }
-        });
+        
+        if (location != null) {
+            geoFire.setLocation(currentUser.getUid(), new GeoLocation(location.getLatitude(), location.getLongitude()), (key, error) -> {
+                if (error != null) {
+                    Log.e(TAG, "There was an error saving the location to GeoFire: " + error);
+                }
+                else {
+                    Log.d(TAG, "Location saved on server successfully!");
+                }
+            });
+        } else {
+            Log.e(TAG, "Cannot store null location");
+        }
     }
     
     public static RiderLocationService getInstance() {
