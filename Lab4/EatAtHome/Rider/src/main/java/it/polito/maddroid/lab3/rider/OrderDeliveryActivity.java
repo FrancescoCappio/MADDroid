@@ -107,6 +107,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         //to get last location from MainActivity
         if (service != null ){
             Location loc = service.getLastLocation();
+            
             lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
             if (lastLocation == null )
                 Utility.showAlertToUser(this,R.string.not_find_location);

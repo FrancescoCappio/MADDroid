@@ -82,7 +82,6 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         origin = intent.getExtras().getParcelable(ORIGIN_LOCATION_KEY);
         destination =intent.getExtras().getParcelable(DESTINATION_LOCATION_KEY);
         directionRoute = (List<List<HashMap<String, String>>>) intent.getExtras().getSerializable(ROUTE_KEY);
-        drawRoute(directionRoute);
     }
 
     @Override
@@ -132,6 +131,8 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+    
+        drawRoute(directionRoute);
 
     }
 

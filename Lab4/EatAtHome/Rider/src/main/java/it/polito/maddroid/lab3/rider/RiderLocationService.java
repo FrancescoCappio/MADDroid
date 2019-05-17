@@ -186,7 +186,7 @@ public class RiderLocationService extends Service {
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.RIDERS_POSITIONS_SUBTREE);
 
-        if (lastLocation != null)
+        if (location != null)
             lastLocation = location;
     
         DatabaseReference dbRef1 = dbRef.child(riderOrderPath);
