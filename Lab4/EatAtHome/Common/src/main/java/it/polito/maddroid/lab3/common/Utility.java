@@ -7,7 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Address;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import com.google.android.material.snackbar.Snackbar;
@@ -220,3 +224,6 @@ public class Utility {
                 .addOnFailureListener(e -> Log.d(TAG, "Cannot store token"));
     }
 }
+
+
+

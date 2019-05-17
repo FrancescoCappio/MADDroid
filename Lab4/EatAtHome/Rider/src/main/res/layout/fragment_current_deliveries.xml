@@ -6,45 +6,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".CurrentDeliveriesFragment">
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible" />
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_deliveries"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_deliveries"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-        android:visibility="visible"
+            android:visibility="visible"
+            tools:listitem="@layout/orders_list_item">
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        </androidx.recyclerview.widget.RecyclerView>
 
-        tools:listitem="@layout/orders_list_item">
+        <TextView
+            android:id="@+id/tv_no_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_no_orders_yet"
+            android:textAlignment="center"
+            android:textSize="30sp"
 
-    </androidx.recyclerview.widget.RecyclerView>
+            android:layout_centerInParent="true"
 
-    <TextView
-        android:id="@+id/tv_no_order"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/alert_no_orders_yet"
+            />
 
-        android:textSize="30sp"
-
-        android:layout_gravity="center"
-
-        />
-
+    </RelativeLayout>
 
 </FrameLayout>
