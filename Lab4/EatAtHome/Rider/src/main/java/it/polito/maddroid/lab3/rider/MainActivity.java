@@ -8,11 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -60,7 +65,8 @@ import it.polito.maddroid.lab3.common.Utility;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "MainActivity";
-    
+    private static MainActivity instance;
+
     private final static int LOCATION_PERMISSION_CODE = 123;
     
     private static String STATE_SELECTED_POSITION = "state_selected_position";
@@ -68,29 +74,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences sharedPreferences;
     public static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
     public static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
-    
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference storageReference;
-    
+
+    private String riderUID ;
+
     private LinearLayout llNavHeaderMain;
     private NavigationView navigationView;
     private TextView tvAccountEmail;
     private ImageView ivAvatar;
     private Switch onDutySwitch;
-    
+
     private LocationManager locationManager;
     private LocationListener locationListener;
-    
+    private Location lastLocation;
+
+
     private boolean riderOnDuty = false;
-    
+
     private Bundle orderHistoryBundle;
     
     private int currentSelectedPosition;
     
     private Intent myServiceIntent;
-    
+
     private Fragment selectedFragment;
     private CurrentDeliveriesFragment currentDeliveriesFragment;
     private OrdersFragment ordersFragment;
@@ -109,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+        instance = this;
         setupNavigation();
     
         getReferencesToViews();
@@ -118,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-    
+
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-    
+
         myServiceIntent = new Intent(this, RiderLocationService.class);
-        
+
         ordersUpdateListeners = new ArrayList<>();
         
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -140,7 +151,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
-        
+
+        riderUID = currentUser.getUid();
+
         tvAccountEmail.setText(currentUser.getEmail());
     
         EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
@@ -158,34 +171,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         startLocation();
     }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        MenuInflater menuInflater = getMenuInflater();
-        
-        menuInflater.inflate(R.menu.activity_main_menu, menu);
-    
-        // Get the action view used in your toggleservice item
-        final MenuItem toggleservice = menu.findItem(R.id.action_toggle_service);
-        final Switch actionView = (Switch) toggleservice.getActionView();
-        
-        onDutySwitch = actionView;
-        riderOnDuty = sharedPreferences.getBoolean(RIDER_ON_DUTY_KEY,false);
-        
-        if (riderOnDuty)
-            actionView.setChecked(true);
-        onDutySwitch.setEnabled(false);
-        
-        actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            startStopService(isChecked);
-        });
-        
-        startStopService(riderOnDuty);
-        
-        return super.onCreateOptionsMenu(menu);
-    }
-    
+
+
     private void startLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
@@ -194,27 +181,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startLocationService();
         }
     }
-    
+
     private void startStopService(boolean start) {
         ActionBar actionBar = getSupportActionBar();
-        
+
         if (!start) {
-            
+
             if (allDeliveries != null) {
                 if (!getCurrentDeliveries(allDeliveries).isEmpty()) {
-        
+
                     Utility.showAlertToUser(this, R.string.alert_complete_current_deliveries);
-        
+
                     if (onDutySwitch != null)
                         onDutySwitch.setChecked(true);
                     return;
                 }
             }
         }
-    
+
         if (actionBar != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-        
+
             riderOnDuty = start;
             if (riderOnDuty) {
                 actionBar.setTitle(R.string.rider_on_duty);
@@ -227,28 +214,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             editor.putBoolean(RIDER_ON_DUTY_KEY, riderOnDuty);
             editor.apply();
         }
-        
+
         checkAllOrdersDownloaded();
     }
-    
+
     private void startLocationService() {
-        
+
         if (!isMyServiceRunning(RiderLocationService.class))
             startService(myServiceIntent);
-        
+
         dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
                 .setValue(EAHCONST.RiderStatus.ON_DUTY)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
                 .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
     }
-    
+
     private void stopLocationService() {
         stopService(myServiceIntent);
-    
+
         dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY)
                 .setValue(EAHCONST.RiderStatus.NOT_ON_DUTY)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Correctly set rider's status on server"))
                 .addOnFailureListener(e -> Log.e(TAG, "Could not set rider's status on server: " + e.getMessage()));
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.activity_main_menu, menu);
+
+        // Get the action view used in your toggleservice item
+        final MenuItem toggleservice = menu.findItem(R.id.action_toggle_service);
+        final Switch actionView = (Switch) toggleservice.getActionView();
+
+        onDutySwitch = actionView;
+        riderOnDuty = sharedPreferences.getBoolean(RIDER_ON_DUTY_KEY,false);
+
+        if (riderOnDuty)
+            actionView.setChecked(true);
+        onDutySwitch.setEnabled(false);
+
+        actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            startStopService(isChecked);
+        });
+
+        startStopService(riderOnDuty);
+
+        return super.onCreateOptionsMenu(menu);
     }
     
     @Override
@@ -563,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         if (allDeliveries == null)
             return;
-        
+
         for (RiderOrderDelivery o : allDeliveries) {
             if (o.getRestaurantName() == null)
                 return;
@@ -573,7 +588,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         if (onDutySwitch != null)
             onDutySwitch.setEnabled(true);
-        
+
         for (OrdersUpdateListener listener : ordersUpdateListeners) {
             try {
                 listener.manageOrdersUpdate();
@@ -594,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public List<RiderOrderDelivery> getAllDeliveries() {
         return allDeliveries;
     }
-    
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (manager == null) {
@@ -610,10 +625,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i ("isMyServiceRunning?", false+"");
         return false;
     }
-    
+
     public static List<RiderOrderDelivery> getCurrentDeliveries(List<RiderOrderDelivery> allDeliveries) {
         List<RiderOrderDelivery> currentDeliveries = new ArrayList<>();
-    
+
         for (RiderOrderDelivery rod : allDeliveries) {
             if (rod.getOrderStatus() == EAHCONST.OrderStatus.ONGOING || rod.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED || rod.getOrderStatus() == EAHCONST.OrderStatus.PENDING)
                 currentDeliveries.add(rod);

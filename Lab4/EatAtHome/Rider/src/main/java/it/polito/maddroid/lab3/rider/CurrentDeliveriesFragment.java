@@ -33,7 +33,7 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
     private RiderOrdersListAdapter adapter;
     
     private List<RiderOrderDelivery> currentDeliveries;
-    
+
     private SharedPreferences sharedPreferences;
 
     public CurrentDeliveriesFragment() {
@@ -51,7 +51,7 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
         if (getContext() != null) {
             sharedPreferences = getContext().getSharedPreferences(MainActivity.SHARED_PREFS, Context.MODE_PRIVATE);
         }
-        
+
         rvDeliveries.setLayoutManager(new LinearLayoutManager(getContext()));
         
         adapter = new RiderOrdersListAdapter(new RiderOrderDeliveryDiffUtilCallback(), order -> {
@@ -87,9 +87,9 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
     }
 
     private void manageVisibility() {
-        
+
         boolean onDuty = sharedPreferences.getBoolean(MainActivity.RIDER_ON_DUTY_KEY, false);
-        
+
         if (onDuty) {
             if (currentDeliveries == null || currentDeliveries.isEmpty()) {
                 tvNoOrdersPlaceHolder.setVisibility(View.VISIBLE);
@@ -132,11 +132,11 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
         setActivityLoading(false);
     
         if (getActivity() instanceof MainActivity) {
-    
+
             currentDeliveries = MainActivity.getCurrentDeliveries(((MainActivity) getActivity()).getAllDeliveries());
             
             adapter.submitList(currentDeliveries);
-            
+
             manageVisibility();
         }
     }
