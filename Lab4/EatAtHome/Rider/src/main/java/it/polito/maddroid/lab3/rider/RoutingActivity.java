@@ -15,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -51,6 +52,8 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
     
     private LatLng origin;
     private LatLng destination;
+    
+    private Button btDirections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
