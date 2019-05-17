@@ -26,6 +26,10 @@
     <string name="alert_error_deliver_food">There was an error while completing the order</string>
     <string name="action_refresh">Refresh</string>
 
+    <string name="direction_to_restaurant">Direction to restaurant</string>
+    <string name="direction_to_customer">Direction to customer</string>
+
     <string name="new_pending_order">There is a new pending order, please accept or decline it</string>
+    <string name="title_activity_routing">Map</string>
 
 </resources>

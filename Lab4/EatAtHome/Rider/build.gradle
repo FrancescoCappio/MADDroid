@@ -43,12 +43,15 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.firebaseui:firebase-ui-storage:4.3.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.firebase:geofire-android:2.3.1'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     annotationProcessor 'androidx.annotation:annotation:1.0.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0-beta01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-beta01'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

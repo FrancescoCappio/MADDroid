@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.rider;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -37,7 +38,7 @@ public class CurrentDeliveriesFragment extends Fragment implements MainActivity.
     private static final String TAG = "CurrentDeliveriesFragment";
 
     private int waitingCount = 0;
-    
+
     private TextView tvNoOrdersPlaceHolder;
     private ProgressBar pbLoading;
     private RecyclerView rvDeliveries;

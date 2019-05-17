@@ -49,6 +49,7 @@ public class EAHCONST {
     public final static String ORDERS_REST_SUBTREE = "orders_restaurateur";
     public final static String ORDERS_CUST_SUBTREE = "orders_customer";
     public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
+    public final static String RIDERS_POSITION = "riders_positions";
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";

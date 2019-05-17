@@ -9,6 +9,7 @@ import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,8 +37,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     
     private static final String TAG = "OrderDeliveryActivity";
     public static final String ORDER_DELIVERY_KEY = "ORDER_DELIVERY_KEY";
+    public static final String RIDER_LOCATION = "RIDER_LOCATION";
     
     private RiderOrderDelivery currentOrder;
+    private Location lastLocation;
     
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
@@ -49,6 +53,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     
     private Button btGetFood;
     private Button btDeliverFood;
+    private Button btDirectionToRestaurant;
+    private Button btDirectionToCustomer;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -63,7 +69,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
-        
+
         Intent intent = getIntent();
         
         if (intent.getSerializableExtra(ORDER_DELIVERY_KEY) == null) {
@@ -73,6 +79,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         }
         
         currentOrder = (RiderOrderDelivery) intent.getSerializableExtra(ORDER_DELIVERY_KEY);
+
+        //to get last location from MainActivity
+        lastLocation = MainActivity.getInstance().getLastLocation();
         
         getReferencesToViews();
         
@@ -123,6 +132,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btDeliverFood = findViewById(R.id.bt_deliver_food);
         tvCustomerName = findViewById(R.id.tv_customer_name);
         tvRestaurantName = findViewById(R.id.tv_restaurant_name);
+        btDirectionToCustomer = findViewById(R.id.bt_direction_toCustomer);
+        btDirectionToRestaurant = findViewById(R.id.bt_direction_toRestaurant);
     }
     
     @Override
@@ -154,8 +165,30 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btDeliverFood.setOnClickListener(v -> deliverFoodAction());
         
         btGetFood.setOnClickListener(v -> getFoodAction());
+
+        btDirectionToRestaurant.setOnClickListener(v -> getDirectionToRestaurant());
+
+        btDirectionToCustomer.setOnClickListener(v -> getDirectionToCustomer());
     }
-    
+
+    private void getDirectionToRestaurant() {
+        Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
+        LatLng originLocation = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+        LatLng destinationLocation = new LatLng(45.07,7.68);
+        intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY,originLocation);
+        intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY,destinationLocation);
+        startActivity(intent);
+    }
+
+    private void getDirectionToCustomer() {
+        Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
+        LatLng originLocation = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+        LatLng destinationLocation = new LatLng(45.07,7.6591);
+        intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY,originLocation.toString());
+        intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY,destinationLocation.toString());
+        startActivity(intent);
+    }
+
     private void getFoodAction() {
         
         setActivityLoading(true);

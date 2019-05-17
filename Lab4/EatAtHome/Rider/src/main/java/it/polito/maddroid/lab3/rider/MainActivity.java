@@ -13,6 +13,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.core.app.ActivityCompat;
@@ -56,6 +59,7 @@ import it.polito.maddroid.lab3.common.Utility;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "MainActivity";
+    private static MainActivity instance;
     
     private final static int LOCATION_PERMISSION_CODE = 123;
     
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private StorageReference storageReference;
+
+    private String riderUID ;
     
     private LinearLayout llNavHeaderMain;
     private NavigationView navigationView;
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Location lastLocation;
+
     
     private Bundle orderHistoryBundle;
     
@@ -96,7 +104,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+        instance = this;
         setupNavigation();
     
         getReferencesToViews();
@@ -123,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // exit
             finish();
         }
+
+        riderUID = currentUser.getUid();
         
         tvAccountEmail.setText(currentUser.getEmail());
     
@@ -141,69 +152,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         startLocation();
     }
-    
+
+
     private void startLocation() {
-    
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    
+
         locationListener = new LocationListener() {
-        
+
             @Override
             public void onLocationChanged(Location location) {
-            
-                Log.d("Location", location.toString());
-            
+
+                lastLocation = location;
+
+                String riderOrderPath = EAHCONST.generatePath(
+                        EAHCONST.RIDERS_POSITION);
+
+                DatabaseReference dbRef1 = FirebaseDatabase.getInstance().getReference(riderOrderPath);
+                GeoFire geoFire = new GeoFire(dbRef1);
+                geoFire.setLocation(riderUID, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
+                    @Override
+                    public void onComplete(String key, DatabaseError error) {
+                        if (error != null) {
+                            Log.d("Location GeoFire","There was an error saving the location to GeoFire: " + error);
+                        } else {
+                            Log.d("Location GeoFire","Location saved on server successfully!");
+                        }
+                    }
+                });
             }
-        
+
             @Override
             public void onStatusChanged(String s, int i, Bundle bundle) {
-            
+
             }
-        
+
             @Override
             public void onProviderEnabled(String s) {
-            
+
             }
-        
+
             @Override
             public void onProviderDisabled(String s) {
-            
+
             }
-        
+
         };
-    
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        
+
             // ask for permission
-        
+
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
-            
+
         } else {
-    
+
             // we have permission!
-    
+
             // getting GPS status
             boolean isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
-    
+
             // getting network status
             boolean isNetworkEnabled = locationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    
+
             // ///Criteria //////////
-    
+
             Criteria crta = new Criteria();
             crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
             crta.setPowerRequirement(Criteria.POWER_LOW);
-            
+
             String provider = locationManager.getBestProvider(crta, true);
-            locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+            locationManager.requestLocationUpdates(provider, 10000, 20, locationListener);
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            
+
             Log.d(TAG, "Latitude: " + location.getLatitude() + " longitude " + location.getLongitude());
-    
+
         }
-    
+
     }
     
     @Override
@@ -537,5 +564,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     
     public List<RiderOrderDelivery> getAllDeliveries() {
         return allDeliveries;
+    }
+    public Location getLastLocation() {
+            return lastLocation;
+    }
+    public static MainActivity getInstance(){
+        return instance;
     }
 }
