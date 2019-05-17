@@ -11,15 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MainAppTheme">
-        <activity android:name=".DishDetailsActivity"></activity>
-        <activity android:name=".OrderDetailsActivity"></activity>
+        <activity android:name=".ChooseRiderActivity"></activity>
+        <activity android:name=".DishDetailsActivity" />
+        <activity android:name=".OrderDetailsActivity" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/MainAppTheme.NoActionBar" />
         <activity android:name=".AccountInfoActivity" />
-        <activity android:name=".LaunchActivity" android:label="@string/app_complete_name">
+        <activity
+            android:name=".LaunchActivity"
+            android:label="@string/app_complete_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -31,6 +31,7 @@ public class EAHCONST {
     public enum OrderStatus {
         ONGOING,
         CONFIRMED,
+        WAITING_RIDER,
         PENDING,
         COMPLETED,
         DECLINED
