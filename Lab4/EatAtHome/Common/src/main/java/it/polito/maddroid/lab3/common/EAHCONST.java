@@ -77,7 +77,8 @@ public class EAHCONST {
     public final static String CUSTOMER_DESCRIPTION = "decription";
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
-  
+    public final static String CUSTOMER_POSITION = "position";
+
     // riders subtree nodes fields
     public final static String RIDER_NAME = "name";
     public final static String RIDER_ADDRESS = "address";
@@ -109,7 +110,8 @@ public class EAHCONST {
     public final static String CUST_ORDER_STATUS = "order_status";
     public final static String CUST_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String CUST_ORDER_RIDER_ID = "rider_id";
-    
+    public final static String CUST_ORDER_DELIVERY_POS = "position";
+
     // riders order subtree nodes fields
     public final static String RIDER_ORDER_STATUS = "order_status";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
