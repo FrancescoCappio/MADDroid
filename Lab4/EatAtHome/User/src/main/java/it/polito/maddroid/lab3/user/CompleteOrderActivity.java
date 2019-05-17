@@ -59,8 +59,12 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String DISHES_KEY = "DISHES_KEY";
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
+    public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
-    
+    public static final String POSITION_KEY = "POSITION_KEY";
+    public static final String CHOICE_KEY = "CHOICE_KEY";
+    public static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -72,7 +76,9 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private AlertDialog possiblePosition;
     private List<Address> addressList;
     private Address address;
+    private String[] multiChoiceItems;
     private int choice;
+    private boolean positionDialogOpen = false;
     
     private String currentUserDefaultAddress;
     
@@ -132,9 +138,16 @@ public class CompleteOrderActivity extends AppCompatActivity {
             
             etDeliveryAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
             etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
-            
+            positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
+            choice = savedInstanceState.getInt(CHOICE_KEY);
+            multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITION_KEY);
+            addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_KEY);
+
             if (etDeliveryAddress.getText().toString().isEmpty())
                 downloadCurrentUserInfo();
+            if  (positionDialogOpen) {
+                showPositionDialog(multiChoiceItems, choice);
+            }
             
         }
         String totalCost = computeTotalCost();
@@ -155,6 +168,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             else
             {
                 GeocodingLocation locationAddress = new GeocodingLocation();
+                setActivityLoading(true);
                 locationAddress.getAddressFromLocation(userDeliveryAddress, getApplicationContext(), new CompleteOrderActivity.GeocoderHandler());
             }
         } );
@@ -359,9 +373,16 @@ public class CompleteOrderActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        if(possiblePosition != null)
+            possiblePosition.dismiss();
         
         outState.putSerializable(DISHES_KEY, (Serializable) selectedDishes);
         outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
+        outState.putSerializable(POSITION_KEY, multiChoiceItems);
+        outState.putSerializable(ADDRESSES_KEY, (Serializable) addressList);
+        outState.putInt(CHOICE_KEY,choice);
+        outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
         
         if (!etDeliveryAddress.getText().toString().isEmpty()) {
             outState.putString(ADDRESS_KEY, etDeliveryAddress.getText().toString());
@@ -378,6 +399,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(Message message) {
+            setActivityLoading(false);
 
             switch (message.what) {
                 case 0:
@@ -385,6 +407,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                     locationAddress = bundle.getString("address");
                     etDeliveryAddress.setText("");
                     Utility.showAlertToUser(CompleteOrderActivity.this, R.string.address_not_found );
+                    etDeliveryAddress.setHint(R.string.address_not_found);
                     actionConfirmOrder();
                     break;
                 case 1:
@@ -398,7 +421,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 case 2:
                     bundle = message.getData();
                     addressList = (List<Address>) bundle.getSerializable("address");
-                    String[] multiChoiceItems = new String[addressList.size()];
+                    multiChoiceItems = new String[addressList.size()];
                     for (int i = 0; i < addressList.size(); ++i) {
                         multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
                         multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
@@ -418,6 +441,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
 
     private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
 
+        positionDialogOpen = true;
+
         possiblePosition = new AlertDialog.Builder(this)
                 .setTitle("Select Your Address")
                 .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
@@ -434,6 +459,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                         Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
                         address = addressList.get(choice);
                         actionConfirmOrder();
+                        positionDialogOpen = false;
                     }
                 })
                 .setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -442,11 +468,21 @@ public class CompleteOrderActivity extends AppCompatActivity {
                         dialog.dismiss();
                         etDeliveryAddress.setText("");
                         actionConfirmOrder();
+                        positionDialogOpen = false;
                     }
                 }).create();
 
 
         possiblePosition.show();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(possiblePosition != null) {
+            possiblePosition.dismiss();
+        }
     }
 }
