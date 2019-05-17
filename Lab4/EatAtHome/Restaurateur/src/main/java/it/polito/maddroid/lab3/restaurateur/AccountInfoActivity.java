@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +95,9 @@ public class AccountInfoActivity extends AppCompatActivity {
     private String timeTableRest;
     boolean photoChanged = false;
     boolean photoPresent = false;
+    private String[] multiChoiceItems;
 
-    private AlertDialog possiblePosition;
+
     private List<Address> addressList;
     private Address address;
     private int choice;
@@ -104,12 +106,14 @@ public class AccountInfoActivity extends AppCompatActivity {
     private List<String> previousSelectedCategoriesId;
     private List<String> currentSelectedCategoriesId;
     private boolean timetableDialogOpen = false;
+    private boolean positionDialogOpen = false;
     private boolean categoriesDialogOpen = false;
 
 
     private AlertDialog logoutDialog;
     private AlertDialog timetableDialog;
     private AlertDialog categoriesDialog;
+    private AlertDialog possiblePosition;
 
     // menu items
     private MenuItem menuEdit;
@@ -144,12 +148,16 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHOTO_PRESENT_KEY = "PHOTO_PRESENT_KEY";
     private static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
     private static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
+    private static final String ADDRESSES_LIST = "ADDRESSES_LIST";
     private static final String MANDATORY_INFO_KEY = "MANDATORY_INFO_KEY";
     private static final String CATEGORIES_AFTE = "CATEGORIES_AFTER";
     private static final String CATEGORIES_BEFO = "CATEGORIES_BEFORE";
     private static final String TIMETABLEINFO = "TIMETABLE_INFO";
+    private static final String POSITIONS = "POSITIONS";
+    private static final String CHOICE = "CHOICE";
     private static final String TIMETABLE_DIALOG_KEY = "TIMETABLE_DIALOG_KEY";
     private static final String CATEGORIES_DIALOG_KEY = "CATEGORIES_DIALOG_KEY";
+    private static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
     private static final String CATEGORIES_LIST_KEY = "CATEGORIES_LIST_KEY";
 
 
@@ -204,6 +212,8 @@ public class AccountInfoActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if(possiblePosition != null)
+            possiblePosition.dismiss();
 
         outState.putString(NAME_KEY, etName.getText().toString());
         outState.putString(DESCRIPTION_KEY, etDescription.getText().toString());
@@ -212,16 +222,21 @@ public class AccountInfoActivity extends AppCompatActivity {
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
         outState.putString(TIMETABLEINFO, timeTableRest);
         outState.putStringArrayList(CATEGORIES_BEFO, (ArrayList<String>) previousSelectedCategoriesId);
+        if(multiChoiceItems != null)
+        outState.putSerializable(POSITIONS, (Serializable) multiChoiceItems);
         outState.putStringArrayList(CATEGORIES_AFTE, (ArrayList<String>) currentSelectedCategoriesId);
-
+        outState.putInt(CHOICE,choice);
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
         outState.putBoolean(EDIT_MODE_KEY, editMode);
+        outState.putSerializable(ADDRESSES_LIST, (Serializable) addressList);
 
         outState.putBoolean(PHOTO_PRESENT_KEY, photoPresent);
         outState.putBoolean(PHOTO_CHANGED_KEY, photoChanged);
 
         outState.putBoolean(TIMETABLE_DIALOG_KEY, timetableDialogOpen);
         outState.putBoolean(CATEGORIES_DIALOG_KEY, categoriesDialogOpen);
+        outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
+
 
         outState.putSerializable(CATEGORIES_LIST_KEY, (Serializable) categories);
     }
@@ -238,6 +253,9 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         previousSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_BEFO);
         currentSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_AFTE);
+        multiChoiceItems  = (String[]) savedInstanceState.getSerializable(POSITIONS);
+        choice = savedInstanceState.getInt(CHOICE);
+        addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_LIST);
         timeTableRest = savedInstanceState.getString(TIMETABLEINFO);
 
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
@@ -252,6 +270,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         setEditEnabled(editMode);
 
         timetableDialogOpen = savedInstanceState.getBoolean(TIMETABLE_DIALOG_KEY, false);
+        positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
         categoriesDialogOpen = savedInstanceState.getBoolean(CATEGORIES_DIALOG_KEY, false);
 
         categories = (List<RestaurantCategory>) savedInstanceState.getSerializable(CATEGORIES_LIST_KEY);
@@ -260,7 +279,9 @@ public class AccountInfoActivity extends AppCompatActivity {
             launchTimetableDialog();
         if (categoriesDialogOpen)
             launchCategoriesDialog();
-
+        if  (positionDialogOpen) {
+            showPositionDialog(multiChoiceItems, choice);
+        }
     }
 
     private void manageLaunchIntent() {
@@ -311,6 +332,10 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         if (categoriesDialog != null) {
             categoriesDialog.dismiss();
+        }
+
+        if(possiblePosition != null) {
+            possiblePosition.dismiss();
         }
     }
 
@@ -885,6 +910,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 else
                 {
                     GeocodingLocation locationAddress = new GeocodingLocation();
+                    setActivityLoading(true);
                     locationAddress.getAddressFromLocation(restaurantAddress, getApplicationContext(), new GeocoderHandler());
                 }
                 break;
@@ -1310,6 +1336,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(Message message) {
+            setActivityLoading(false);
 
             switch (message.what) {
                 case 0:
@@ -1317,6 +1344,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     locationAddress = bundle.getString("address");
                     etAddress.setText("");
                     Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found );
+                    etAddress.setHint(R.string.address_not_found);
                     launchConfirm();
                     break;
                 case 1:
@@ -1330,7 +1358,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 case 2:
                     bundle = message.getData();
                     addressList = (List<Address>) bundle.getSerializable("address");
-                    String[] multiChoiceItems = new String[addressList.size()];
+                    multiChoiceItems = new String[addressList.size()];
                     for (int i = 0; i < addressList.size(); ++i) {
                         multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
                         multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
@@ -1350,6 +1378,8 @@ public class AccountInfoActivity extends AppCompatActivity {
 
     private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
 
+        positionDialogOpen = true;
+
         possiblePosition = new AlertDialog.Builder(this)
                 .setTitle("Select Your Address")
                 .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
@@ -1365,6 +1395,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                         etAddress.setText(multiChoiceItems[choice]);
                         Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
                         address = addressList.get(choice);
+                        positionDialogOpen = false;
                         launchConfirm();
                     }
                 })
@@ -1373,6 +1404,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         etAddress.setText("");
+                        positionDialogOpen = false;
                         launchConfirm();
                     }
                 }).create();

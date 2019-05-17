@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,8 +76,11 @@ public class AccountInfoActivity extends AppCompatActivity {
     private int waitingCount = 0;
     boolean photoChanged = false;
     boolean photoPresent = false;
+    private boolean positionDialogOpen = false;
+
     private AlertDialog possiblePosition;
     private List<Address> addressList;
+    private String[] multiChoiceItems;
     private Address address;
     private int choice;
 
@@ -111,8 +115,12 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHONE_KEY = "PHONE_KEY";
     private static final String EMAIL_KEY = "EMAIL_KEY";
     private static final String ADDRESS_KEY = "ADDRESS_KEY";
+    private static final String ADDRESSES_LIST_KEY = "ADDRESS_LIST_KEY";
     private static final String PHOTO_PRESENT_KEY = "PHOTO_PRESENT_KEY";
+    private static final String CHOICE_KEY = "CHOICE_KEY";
+    private static final String POSITIONS_KEY = "PSOITIONS_KEY";
     private static final String PHOTO_CHANGED_KEY = "PHOTO_CHANGED_KEY";
+    private static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
     private static final String EDIT_MODE_KEY = "EDIT_MODE_KEY";
     private static final String MANDATORY_INFO_KEY = "MANDATORY_INFO_KEY";
 
@@ -195,6 +203,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 else
                 {
                     GeocodingLocation locationAddress = new GeocodingLocation();
+                    setActivityLoading(true);
                     locationAddress.getAddressFromLocation(userAddress, getApplicationContext(), new GeocoderHandler());
                 }
                 break;
@@ -633,17 +642,25 @@ public class AccountInfoActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        if(possiblePosition != null)
+            possiblePosition.dismiss();
+
         outState.putString(NAME_KEY, etName.getText().toString());
         outState.putString(DESCRIPTION_KEY, etDescription.getText().toString());
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
+        outState.putSerializable(ADDRESSES_LIST_KEY, (Serializable) addressList);
+        outState.putSerializable(POSITIONS_KEY, (Serializable) multiChoiceItems);
+        outState.putInt(CHOICE_KEY, choice);
 
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
         outState.putBoolean(EDIT_MODE_KEY, editMode);
 
         outState.putBoolean(PHOTO_PRESENT_KEY, photoPresent);
         outState.putBoolean(PHOTO_CHANGED_KEY, photoChanged);
+
+        outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
     }
 
     @Override
@@ -655,31 +672,48 @@ public class AccountInfoActivity extends AppCompatActivity {
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
         etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
         etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
+        choice = savedInstanceState.getInt(CHOICE_KEY);
+        addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_LIST_KEY);
+        multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITIONS_KEY);
 
         editMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
         mandatoryAccountInfo = savedInstanceState.getBoolean(MANDATORY_INFO_KEY);
 
         photoPresent = savedInstanceState.getBoolean(PHOTO_PRESENT_KEY);
         photoChanged = savedInstanceState.getBoolean(PHOTO_CHANGED_KEY);
+        positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
 
         if (photoPresent)
             updateAvatarImage();
+        if  (positionDialogOpen) {
+            showPositionDialog(multiChoiceItems, choice);
+        }
 
         setEditEnabled(editMode);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(possiblePosition != null) {
+            possiblePosition.dismiss();
+        }
+    }
 
     public class GeocoderHandler extends Handler {
         String locationAddress = new String();
 
         @Override
         public void handleMessage(Message message) {
+            setActivityLoading(false);
 
             switch (message.what) {
                 case 0:
                     Bundle bundle = message.getData();
                     locationAddress = bundle.getString("address");
                     etAddress.setText("");
+                    etAddress.setHint(R.string.address_not_found);
                     Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found );
                     launchConfirm();
                     break;
@@ -694,7 +728,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 case 2:
                     bundle = message.getData();
                     addressList = (List<Address>) bundle.getSerializable("address");
-                    String[] multiChoiceItems = new String[addressList.size()];
+                    multiChoiceItems = new String[addressList.size()];
                     for (int i = 0; i < addressList.size(); ++i) {
                         multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
                         multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
@@ -713,6 +747,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
     private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
+        positionDialogOpen = true;
 
         possiblePosition = new AlertDialog.Builder(this)
                 .setTitle("Select Your Address")
@@ -729,6 +764,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                         etAddress.setText(multiChoiceItems[choice]);
                         Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
                         address = addressList.get(choice);
+                        positionDialogOpen = false;
                         launchConfirm();
                     }
                 })
@@ -738,6 +774,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                         dialog.dismiss();
                         etAddress.setText("");
                         launchConfirm();
+                        positionDialogOpen = false;
                     }
                 }).create();
 
