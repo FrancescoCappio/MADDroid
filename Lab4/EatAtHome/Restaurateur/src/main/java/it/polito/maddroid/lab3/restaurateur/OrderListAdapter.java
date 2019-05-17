@@ -96,6 +96,7 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
                     break;
                 case CONFIRMED:
+                case WAITING_RIDER:
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
                     break;
                 default:
