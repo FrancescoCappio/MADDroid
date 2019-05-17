@@ -185,8 +185,9 @@ public class RiderLocationService extends Service {
     private void uploadLocation(Location location) {
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.RIDERS_POSITIONS_SUBTREE);
-        
-        lastLocation = location;
+
+        if (lastLocation != null)
+            lastLocation = location;
     
         DatabaseReference dbRef1 = dbRef.child(riderOrderPath);
         GeoFire geoFire = new GeoFire(dbRef1);

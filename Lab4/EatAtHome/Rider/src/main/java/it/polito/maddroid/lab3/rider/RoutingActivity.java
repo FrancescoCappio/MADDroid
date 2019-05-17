@@ -49,12 +49,14 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
 
     public static final String ORIGIN_LOCATION_KEY = "ORIGIN_LOCATION_KEY";
     public static final String DESTINATION_LOCATION_KEY = "DESTINATION_LOCATION_KEY";
+    public static final String ROUTE_KEY = "ROUTE_KEY";
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private Marker mCurrLocationMarker;
     private LocationRequest mLocationRequest;
+    private List<List<HashMap<String, String>>> directionRoute;
 
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -79,11 +81,9 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         Intent intent = getIntent();
         origin = intent.getExtras().getParcelable(ORIGIN_LOCATION_KEY);
         destination =intent.getExtras().getParcelable(DESTINATION_LOCATION_KEY);
-
+        directionRoute = (List<List<HashMap<String, String>>>) intent.getExtras().getSerializable(ROUTE_KEY);
+        drawRoute(directionRoute);
     }
-
-
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -123,156 +123,56 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         mMap.addMarker(options);
 
-        // Getting URL to the Google Directions API
-        String url = getUrl(origin, destination);
-        Log.d("onMapClick", url.toString());
-        FetchUrl FetchUrl = new FetchUrl();
-
-        // Start downloading json data from Google Directions API
-        FetchUrl.execute(url);
+//        // Getting URL to the Google Directions API
+//        String url = getUrl(origin, destination);
+//        FetchUrl FetchUrl = new FetchUrl();
+//
+//        // Start downloading json data from Google Directions API
+//        FetchUrl.execute(url);
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+
     }
 
+    private void drawRoute(List<List<HashMap<String, String>>> result) {
+        ArrayList<LatLng> points;
+        PolylineOptions lineOptions = null;
 
-    private String getUrl(LatLng origin, LatLng dest) {
+        // Traversing through all the routes
+        for (int i = 0; i < result.size(); i++) {
+            points = new ArrayList<>();
+            lineOptions = new PolylineOptions();
 
+            // Fetching i-th route
+            List<HashMap<String, String>> path = result.get(i);
 
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+            // Fetching all the points in i-th route
+            for (int j = 0; j < path.size(); j++) {
+                HashMap<String, String> point = path.get(j);
 
-        String sensor = "sensor=false";
-        String mode = "mode=walking";
+                double lat = Double.parseDouble(point.get("lat"));
+                double lng = Double.parseDouble(point.get("lng"));
+                LatLng position = new LatLng(lat, lng);
 
-
-        String parameters = str_origin + "&" + str_dest + "&" + sensor+ "&" + mode + "&key=" + getString(R.string.google_maps_key);
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+                points.add(position);
             }
 
-            data = sb.toString();
-            Log.d("downloadUrl", data.toString());
-            br.close();
+            // Adding all the points in the route to LineOptions
+            lineOptions.addAll(points);
+            lineOptions.width(10);
+            lineOptions.color(Color.RED);
 
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
+            Log.d("onPostExecute","onPostExecute lineoptions decoded");
 
-    private class FetchUrl extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-                Log.d("Background Task data", data.toString());
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-            parserTask.execute(result);
+        // Drawing polyline in the Google Map for the i-th route
+        if(lineOptions != null) {
+            mMap.addPolyline(lineOptions);
         }
-    }
-
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-
-                RoutingDataParser parser = new RoutingDataParser();
-                routes = parser.parse(jObject);
-
-            } catch (Exception e) {
-                Log.d("ParserTask",e.toString());
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points;
-            PolylineOptions lineOptions = null;
-
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<>();
-                lineOptions = new PolylineOptions();
-
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(10);
-                lineOptions.color(Color.RED);
-
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
-
-            }
-
-            // Drawing polyline in the Google Map for the i-th route
-            if(lineOptions != null) {
-                mMap.addPolyline(lineOptions);
-            }
-            else {
-                Log.d("onPostExecute","without Polylines drawn");
-            }
+        else {
+            Log.d("onPostExecute","without Polylines drawn");
         }
     }
 

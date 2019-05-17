@@ -77,6 +77,7 @@ public class EAHCONST {
     public final static String CUSTOMER_DESCRIPTION = "decription";
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
+    public final static String CUSTOMER_POSITION = "position";
   
     // riders subtree nodes fields
     public final static String RIDER_NAME = "name";
