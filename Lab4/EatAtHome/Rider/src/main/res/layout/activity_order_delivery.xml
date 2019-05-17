@@ -163,7 +163,7 @@
 
 
         <TextView
-            android:id="@+id/tv_restaurante_address_title"
+            android:id="@+id/tv_restaurant_address_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/restaurant_address"
@@ -190,12 +190,59 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_restaurante_address_title"
+            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist_title"
             app:layout_constraintTop_toBottomOf="@id/tv_restaurant_title"
             />
 
         <TextView
-            android:id="@+id/tv_restaurante_name_title"
+            android:id="@+id/tv_restaurant_dist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/restaurant_distance"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_restaurant_dist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="xx KM"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            android:maxLines="1"
+            android:ellipsize="end"
+
+           app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
+            />
+
+        <TextView
+            android:id="@+id/tv_restaurant_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="xx min"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            android:maxLines="1"
+            android:ellipsize="end"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist"
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
+            />
+
+        <TextView
+            android:id="@+id/tv_restaurant_name_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/restaurant_name"
@@ -203,7 +250,7 @@
             android:layout_marginBottom="@dimen/activity_margin"
             android:layout_marginStart="@dimen/activity_margin"
 
-            app:layout_constraintTop_toBottomOf="@id/tv_restaurante_address_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_restaurant_dist_title"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
@@ -220,8 +267,8 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_restaurante_name_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_restaurante_address_title"
+            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_restaurant_dist_title"
             />
 
         <Button
@@ -238,7 +285,7 @@
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_restaurante_name_title"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_restaurant_name_title"/>
 
         <View
             android:id="@+id/view_restaurant_address_separator"
@@ -309,9 +356,57 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_delivery_address_title"
+            app:layout_constraintStart_toEndOf="@id/tv_delivery_address_dist_title"
             app:layout_constraintTop_toBottomOf="@id/tv_customer_title"
             />
+
+        <TextView
+            android:id="@+id/tv_delivery_address_dist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="xx KM"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            android:maxLines="1"
+            android:ellipsize="end"
+
+            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_dist_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
+            />
+
+        <TextView
+            android:id="@+id/tv_delivery_address_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="xx min"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            android:maxLines="1"
+            android:ellipsize="end"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_dist"
+            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
+            />
+
+        <TextView
+            android:id="@+id/tv_delivery_address_dist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delivery_distance"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/tv_delivery_address_title"
+            app:layout_constraintStart_toStartOf="parent"/>
+
 
         <TextView
             android:id="@+id/tv_customer_name_title"
@@ -323,7 +418,7 @@
             android:layout_marginBottom="@dimen/activity_margin"
             android:layout_marginStart="@dimen/activity_margin"
 
-            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_dist_title"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
@@ -341,8 +436,8 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_customer_name_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_title"
+            app:layout_constraintStart_toEndOf="@id/tv_delivery_address_dist_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_dist_title"
             />
 
         <Button
