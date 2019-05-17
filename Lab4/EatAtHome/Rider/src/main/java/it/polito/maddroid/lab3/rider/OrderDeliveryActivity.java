@@ -260,6 +260,11 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
 
     private void getDirectionToRestaurant() {
+        if (riderToRestaurantRoutes == null) {
+            Utility.showAlertToUser(this, R.string.route_not_ready);
+            return;
+        }
+        
         Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
         intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY,lastLocation);
         intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY,restaurantLocation);
@@ -269,6 +274,11 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
 
     private void getDirectionToCustomer() {
+        if (restaurantToCustomerRoutes == null) {
+            Utility.showAlertToUser(this, R.string.route_not_ready);
+            return;
+        }
+        
         Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
         intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY, restaurantLocation);
         intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY, customerLocation);

@@ -126,4 +126,6 @@
 
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
+    <string name="route_not_ready">Please wait, the route is not ready</string>
+
 </resources>

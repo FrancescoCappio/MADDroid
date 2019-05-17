@@ -5,14 +5,14 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,22 +30,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class RoutingActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
     public static final String ORIGIN_LOCATION_KEY = "ORIGIN_LOCATION_KEY";
     public static final String DESTINATION_LOCATION_KEY = "DESTINATION_LOCATION_KEY";
@@ -53,20 +44,13 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private Marker mCurrLocationMarker;
-    private LocationRequest mLocationRequest;
     private List<List<HashMap<String, String>>> directionRoute;
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-
-
-    private Location lastLocation;
-    private LatLng origin = new LatLng(45.0639,7.6591);
-    private LatLng destination = new LatLng(45.0641,7.6591);
-
-
+    
+    private LatLng origin;
+    private LatLng destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,38 +66,26 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         origin = intent.getExtras().getParcelable(ORIGIN_LOCATION_KEY);
         destination =intent.getExtras().getParcelable(DESTINATION_LOCATION_KEY);
         directionRoute = (List<List<HashMap<String, String>>>) intent.getExtras().getSerializable(ROUTE_KEY);
+    
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-            }
-        });
-
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-        else {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
 
-
         //Add ORIGIN mark to map
         MarkerOptions options = new MarkerOptions();
         options.position(origin);
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mMap.addMarker(options);
 
         //Add DESTINATION mark to map
@@ -121,19 +93,12 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         options.position(destination);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         mMap.addMarker(options);
-
-//        // Getting URL to the Google Directions API
-//        String url = getUrl(origin, destination);
-//        FetchUrl FetchUrl = new FetchUrl();
-//
-//        // Start downloading json data from Google Directions API
-//        FetchUrl.execute(url);
+        
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     
         drawRoute(directionRoute);
-
     }
 
     private void drawRoute(List<List<HashMap<String, String>>> result) {
@@ -189,69 +154,67 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onConnected(Bundle bundle) {
 
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this::onLocationChanged);
-        }
+//        mLocationRequest = new LocationRequest();
+//        mLocationRequest.setInterval(1000);
+//        mLocationRequest.setFastestInterval(1000);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//            // ///Criteria //////////
+//            Criteria crta = new Criteria();
+//            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
+//            crta.setPowerRequirement(Criteria.POWER_LOW);
+//
+//            String provider = locationManager.getBestProvider(crta, true);
+//            locationManager.requestLocationUpdates(provider, 30000, 0, new LocationListener() {
+//                @Override
+//                public void onLocationChanged(Location location) {
+//                    locationListener = this;
+//                    if (mCurrLocationMarker != null) {
+//                        mCurrLocationMarker.remove();
+//                    }
+//
+//                    //Place current location marker
+//                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//                    //move map camera
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//
+//                }
+//
+//                @Override
+//                public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//                }
+//
+//                @Override
+//                public void onProviderEnabled(String provider) {
+//
+//                }
+//
+//                @Override
+//                public void onProviderDisabled(String provider) {
+//
+//                }
+//            });
+//
+//        }
 
     }
-
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (locationManager != null && locationListener != null)
+            locationManager.removeUpdates(locationListener);
+    }
+    
     @Override
     public void onConnectionSuspended(int i) {
-
+    
     }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this::onLocationChanged);
-        }
-
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -266,5 +229,10 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
                 mMap.setMyLocationEnabled(true);
             }
         }
+    }
+    
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    
     }
 }
