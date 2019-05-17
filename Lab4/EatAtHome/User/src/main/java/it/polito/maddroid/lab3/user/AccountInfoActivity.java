@@ -1,12 +1,19 @@
 package it.polito.maddroid.lab3.user;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.location.Address;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.ActionBar;
@@ -46,9 +53,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.GeocodingLocation;
 import it.polito.maddroid.lab3.common.LoginActivity;
 import it.polito.maddroid.lab3.common.SplashScreenActivity;
 import it.polito.maddroid.lab3.common.Utility;
@@ -66,6 +75,10 @@ public class AccountInfoActivity extends AppCompatActivity {
     private int waitingCount = 0;
     boolean photoChanged = false;
     boolean photoPresent = false;
+    private AlertDialog possiblePosition;
+    private List<Address> addressList;
+    private Address address;
+    private int choice;
 
     // menu items
     private MenuItem menuEdit;
@@ -173,9 +186,16 @@ public class AccountInfoActivity extends AppCompatActivity {
                 break;
 
             case R.id.menu_confirm:
-                if (manageUserConfirm()) {
-                    editMode = false;
-                    setEditEnabled(false);
+                String userAddress = etAddress.getText().toString();
+                if(userAddress.isEmpty())
+                {
+                    Utility.showAlertToUser(this, R.string.fields_empty_alert);
+                    return true;
+                }
+                else
+                {
+                    GeocodingLocation locationAddress = new GeocodingLocation();
+                    locationAddress.getAddressFromLocation(userAddress, getApplicationContext(), new GeocoderHandler());
                 }
                 break;
 
@@ -416,6 +436,18 @@ public class AccountInfoActivity extends AppCompatActivity {
 
             Log.d(TAG, "Success registering user info");
             setActivityLoading(false);
+            DatabaseReference dbRef1 = dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentUser.getUid());
+            GeoFire geoFire = new GeoFire(dbRef1);
+            geoFire.setLocation(EAHCONST.CUSTOMER_POSITION, new GeoLocation(address.getLatitude(), address.getLongitude()), new GeoFire.CompletionListener() {
+                @Override
+                public void onComplete(String key, DatabaseError error) {
+                    if (error != null) {
+                        Log.d("Location GeoFire", "There was an error saving the location to GeoFire: " + error);
+                    } else {
+                        Log.d("Location GeoFire", "Location saved on server successfully!");
+                    }
+                }
+            });
             Utility.showAlertToUser(this,R.string.notify_save_ok);
 
         }).addOnFailureListener(e -> {
@@ -634,6 +666,93 @@ public class AccountInfoActivity extends AppCompatActivity {
             updateAvatarImage();
 
         setEditEnabled(editMode);
+    }
+
+
+    public class GeocoderHandler extends Handler {
+        String locationAddress = new String();
+
+        @Override
+        public void handleMessage(Message message) {
+
+            switch (message.what) {
+                case 0:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    etAddress.setText("");
+                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found );
+                    launchConfirm();
+                    break;
+                case 1:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
+                    address = addressList.get(0);
+                    etAddress.setText("" + address.getThoroughfare()+" "+ address.getSubThoroughfare()+ ", " + address.getLocality() );
+                    launchConfirm();
+                    break;
+                case 2:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    String[] multiChoiceItems = new String[addressList.size()];
+                    for (int i = 0; i < addressList.size(); ++i) {
+                        multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + ", " + addressList.get(i).getLocality();
+
+                    }
+                    showPositionDialog(multiChoiceItems, 0);
+                    break;
+                default:
+                    locationAddress = null;
+                    break;
+            }
+
+
+        }
+    }
+
+    private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
+
+        possiblePosition = new AlertDialog.Builder(this)
+                .setTitle("Select Your Address")
+                .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice = which;
+                    }
+                })
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etAddress.setText(multiChoiceItems[choice]);
+                        Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
+                        address = addressList.get(choice);
+                        launchConfirm();
+                    }
+                })
+                .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etAddress.setText("");
+                        launchConfirm();
+                    }
+                }).create();
+
+
+        possiblePosition.show();
+
+    }
+
+
+    private void launchConfirm(){
+        if (manageUserConfirm()) {
+            editMode = false;
+            setEditEnabled(false);
+        }
+
     }
 
 }

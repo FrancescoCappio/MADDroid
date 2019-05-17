@@ -3,16 +3,22 @@ package it.polito.maddroid.lab3.user;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.GeocodingLocation;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +28,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +69,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private int waitingCount = 0;
     private List<Dish> selectedDishes;
     private Restaurant currentRestaurant;
+    private AlertDialog possiblePosition;
+    private List<Address> addressList;
+    private Address address;
+    private int choice;
     
     private String currentUserDefaultAddress;
     
@@ -133,7 +145,19 @@ public class CompleteOrderActivity extends AppCompatActivity {
         etDeliveryTime.setClickable(true);
         etDeliveryTime.setOnClickListener(v -> showTimePickerDialog());
         
-        btConfirmOrder.setOnClickListener(v -> actionConfirmOrder());
+        btConfirmOrder.setOnClickListener(v ->{
+            String userDeliveryAddress = etDeliveryAddress.getText().toString();
+            if(userDeliveryAddress.isEmpty())
+            {
+                Utility.showAlertToUser(this, R.string.fields_empty_alert);
+                return;
+            }
+            else
+            {
+                GeocodingLocation locationAddress = new GeocodingLocation();
+                locationAddress.getAddressFromLocation(userDeliveryAddress, getApplicationContext(), new CompleteOrderActivity.GeocoderHandler());
+            }
+        } );
         
     }
     
@@ -274,6 +298,18 @@ public class CompleteOrderActivity extends AppCompatActivity {
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
+            DatabaseReference dbRef1 = dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentRestaurant.getRestaurantID()).child(orderId);
+            GeoFire geoFire = new GeoFire(dbRef1);
+            geoFire.setLocation(EAHCONST.CUST_ORDER_DELIVERY_POS, new GeoLocation(address.getLatitude(), address.getLongitude()), new GeoFire.CompletionListener() {
+                @Override
+                public void onComplete(String key, DatabaseError error) {
+                    if (error != null) {
+                        Log.d("Location GeoFire", "There was an error saving the location to GeoFire: " + error);
+                    } else {
+                        Log.d("Location GeoFire", "Location saved on server successfully!");
+                    }
+                }
+            });
             Toast.makeText(CompleteOrderActivity.this, R.string.order_completed, Toast.LENGTH_LONG).show();
             finish();
         }).addOnFailureListener(e -> {
@@ -334,5 +370,83 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if (!etDeliveryTime.getText().toString().isEmpty()) {
             outState.putString(TIME_KEY, etDeliveryTime.getText().toString());
         }
+    }
+
+
+    public class GeocoderHandler extends Handler {
+        String locationAddress = new String();
+
+        @Override
+        public void handleMessage(Message message) {
+
+            switch (message.what) {
+                case 0:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    etDeliveryAddress.setText("");
+                    Utility.showAlertToUser(CompleteOrderActivity.this, R.string.address_not_found );
+                    actionConfirmOrder();
+                    break;
+                case 1:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
+                    address = addressList.get(0);
+                    etDeliveryAddress.setText("" + address.getThoroughfare()+" "+ address.getSubThoroughfare()+ ", " + address.getLocality() );
+                    actionConfirmOrder();
+                    break;
+                case 2:
+                    bundle = message.getData();
+                    addressList = (List<Address>) bundle.getSerializable("address");
+                    String[] multiChoiceItems = new String[addressList.size()];
+                    for (int i = 0; i < addressList.size(); ++i) {
+                        multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
+                        multiChoiceItems[i] = multiChoiceItems[i] + ", " + addressList.get(i).getLocality();
+
+                    }
+                    showPositionDialog(multiChoiceItems, 0);
+                    break;
+                default:
+                    locationAddress = null;
+                    break;
+            }
+
+
+        }
+    }
+
+    private void showPositionDialog(String[] multiChoiceItems, int checkedItems) {
+
+        possiblePosition = new AlertDialog.Builder(this)
+                .setTitle("Select Your Address")
+                .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice = which;
+                    }
+                })
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etDeliveryAddress.setText(multiChoiceItems[choice]);
+                        Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
+                        address = addressList.get(choice);
+                        actionConfirmOrder();
+                    }
+                })
+                .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        etDeliveryAddress.setText("");
+                        actionConfirmOrder();
+                    }
+                }).create();
+
+
+        possiblePosition.show();
+
     }
 }

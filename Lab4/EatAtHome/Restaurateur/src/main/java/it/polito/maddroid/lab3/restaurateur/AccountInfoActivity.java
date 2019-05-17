@@ -98,12 +98,14 @@ public class AccountInfoActivity extends AppCompatActivity {
     private AlertDialog possiblePosition;
     private List<Address> addressList;
     private Address address;
+    private int choice;
+
     private List<RestaurantCategory> categories;
     private List<String> previousSelectedCategoriesId;
     private List<String> currentSelectedCategoriesId;
     private boolean timetableDialogOpen = false;
     private boolean categoriesDialogOpen = false;
-    private int choice;
+
 
     private AlertDialog logoutDialog;
     private AlertDialog timetableDialog;
@@ -1322,6 +1324,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     addressList = (List<Address>) bundle.getSerializable("address");
                     Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
                     address = addressList.get(0);
+                    etAddress.setText(address.getThoroughfare()+" "+address.getSubThoroughfare()+", "+address.getLocality());
                     launchConfirm();
                     break;
                 case 2:
@@ -1331,7 +1334,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     for (int i = 0; i < addressList.size(); ++i) {
                         multiChoiceItems[i] = "" + addressList.get(i).getThoroughfare();
                         multiChoiceItems[i] = multiChoiceItems[i] + " " + addressList.get(i).getSubThoroughfare();
-                        multiChoiceItems[i] = multiChoiceItems[i] + "," + addressList.get(i).getLocality();
+                        multiChoiceItems[i] = multiChoiceItems[i] + ", " + addressList.get(i).getLocality();
 
                     }
                     showPositionDialog(multiChoiceItems, 0);
