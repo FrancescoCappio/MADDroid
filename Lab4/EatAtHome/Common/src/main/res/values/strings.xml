@@ -60,6 +60,7 @@
     <string name="image_empty_alert">Please set an image</string>
     <string name="no_category_alert">Please set at least one Category</string>
     <string name="no_timetable_alert">Please set the time Table</string>
+    <string name="address_not_found"> Address NOT found</string>
 
     <string name="title_activity_main">MainActivity</string>
 
@@ -85,14 +86,14 @@
 
     <string name="restaurant_name">Restaurant\'s name</string>
     <string name="restaurant_email">Restaurant\'s email</string>
-    <string name="restaurant_address">Restaurant\'s address (also city)</string>
+    <string name="restaurant_address">Restaurant\'s address </string>
     <string name="restaurant_description">Restaurant\'s description</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
     <string name="restaurant_categories">Restaurant\'s categories</string>
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
 
     <string name="delivery_time">Delivery time</string>
-    <string name="delivery_address">Delivery address (also city)</string>
+    <string name="delivery_address">Delivery address </string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
     <string name="customer">Customer</string>
