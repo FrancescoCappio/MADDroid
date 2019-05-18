@@ -113,8 +113,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         if (service != null ){
             Location loc = service.getLastLocation();
             
-            lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
-            if (lastLocation == null )
+            if (loc != null)
+                lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
+            if (lastLocation == null)
                 Utility.showAlertToUser(this,R.string.not_find_location);
         }
 
@@ -174,8 +175,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvRestaurantToCustomerDistKM = findViewById(R.id.tv_delivery_address_distance);
         tvRestaurantToCustomerDistTime = findViewById(R.id.tv_delivery_address_duration);
 
-        btDirectionToCustomer = findViewById(R.id.bt_direction_toCustomer);
-        btDirectionToRestaurant = findViewById(R.id.bt_direction_toRestaurant);
+        btDirectionToCustomer = findViewById(R.id.bt_direction_to_customer);
+        btDirectionToRestaurant = findViewById(R.id.bt_direction_to_restaurant);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
     }

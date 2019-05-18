@@ -39,4 +39,6 @@
     <string name="alert_complete_current_deliveries">You have to complete the current deliveries if you want to stop working</string>
     <string name="alert_on_duty_switch">You need to be on duty if you want to be available for an order assignment</string>
 
+    <string name="cannot_find_gmaps_alert">Cannot find google maps on your device</string>
+
 </resources>

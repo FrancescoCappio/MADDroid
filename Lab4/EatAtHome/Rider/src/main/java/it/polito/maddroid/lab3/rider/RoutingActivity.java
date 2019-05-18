@@ -3,6 +3,7 @@ package it.polito.maddroid.lab3.rider;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import it.polito.maddroid.lab3.common.Utility;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,8 +14,10 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -71,6 +74,22 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
         directionRoute = (List<List<HashMap<String, String>>>) intent.getExtras().getSerializable(ROUTE_KEY);
     
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        
+        btDirections = findViewById(R.id.bt_directions);
+        
+        btDirections.setOnClickListener(v -> {
+            
+            Uri gmmIntentUri = Uri.parse("google.navigation:q=" + destination.latitude + "," + destination.longitude + "&mode=b");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            // Attempt to start an activity that can handle the Intent
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            } else {
+                Utility.showAlertToUser(RoutingActivity.this, R.string.cannot_find_gmaps_alert);
+            }
+        });
     }
 
     @Override
@@ -156,53 +175,6 @@ public class RoutingActivity extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onConnected(Bundle bundle) {
-
-//        mLocationRequest = new LocationRequest();
-//        mLocationRequest.setInterval(1000);
-//        mLocationRequest.setFastestInterval(1000);
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//
-//            // ///Criteria //////////
-//            Criteria crta = new Criteria();
-//            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
-//            crta.setPowerRequirement(Criteria.POWER_LOW);
-//
-//            String provider = locationManager.getBestProvider(crta, true);
-//            locationManager.requestLocationUpdates(provider, 30000, 0, new LocationListener() {
-//                @Override
-//                public void onLocationChanged(Location location) {
-//                    locationListener = this;
-//                    if (mCurrLocationMarker != null) {
-//                        mCurrLocationMarker.remove();
-//                    }
-//
-//                    //Place current location marker
-//                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//
-//                    //move map camera
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//
-//                }
-//
-//                @Override
-//                public void onStatusChanged(String provider, int status, Bundle extras) {
-//
-//                }
-//
-//                @Override
-//                public void onProviderEnabled(String provider) {
-//
-//                }
-//
-//                @Override
-//                public void onProviderDisabled(String provider) {
-//
-//                }
-//            });
-//
-//        }
 
     }
     

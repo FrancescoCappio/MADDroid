@@ -146,20 +146,22 @@
             app:layout_constraintTop_toBottomOf="@+id/view_cost_delivery"/>
 
         <Button
-            android:id="@+id/bt_direction_toRestaurant"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
+            android:id="@+id/bt_direction_to_restaurant"
+            android:layout_width="210dp"
+            android:layout_height="35dp"
             android:background="@color/eah_blue"
             android:text="@string/direction_to_restaurant"
 
             android:textColor="@color/eah_white"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.855"
-            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_title"
-            app:layout_constraintTop_toBottomOf="@id/view_cost_delivery" />
+            app:layout_constraintTop_toTopOf="@+id/tv_restaurant_title"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_restaurant_title"/>
 
 
         <TextView
@@ -181,6 +183,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="dove si trova il mio ristorante"
+            android:textAlignment="textEnd"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -219,7 +222,7 @@
             android:maxLines="1"
             android:ellipsize="end"
 
-           app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist_title"
+           app:layout_constraintEnd_toStartOf="@+id/tv_restaurant_duration"
             app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
             />
 
@@ -237,7 +240,6 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_distance"
             app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
             />
 
@@ -258,6 +260,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="chez Il mio ristorante"
+            android:textAlignment="textEnd"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -313,20 +316,22 @@
             app:layout_constraintTop_toBottomOf="@+id/view_restaurant_address_separator"/>
 
         <Button
-            android:id="@+id/bt_direction_toCustomer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
+            android:id="@+id/bt_direction_to_customer"
+            android:layout_width="210dp"
+            android:layout_height="35dp"
             android:background="@color/eah_blue"
             android:text="@string/direction_to_customer"
 
             android:textColor="@color/eah_white"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.855"
-            app:layout_constraintStart_toEndOf="@+id/tv_customer_title"
-            app:layout_constraintTop_toBottomOf="@id/view_restaurant_address_separator" />
+            app:layout_constraintTop_toTopOf="@+id/tv_customer_title"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_customer_title" />
 
         <TextView
             android:id="@+id/tv_delivery_address_title"
@@ -347,6 +352,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Esempio di delivery address"
+
+            android:textAlignment="textEnd"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -373,7 +380,7 @@
             android:maxLines="1"
             android:ellipsize="end"
 
-            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_dist_title"
+            app:layout_constraintEnd_toStartOf="@+id/tv_delivery_address_duration"
             app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
             />
 
@@ -391,7 +398,6 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_distance"
             app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
             />
 
@@ -427,6 +433,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Pippo pluto"
+            android:textAlignment="textEnd"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
