@@ -76,7 +76,6 @@ public class RoutingUtility {
             }
             
             data = sb.toString();
-            Log.d("downloadUrl", data);
             br.close();
             
         } catch (Exception e) {
@@ -97,7 +96,6 @@ public class RoutingUtility {
             
             try {
                 data = downloadUrl(url[0]);
-                Log.d("Background Task data", data);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }

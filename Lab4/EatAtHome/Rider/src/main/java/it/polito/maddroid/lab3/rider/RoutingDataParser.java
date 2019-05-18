@@ -107,11 +107,28 @@ public class RoutingDataParser {
             jRoutes = this.jObject.getJSONArray("routes");
             jLegs = ((JSONObject) jRoutes.get(0)).getJSONArray("legs");
             String distance = (String) ((JSONObject) ((JSONObject) jLegs.get(0)).get("distance")).get("text");
-            data[0] = String.valueOf(Double .parseDouble(distance.split(" ")[0])) + " KM";
-            String duration = (String) ((JSONObject) ((JSONObject) jLegs.get(0)).get("duration")).get("text");
-            int durationTime = (int) ((Double.parseDouble(duration.split(" ")[0])) / 2) + 1;
-            data[1] = String.valueOf(durationTime) + " Min";
-
+            data[0] = Double.parseDouble(distance.split(" ")[0]) + " Km";
+    
+            int durationTime;
+            
+            if (((JSONObject) ((JSONObject) jLegs.get(0)).get("duration")).get("value") instanceof Integer)
+                durationTime = (int) ((JSONObject) ((JSONObject) jLegs.get(0)).get("duration")).get("value");
+            else {
+                String duration = (String) ((JSONObject) ((JSONObject) jLegs.get(0)).get("duration")).get("value");
+                durationTime = Integer.parseInt(duration);
+            }
+            
+            int durationTimeBike = durationTime / 2;
+            int durationTimeBikeMins = durationTimeBike / 60;
+            
+            if (durationTimeBikeMins > 60) {
+                int hours = durationTimeBikeMins / 60;
+                int remain = durationTimeBikeMins - hours*60;
+                data[1] = hours + "h " + remain + "m";
+            } else {
+                data[1] = durationTimeBikeMins + "m";
+            }
+            
         } catch (JSONException e) {
             e.printStackTrace();
         }
