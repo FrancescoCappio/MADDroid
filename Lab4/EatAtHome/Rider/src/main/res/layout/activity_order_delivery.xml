@@ -207,7 +207,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_restaurant_dist"
+            android:id="@+id/tv_restaurant_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="xx KM"
@@ -224,7 +224,7 @@
             />
 
         <TextView
-            android:id="@+id/tv_restaurant_time"
+            android:id="@+id/tv_restaurant_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="xx min"
@@ -237,7 +237,7 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_dist"
+            app:layout_constraintStart_toEndOf="@+id/tv_restaurant_distance"
             app:layout_constraintTop_toBottomOf="@id/tv_restaurant_address_title"
             />
 
@@ -361,7 +361,7 @@
             />
 
         <TextView
-            android:id="@+id/tv_delivery_address_dist"
+            android:id="@+id/tv_delivery_address_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="xx KM"
@@ -378,7 +378,7 @@
             />
 
         <TextView
-            android:id="@+id/tv_delivery_address_time"
+            android:id="@+id/tv_delivery_address_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="xx min"
@@ -391,7 +391,7 @@
             android:ellipsize="end"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_dist"
+            app:layout_constraintStart_toEndOf="@+id/tv_delivery_address_distance"
             app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
             />
 
