@@ -15,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -68,11 +69,7 @@ public class RiderLocationService extends Service {
         
         createNotificationChannel();
     
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle(CHANNEL_NAME)
-                .setContentText(CHANNEL_DESC)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification).setContentTitle(CHANNEL_NAME).setContentText(CHANNEL_DESC).setPriority(NotificationCompat.PRIORITY_DEFAULT);
     
         // Create an explicit intent for an Activity in your app
         Intent newIntent = new Intent(this, MainActivity.class);
@@ -103,16 +100,16 @@ public class RiderLocationService extends Service {
     
         if (currentUser != null) {
             String riderOrderPath = EAHCONST.generatePath(EAHCONST.RIDERS_POSITIONS_SUBTREE, currentUser.getUid());
-    
+        
             DatabaseReference dbRef1 = dbRef.child(riderOrderPath);
-    
+        
             dbRef1.removeValue((databaseError, databaseReference) -> {
                 if (databaseError == null)
                     Log.d(TAG, "Successfully removed rider's position from the db");
                 else
                     Log.e(TAG, "Error removing rider's position from the db: " + databaseError.getMessage());
             });
-    
+        
         }
         
         Log.d(TAG, "Service stop");
@@ -137,17 +134,17 @@ public class RiderLocationService extends Service {
             
             @Override
             public void onStatusChanged(String s, int i, Bundle bundle) {
-            
+    
             }
             
             @Override
             public void onProviderEnabled(String s) {
-            
+    
             }
             
             @Override
             public void onProviderDisabled(String s) {
-            
+    
             }
             
         };
@@ -155,19 +152,39 @@ public class RiderLocationService extends Service {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             
             // we have permission!
-            
-            // ///Criteria //////////
-            Criteria crta = new Criteria();
-            crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
-            crta.setPowerRequirement(Criteria.POWER_LOW);
-            
-            String provider = locationManager.getBestProvider(crta, true);
-            locationManager.requestLocationUpdates(provider, 30000, 0, locationListener);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            uploadLocation(location);
+            startLocationListener();
             
         }
+        else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (ContextCompat.checkSelfPermission(RiderLocationService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        startLocationListener();
+                    }
+                    else {
+                        new Handler().postDelayed(this, 5000);
+                    }
+                }
+            }, 5000);
+        }
         
+    }
+    
+    private void startLocationListener() {
+        // ///Criteria //////////
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+    
+        String provider = locationManager.getBestProvider(crta, true);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "We do not have the permission the access the location!");
+            return;
+        }
+        locationManager.requestLocationUpdates(provider, 30000, 0, locationListener);
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        uploadLocation(location);
     }
     
     private void createNotificationChannel() {

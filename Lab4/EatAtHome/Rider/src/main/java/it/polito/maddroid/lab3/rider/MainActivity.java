@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -169,16 +170,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         downloadOrdersInfo();
         
-        startLocation();
+        checkPermissions();
     }
-
-
-    private void startLocation() {
+    
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
-        } else {
-            startLocationService();
         }
     }
 
@@ -260,21 +258,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionView.setOnCheckedChangeListener((buttonView, isChecked) -> {
             startStopService(isChecked);
         });
-
-        startStopService(riderOnDuty);
-
+        restoreRiderStatusFromServer();
+        
         return super.onCreateOptionsMenu(menu);
+    }
+    
+    private void restoreRiderStatusFromServer() {
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.RIDER_ON_DUTY).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    Log.e(TAG, "Error restoring rider status from server");
+                    startStopService(riderOnDuty);
+                    return;
+                }
+                riderOnDuty = dataSnapshot.getValue(EAHCONST.RiderStatus.class) == EAHCONST.RiderStatus.ON_DUTY;
+                onDutySwitch.setChecked(riderOnDuty);
+                startStopService(riderOnDuty);
+            }
+    
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error while restoring rider status");
+                startStopService(riderOnDuty);
+            }
+        });
     }
     
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                startLocationService();
-            }
+        if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_permissions_title)
+                    .setMessage(R.string.alert_permissions_needed)
+                    .setOnDismissListener(dialog -> checkPermissions()).create().show();
         }
         
     }

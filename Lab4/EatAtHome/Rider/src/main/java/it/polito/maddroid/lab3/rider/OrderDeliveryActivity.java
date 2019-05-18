@@ -137,8 +137,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         setupButtonsEnable();
 
         getRestaurantLocations();
-
-
+        
     }
 
     private void setupButtonsEnable() {
