@@ -91,8 +91,10 @@
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
     <string name="restaurant_categories">Restaurant\'s categories</string>
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
+    <string name="restaurant_distance">Distance from Restaurant</string>
 
     <string name="delivery_time">Delivery time</string>
+    <string name="delivery_distance">Distance from Custumer</string>
     <string name="delivery_address">Delivery address </string>
     <string name="payment_info">Payment info</string>
     <string name="customer_name">Customer Name</string>
