@@ -282,6 +282,10 @@ public class AccountInfoActivity extends AppCompatActivity {
             intent.putExtra(EAHCONST.LAUNCH_ACTIVITY_KEY, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            
+            RiderLocationService service = RiderLocationService.getInstance();
+            if (service != null)
+                service.stopService();
 
             finishAndRemoveTask();
         }

@@ -213,4 +213,9 @@ public class RiderLocationService extends Service {
     public Location getLastLocation() {
         return lastLocation;
     }
+    
+    public void stopService() {
+        Log.d(TAG, "Stop service called");
+        stopSelf();
+    }
 }
