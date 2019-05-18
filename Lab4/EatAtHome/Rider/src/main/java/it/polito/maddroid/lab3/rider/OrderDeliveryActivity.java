@@ -12,16 +12,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.LocationCallback;
@@ -53,15 +50,18 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     
     private static final String TAG = "OrderDeliveryActivity";
     public static final String ORDER_DELIVERY_KEY = "ORDER_DELIVERY_KEY";
-    public static final String RIDER_LOCATION = "RIDER_LOCATION";
-    
+
     private RiderOrderDelivery currentOrder;
     private LatLng lastLocation;
     private LatLng restaurantLocation;
     private LatLng customerLocation;
 
     private List<List<HashMap<String, String>>> riderToRestaurantRoutes;
+    private String riderToRestaurantDistance;
+    private String riderToRestaurantDuration;
     private List<List<HashMap<String, String>>> restaurantToCustomerRoutes;
+    private String restaurantToCustomerDistance;
+    private String restaurantToCustomerDuration;
     private String routeMode;
     
     private TextView tvDeliveryTime;
@@ -72,7 +72,12 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private TextView tvCustomerName;
     private TextView tvRestaurantName;
-    
+    private TextView tvRiderToRestaurantDistKM;
+    private TextView tvRiderToRestaurantDistTime;
+    private TextView tvRestaurantToCustomerDistKM;
+    private TextView tvRestaurantToCustomerDistTime;
+
+
     private Button btGetFood;
     private Button btDeliverFood;
     private Button btDirectionToRestaurant;
@@ -108,8 +113,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         if (service != null ){
             Location loc = service.getLastLocation();
             
-            lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
-            if (lastLocation == null )
+            if (loc != null)
+                lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
+            if (lastLocation == null)
                 Utility.showAlertToUser(this,R.string.not_find_location);
         }
 
@@ -135,60 +141,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
 
     }
 
-
-    private void getRestaurantLocations() {
-
-        String restaurantUID = currentOrder.getRestaurantId();
-
-        String restaurantPath = EAHCONST.generatePath(
-                EAHCONST.RESTAURANTS_SUB_TREE,restaurantUID);
-
-        DatabaseReference dbRef1 = dbRef.child(restaurantPath);
-        GeoFire geoFireRestaurant = new GeoFire(dbRef1);
-
-        geoFireRestaurant.getLocation(EAHCONST.RESTAURANT_POSITION, new LocationCallback() {
-            @Override
-            public void onLocationResult(String key, GeoLocation location) {
-                if (location != null) {
-                    restaurantLocation = new LatLng(location.latitude, location.longitude);
-                    getCustomerLocation();
-                     } else {
-                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.err.println("There was an error getting the GeoFire location: " + databaseError);
-            }
-        });
-    }
-
-    private void getCustomerLocation() {
-
-        String customerUID = currentOrder.getCustomerId();
-        String customerPath = EAHCONST.generatePath(
-                EAHCONST.ORDERS_REST_SUBTREE,currentOrder.getRestaurantId(),currentOrder.getOrderId());
-
-        DatabaseReference dbRef2 = dbRef.child(customerPath);
-        GeoFire geoFireCustomer = new GeoFire(dbRef2);
-
-        geoFireCustomer.getLocation(EAHCONST.CUSTOMER_POSITION, new LocationCallback() {
-            @Override
-            public void onLocationResult(String key, GeoLocation location) {
-                if (location != null) {
-                    customerLocation = new LatLng(location.latitude, location.longitude);
-                    getRoutes();
-                } else {
-                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.err.println("There was an error getting the GeoFire location: " + databaseError);
-            }
-        });
-    }
-
     private void setupButtonsEnable() {
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.CONFIRMED) {
             btDeliverFood.setEnabled(false);
@@ -209,19 +161,24 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
     
     private void getReferencesToViews(){
+        pbLoading = findViewById(R.id.pb_loading);
         
         tvDeliveryTime = findViewById(R.id.tv_time);
         tvCostDelivery = findViewById(R.id.tv_cost_delivery);
         tvTotalCost = findViewById(R.id.tv_total_cost);
         tvRestaurantAdress = findViewById(R.id.tv_restaurant_address);
         tvDeliveryAdress = findViewById(R.id.tv_delivery_address);
-        pbLoading = findViewById(R.id.pb_loading);
-        btGetFood = findViewById(R.id.bt_get_food);
-        btDeliverFood = findViewById(R.id.bt_deliver_food);
         tvCustomerName = findViewById(R.id.tv_customer_name);
         tvRestaurantName = findViewById(R.id.tv_restaurant_name);
-        btDirectionToCustomer = findViewById(R.id.bt_direction_toCustomer);
-        btDirectionToRestaurant = findViewById(R.id.bt_direction_toRestaurant);
+        tvRiderToRestaurantDistKM = findViewById(R.id.tv_restaurant_distance);
+        tvRiderToRestaurantDistTime = findViewById(R.id.tv_restaurant_duration);
+        tvRestaurantToCustomerDistKM = findViewById(R.id.tv_delivery_address_distance);
+        tvRestaurantToCustomerDistTime = findViewById(R.id.tv_delivery_address_duration);
+
+        btDirectionToCustomer = findViewById(R.id.bt_direction_to_customer);
+        btDirectionToRestaurant = findViewById(R.id.bt_direction_to_restaurant);
+        btGetFood = findViewById(R.id.bt_get_food);
+        btDeliverFood = findViewById(R.id.bt_deliver_food);
     }
     
     @Override
@@ -330,7 +287,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         
     }
     
-    
     private void deliverFoodAction() {
         
         setActivityLoading(true);
@@ -362,7 +318,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.alert_error_deliver_food);
         });
     }
-    
     
     private synchronized void setActivityLoading(boolean loading) {
         // this method is necessary to show the user when the activity is doing a network operation
@@ -409,118 +364,83 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         });
     }
 
+    private void getRestaurantLocations() {
 
-    private String getUrl(LatLng origin, LatLng dest) {
+        String restaurantUID = currentOrder.getRestaurantId();
 
+        String restaurantPath = EAHCONST.generatePath(
+                EAHCONST.RESTAURANTS_SUB_TREE,restaurantUID);
 
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        DatabaseReference dbRef1 = dbRef.child(restaurantPath);
+        GeoFire geoFireRestaurant = new GeoFire(dbRef1);
 
-        String sensor = "sensor=false";
-        String mode = "mode=walking";
-
-
-        String parameters = str_origin + "&" + str_dest + "&" + sensor+ "&" + mode + "&key=" + getString(R.string.google_maps_key);
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+        geoFireRestaurant.getLocation(EAHCONST.RESTAURANT_POSITION, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location != null) {
+                    restaurantLocation = new LatLng(location.latitude, location.longitude);
+                    getCustomerLocation();
+                } else {
+                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
+                }
             }
-
-            data = sb.toString();
-            Log.d("downloadUrl", data.toString());
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    private class FetchUrl extends AsyncTask<String, Void, String> {
-
-        String mode;
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                mode = url[1];
-                data = downloadUrl(url[0]);
-                Log.d("Background Task data", data.toString());
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.err.println("There was an error getting the GeoFire location: " + databaseError);
             }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            if (mode.equals("RR")) {
-                riderToRestaurantRoutes = convertDataURLtoJson(result);
-            } else
-                restaurantToCustomerRoutes = convertDataURLtoJson(result);
-        }
+        });
     }
 
-    private List<List<HashMap<String, String>>> convertDataURLtoJson(String... jsonData) {
-        JSONObject jObject;
-        List<List<HashMap<String, String>>> routes = null;
+    private void getCustomerLocation() {
 
-        try {
-            jObject = new JSONObject(jsonData[0]);
+        String customerPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_REST_SUBTREE,currentOrder.getRestaurantId(),currentOrder.getOrderId());
 
-            RoutingDataParser parser = new RoutingDataParser();
-            routes = parser.parse(jObject);
+        DatabaseReference dbRef2 = dbRef.child(customerPath);
+        GeoFire geoFireCustomer = new GeoFire(dbRef2);
 
-        } catch (Exception e) {
-            Log.d("ParserTask",e.toString());
-            e.printStackTrace();
-        }
-        return routes;
+        geoFireCustomer.getLocation(EAHCONST.CUSTOMER_POSITION, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location != null) {
+                    customerLocation = new LatLng(location.latitude, location.longitude);
+                    getRoutes();
+                } else {
+                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.err.println("There was an error getting the GeoFire location: " + databaseError);
+            }
+        });
     }
-
-
 
     private void getRoutes() {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
-            String urlRR = getUrl(lastLocation, restaurantLocation);
-            FetchUrl FetchUrlRR = new FetchUrl();
-            routeMode = "RR"; //Rider to Restaurant
-            FetchUrlRR.execute(urlRR, routeMode);
-
-            FetchUrl FetchUrlRc = new FetchUrl();
-            String urlRC = getUrl(restaurantLocation, customerLocation);
-            routeMode = "RC"; // Restaurant to Customer
-            FetchUrlRc.execute(urlRC, routeMode);
+            
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                    riderToRestaurantRoutes = route;
+                    riderToRestaurantDistance = distances[0];
+                    tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
+                    riderToRestaurantDuration = distances[1];
+                    tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+                }
+            });
+            
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                    restaurantToCustomerRoutes = route;
+                    restaurantToCustomerDistance = distances[0];
+                    tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
+                    restaurantToCustomerDuration = distances[1];
+                    tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+                }
+            });
         }
     }
 }
