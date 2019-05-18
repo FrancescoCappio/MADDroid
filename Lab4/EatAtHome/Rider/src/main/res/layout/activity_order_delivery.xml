@@ -213,7 +213,7 @@
             android:id="@+id/tv_restaurant_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="xx KM"
+            android:text="xx KM"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -230,7 +230,7 @@
             android:id="@+id/tv_restaurant_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="xx min"
+            android:text="xx min"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -371,7 +371,7 @@
             android:id="@+id/tv_delivery_address_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="xx KM"
+            android:text="xx KM"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -388,7 +388,7 @@
             android:id="@+id/tv_delivery_address_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="xx min"
+            android:text="xx min"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"

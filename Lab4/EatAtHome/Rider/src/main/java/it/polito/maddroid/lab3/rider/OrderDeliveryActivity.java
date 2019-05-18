@@ -419,120 +419,28 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private void getRoutes() {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
-            String urlRR = getUrl(lastLocation, restaurantLocation);
-            FetchUrl FetchUrlRR = new FetchUrl();
-            routeMode = "RR"; //Rider to Restaurant
-            FetchUrlRR.execute(urlRR, routeMode);
-
-            FetchUrl FetchUrlRc = new FetchUrl();
-            String urlRC = getUrl(restaurantLocation, customerLocation);
-            routeMode = "RC"; // Restaurant to Customer
-            FetchUrlRc.execute(urlRC, routeMode);
-        }
-    }
-
-    private String getUrl(LatLng origin, LatLng dest) {
-
-
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        String sensor = "sensor=false";
-        String mode = "mode=walking";
-
-
-        String parameters = str_origin + "&" + str_dest + "&" + sensor+ "&" + mode + "&key=" + getString(R.string.google_maps_key);
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-            Log.d("downloadUrl", data.toString());
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    private class FetchUrl extends AsyncTask<String, Void, String> {
-
-        String mode;
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                mode = url[1];
-                data = downloadUrl(url[0]);
-                Log.d("Background Task data", data.toString());
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            convertDataURLtoJson(result,mode);
-        }
-    }
-
-    private void convertDataURLtoJson(String... jsonData) {
-        JSONObject jObject;
-        try {
-            jObject = new JSONObject(jsonData[0]);
-            String mode = jsonData[1];
-
-            RoutingDataParser parser = new RoutingDataParser(jObject);
-
-            if (mode.equals("RR")) {
-                riderToRestaurantRoutes = parser.parse();
-                String[] Distances = parser.getDistance();
-                riderToRestaurantDistance = Distances[0];
-                tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
-                riderToRestaurantDuration = Distances[1];
-                tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
-            } else {
-                restaurantToCustomerRoutes = parser.parse();
-                String[] Distances = parser.getDistance();
-                restaurantToCustomerDistance = Distances[0];
-                tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
-                restaurantToCustomerDuration = Distances[1];
-                tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
-            }
-        } catch (Exception e) {
-            Log.d("ParserTask",e.toString());
-            e.printStackTrace();
+            
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                    riderToRestaurantRoutes = route;
+                    riderToRestaurantDistance = distances[0];
+                    tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
+                    riderToRestaurantDuration = distances[1];
+                    tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+                }
+            });
+            
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                    restaurantToCustomerRoutes = route;
+                    restaurantToCustomerDistance = distances[0];
+                    tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
+                    restaurantToCustomerDuration = distances[1];
+                    tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+                }
+            });
         }
     }
 }
