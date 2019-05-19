@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -142,6 +143,9 @@ public class AccountInfoActivity extends AppCompatActivity {
 
             if (savedInstanceState == null)
                 manageLaunchIntent();
+    
+            // To fix keyboard opened on activity start
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         }
 
         @Override
