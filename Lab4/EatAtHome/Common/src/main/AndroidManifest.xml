@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:theme="@style/MainAppTheme">
+        <activity android:name=".CustomerDetailActivity"></activity>
+
         <service
             android:name=".EAHFirebaseMessagingService"
             android:enabled="true"
@@ -14,8 +16,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ChooseRiderActivity"></activity>
-
+        <activity android:name=".ChooseRiderActivity" />
         <activity
             android:name=".SplashScreenActivity"
             android:screenOrientation="portrait"
@@ -23,6 +24,9 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/LoginActivityTheme" />
+
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

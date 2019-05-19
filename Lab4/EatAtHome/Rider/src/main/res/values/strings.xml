@@ -28,6 +28,7 @@
 
     <string name="direction_to_restaurant">Direction to restaurant</string>
     <string name="direction_to_customer">Direction to customer</string>
+    <string name="customer_info">Customer info</string>
     <string name="not_find_location">Can\'t find your location</string>
 
     <string name="new_pending_order">There is a new pending order, please accept or decline it</string>
@@ -35,6 +36,9 @@
 
     <string name="rider_on_duty">On duty: current deliveries</string>
     <string name="rider_not_on_duty">Not at work</string>
+
+    <string name="alert_permissions_needed">The app cannot work without the requested permissions</string>
+    <string name="alert_permissions_title">Permissions</string>
 
     <string name="alert_complete_current_deliveries">You have to complete the current deliveries if you want to stop working</string>
     <string name="alert_on_duty_switch">You need to be on duty if you want to be available for an order assignment</string>

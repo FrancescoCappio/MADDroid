@@ -232,27 +232,37 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
     
     private void setupEventListeners() {
-        //TODO: add click listeners to phone number (to direct call), email addres (to direct new email)
+        
+        tvPhoneNumber.setOnClickListener(v -> {
+            Intent intent = Utility.generateIntentPhoneNumber(currentRestaurant.getPhone());
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        });
+        
+        tvEmail.setOnClickListener(v -> {
+            Intent intent = Utility.generateIntentEmail(currentRestaurant.getEmail());
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        });
         
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
             
-            appBarLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
-                        // completely collapsed
-                        appBarExpanded = false;
-        
-                    } else if (verticalOffset == 0) {
-                        // completely expanded
-                        appBarExpanded = true;
-        
-                    } else {
-                        appBarExpanded = false;
-                    }
+            appBarLayout.post(() -> {
+                if (Math.abs(verticalOffset) == appBarLayout1.getTotalScrollRange()) {
+                    // completely collapsed
+                    appBarExpanded = false;
     
-                    updateTotalVisibility();
+                } else if (verticalOffset == 0) {
+                    // completely expanded
+                    appBarExpanded = true;
+    
+                } else {
+                    appBarExpanded = false;
                 }
+
+                updateTotalVisibility();
             });
             
         });

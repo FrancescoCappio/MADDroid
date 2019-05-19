@@ -22,7 +22,9 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,20 +32,16 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -60,6 +58,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
+    public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
     public static final String POSITION_KEY = "POSITION_KEY";
     public static final String CHOICE_KEY = "CHOICE_KEY";
@@ -81,12 +80,15 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private boolean positionDialogOpen = false;
     
     private String currentUserDefaultAddress;
+    private String currentUserDefaultAddressNotes;
     
     private TextView tvTotalCost;
     private EditText etDeliveryTime;
     private EditText etDeliveryAddress;
     private Button btConfirmOrder;
     private TextView tvDeliveryCost;
+    private EditText etAddressNotes;
+    private CheckBox cbAccountAddress;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +139,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             selectedDishes = (List<Dish>) dishesExtra;
             
             etDeliveryAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+            etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
             etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
             positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
             choice = savedInstanceState.getInt(CHOICE_KEY);
@@ -173,6 +176,22 @@ public class CompleteOrderActivity extends AppCompatActivity {
             }
         } );
         
+        cbAccountAddress.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                etAddressNotes.setVisibility(View.GONE);
+                etDeliveryAddress.setEnabled(false);
+                
+                if (currentUserDefaultAddress != null)
+                    etDeliveryAddress.setText(currentUserDefaultAddress);
+            } else {
+                etAddressNotes.setVisibility(View.VISIBLE);
+                etDeliveryAddress.setEnabled(true);
+            }
+    
+        });
+    
+        // do not open keyboard on activity open
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     
     private void getReferencesToViews() {
@@ -182,6 +201,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         etDeliveryTime = findViewById(R.id.et_time);
         btConfirmOrder = findViewById(R.id.bt_confirm);
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
+        etAddressNotes = findViewById(R.id.et_delivery_address_notes);
+        cbAccountAddress = findViewById(R.id.cb_address);
         
     }
     
@@ -232,16 +253,25 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private void downloadCurrentUserInfo() {
         setActivityLoading(true);
         
-        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.CUSTOMER_ADDRESS).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentUserDefaultAddress = (String) dataSnapshot.getValue();
+                
+                if (dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS).getValue() == null) {
+                    Log.e(TAG, "Cannot download current user info");
+                    setActivityLoading(false);
+                    return;
+                }
+                
+                currentUserDefaultAddress = (String) dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS).getValue();
+                currentUserDefaultAddressNotes = (String) dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue();
                 etDeliveryAddress.setText(currentUserDefaultAddress);
                 setActivityLoading(false);
             }
     
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error while downloading customer info: " + databaseError.getMessage());
                 setActivityLoading(false);
             }
         });
@@ -271,6 +301,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
             return;
         }
         
+        if (!cbAccountAddress.isChecked()) {
+            if (etAddressNotes.getText().toString().isEmpty()) {
+                Utility.showAlertToUser(this, R.string.alert_order_no_address_notes);
+                return;
+            }
+        }
+        
         setActivityLoading(true);
     
         Map<String,Object> updateMap = new HashMap<>();
@@ -281,6 +318,12 @@ public class CompleteOrderActivity extends AppCompatActivity {
         String deliveryTime = etDeliveryTime.getText().toString();
         
         String deliveryAddress = etDeliveryAddress.getText().toString();
+        
+        String addressNotes;
+        if (cbAccountAddress.isChecked())
+            addressNotes = currentUserDefaultAddressNotes;
+        else
+            addressNotes = etAddressNotes.getText().toString();
         
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.PENDING;
         
@@ -295,6 +338,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS_NOTES), addressNotes);
         
         for (Dish d : selectedDishes) {
             updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DISHES_SUBTREE, String.valueOf(d.getDishID())), d.getQuantity());
@@ -386,6 +430,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         if (!etDeliveryAddress.getText().toString().isEmpty()) {
             outState.putString(ADDRESS_KEY, etDeliveryAddress.getText().toString());
+        }
+        
+        if (!etAddressNotes.getText().toString().isEmpty()) {
+            outState.putString(ADDRESS_NOTES_KEY, etAddressNotes.getText().toString());
         }
     
         if (!etDeliveryTime.getText().toString().isEmpty()) {

@@ -5,12 +5,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import it.polito.maddroid.lab3.common.Customer;
+import it.polito.maddroid.lab3.common.CustomerDetailActivity;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,15 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -62,13 +55,12 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private List<List<HashMap<String, String>>> restaurantToCustomerRoutes;
     private String restaurantToCustomerDistance;
     private String restaurantToCustomerDuration;
-    private String routeMode;
     
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
     private TextView tvTotalCost;
-    private TextView tvRestaurantAdress;
-    private TextView tvDeliveryAdress;
+    private TextView tvRestaurantAddress;
+    private TextView tvDeliveryAddress;
     private ProgressBar pbLoading;
     private TextView tvCustomerName;
     private TextView tvRestaurantName;
@@ -76,17 +68,19 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRiderToRestaurantDistTime;
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
-
-
+    private TextView tvDeliveryAddressNotes;
+    
     private Button btGetFood;
     private Button btDeliverFood;
     private Button btDirectionToRestaurant;
     private Button btDirectionToCustomer;
+    private Button btCustomerInfo;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private int waitingCount;
+    private Customer currentCustomer;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,13 +126,12 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         
-        getCustomerName();
+        getCustomerInfo();
         
         setupButtonsEnable();
 
         getRestaurantLocations();
-
-
+        
     }
 
     private void setupButtonsEnable() {
@@ -166,8 +159,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryTime = findViewById(R.id.tv_time);
         tvCostDelivery = findViewById(R.id.tv_cost_delivery);
         tvTotalCost = findViewById(R.id.tv_total_cost);
-        tvRestaurantAdress = findViewById(R.id.tv_restaurant_address);
-        tvDeliveryAdress = findViewById(R.id.tv_delivery_address);
+        tvRestaurantAddress = findViewById(R.id.tv_restaurant_address);
+        tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
+        tvDeliveryAddressNotes = findViewById(R.id.tv_delivery_address_notes);
         tvCustomerName = findViewById(R.id.tv_customer_name);
         tvRestaurantName = findViewById(R.id.tv_restaurant_name);
         tvRiderToRestaurantDistKM = findViewById(R.id.tv_restaurant_distance);
@@ -177,6 +171,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
 
         btDirectionToCustomer = findViewById(R.id.bt_direction_to_customer);
         btDirectionToRestaurant = findViewById(R.id.bt_direction_to_restaurant);
+        btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
     }
@@ -199,9 +194,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvTotalCost.setText(currentOrder.getTotalCost());
         tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
-        tvRestaurantAdress.setText(currentOrder.getRestaurantAddress());
-        tvDeliveryAdress.setText(currentOrder.getDeliveryAddress());
+        tvRestaurantAddress.setText(currentOrder.getRestaurantAddress());
+        tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
+        tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
         
     }
     
@@ -214,6 +210,16 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btDirectionToRestaurant.setOnClickListener(v -> getDirectionToRestaurant());
 
         btDirectionToCustomer.setOnClickListener(v -> getDirectionToCustomer());
+        
+        btCustomerInfo.setOnClickListener(v -> {
+            if (currentCustomer == null) {
+                Utility.showAlertToUser(this, R.string.not_ready_alert);
+                return;
+            }
+            Intent customerInfoIntent = new Intent(this, CustomerDetailActivity.class);
+            customerInfoIntent.putExtra(CustomerDetailActivity.CUSTOMER_KEY, currentCustomer);
+            startActivity(customerInfoIntent);
+        });
     }
 
     private void getDirectionToRestaurant() {
@@ -337,11 +343,11 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         }
     }
     
-    private void getCustomerName() {
+    private void getCustomerInfo() {
         
         setActivityLoading(true);
         
-        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentOrder.getCustomerId()).child(EAHCONST.CUSTOMER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentOrder.getCustomerId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
@@ -351,7 +357,16 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     return;
                 }
                 
-                tvCustomerName.setText(dataSnapshot.getValue(String.class));
+                String name = dataSnapshot.child(EAHCONST.CUSTOMER_NAME).getValue(String.class);
+                String address = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS).getValue(String.class);
+                String addressNotes = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue(String.class);
+                String phoneNumber = dataSnapshot.child(EAHCONST.CUSTOMER_PHONE).getValue(String.class);
+                String email = dataSnapshot.child(EAHCONST.CUSTOMER_EMAIL).getValue(String.class);
+                String description = dataSnapshot.child(EAHCONST.CUSTOMER_DESCRIPTION).getValue(String.class);
+                
+                tvCustomerName.setText(name);
+                
+                currentCustomer = new Customer(currentOrder.getCustomerId(), name, address, addressNotes, description, phoneNumber, email);
                 
                 setActivityLoading(false);
             }

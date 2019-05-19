@@ -244,7 +244,7 @@ public class DishDetailsActivity extends AppCompatActivity {
                     }
                     
                     if (lastDishId == -1) {
-                        Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_not_ready);
+                        Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_not_ready_save);
                         setActivityLoading(false);
                         return true;
                     }

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/eah_orange"
-    android:animateLayoutChanges="true"
     tools:context=".LoginActivity">
 
     <TextView
@@ -46,8 +45,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true">
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
                     android:id="@+id/rlLoginTitleContainer"
@@ -155,8 +153,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true">
+                android:layout_height="wrap_content">
 
 
                 <RelativeLayout

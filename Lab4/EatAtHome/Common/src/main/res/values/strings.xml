@@ -12,6 +12,11 @@
     <string name="password">Password</string>
     <string name="repassword">Repeat Password</string>
 
+    <string name="name">Name</string>
+    <string name="address">Address</string>
+    <string name="phone_number">Phone number</string>
+    <string name="description">Description</string>
+
     <string name="action_confirm">Confirm</string>
     <string name="action_edit">Edit</string>
     <string name="action_cancel">Cancel</string>
@@ -103,13 +108,16 @@
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
+    <string name="address_notes">Address Notes</string>
+
     <string name="order_delivery">Order delivery</string>
     <string name="confirm_order">Confirm order</string>
     <string name="decline_order">Decline order</string>
     <string name="order_total_cost">Total cost</string>
-    <string name ="your_earning">Your earning</string>
+    <string name="your_earning">Your earning</string>
 
     <string name="date">Date</string>
+    <string name="not_ready_alert">Not ready, please wait</string>
 
     <string name="total_cost">Total cost</string>
     <string name="rider_not_assigned">No riders assigned to this order yet</string>
@@ -126,6 +134,8 @@
     <string name="search_radius">Search radius (Km)</string>
     <string name="get_directions">Get directions with Google Maps</string>
     <string name="choose_rider">Choose your rider</string>
+
+    <string name="customer_info">Customer info</string>
 
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 

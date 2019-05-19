@@ -1,8 +1,6 @@
 package it.polito.maddroid.lab3.common;
 
 
-import android.animation.LayoutTransition;
-import android.content.Context;
 import android.content.Intent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -13,7 +11,6 @@ import android.os.Bundle;
 import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,7 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,10 +79,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-    
-        // enable animation in layout changes even for layout resize
-        ((ViewGroup) findViewById(R.id.clLoginMainContainer)).getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-    
         
         // get references to view elements
         getReferencesToViews();

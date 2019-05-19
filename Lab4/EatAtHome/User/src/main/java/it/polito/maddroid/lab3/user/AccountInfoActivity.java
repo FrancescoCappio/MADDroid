@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -95,6 +96,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private EditText etMail;
     private EditText etDescription;
     private EditText etAddress;
+    private EditText etAddressNotes;
     private TextView tvDescriptionCount;
     private ImageView ivPhoto;
     private FloatingActionButton fabPhoto;
@@ -115,6 +117,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHONE_KEY = "PHONE_KEY";
     private static final String EMAIL_KEY = "EMAIL_KEY";
     private static final String ADDRESS_KEY = "ADDRESS_KEY";
+    private static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     private static final String ADDRESSES_LIST_KEY = "ADDRESS_LIST_KEY";
     private static final String PHOTO_PRESENT_KEY = "PHOTO_PRESENT_KEY";
     private static final String CHOICE_KEY = "CHOICE_KEY";
@@ -164,6 +167,9 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         if (savedInstanceState == null)
             manageLaunchIntent();
+    
+        //do not show the keyboard on activity open
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override
@@ -235,6 +241,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etMail.setEnabled(enabled);
         etPhone.setEnabled(enabled);
         etAddress.setEnabled(enabled);
+        etAddressNotes.setEnabled(enabled);
 
         if (enabled)
             fabPhoto.show();
@@ -249,6 +256,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         etName = findViewById(R.id.et_name);
         etAddress = findViewById(R.id.et_address);
+        etAddressNotes = findViewById(R.id.et_address_notes);
         etDescription = findViewById(R.id.et_description);
         etMail = findViewById(R.id.et_mail);
         etPhone = findViewById(R.id.et_phone);
@@ -365,6 +373,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 String customerEmail = (String) dataSnapshot.child(EAHCONST.CUSTOMER_EMAIL).getValue();
                 String customerPhone = (String) dataSnapshot.child(EAHCONST.CUSTOMER_PHONE).getValue();
                 String customerDescription = (String) dataSnapshot.child(EAHCONST.CUSTOMER_DESCRIPTION).getValue();
+                String addressNotes = (String) dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue();
 
                 if (customerName != null) {
                     etName.setText(customerName);
@@ -385,6 +394,10 @@ public class AccountInfoActivity extends AppCompatActivity {
                 if (customerDescription != null) {
                     etDescription.setText(customerDescription);
                 }
+                
+                if (addressNotes != null) {
+                    etAddressNotes.setText(addressNotes);
+                }
 
                 setActivityLoading(false);
             }
@@ -404,8 +417,9 @@ public class AccountInfoActivity extends AppCompatActivity {
         String customerAddress = etAddress.getText().toString();
         String customerEmail = etMail.getText().toString();
         String customerDescription = etDescription.getText().toString();
+        String customerAddressNotes = etAddressNotes.getText().toString();
 
-        if (customerName.isEmpty() || customerPhone.isEmpty() || customerAddress.isEmpty() || customerEmail.isEmpty() || customerDescription.isEmpty()) {
+        if (customerName.isEmpty() || customerPhone.isEmpty() || customerAddress.isEmpty() || customerEmail.isEmpty() || customerDescription.isEmpty() || customerAddressNotes.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
         }
@@ -440,6 +454,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.CUSTOMERS_SUB_TREE, userId, EAHCONST.CUSTOMER_DESCRIPTION), customerDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.CUSTOMERS_SUB_TREE, userId, EAHCONST.CUSTOMER_EMAIL), customerEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.CUSTOMERS_SUB_TREE, userId, EAHCONST.CUSTOMER_PHONE), customerPhone);
+        updateMap.put(EAHCONST.generatePath(EAHCONST.CUSTOMERS_SUB_TREE, userId, EAHCONST.CUSTOMER_ADDRESS_NOTES), customerAddressNotes);
 
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
 
@@ -447,14 +462,11 @@ public class AccountInfoActivity extends AppCompatActivity {
             setActivityLoading(false);
             DatabaseReference dbRef1 = dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentUser.getUid());
             GeoFire geoFire = new GeoFire(dbRef1);
-            geoFire.setLocation(EAHCONST.CUSTOMER_POSITION, new GeoLocation(address.getLatitude(), address.getLongitude()), new GeoFire.CompletionListener() {
-                @Override
-                public void onComplete(String key, DatabaseError error) {
-                    if (error != null) {
-                        Log.d("Location GeoFire", "There was an error saving the location to GeoFire: " + error);
-                    } else {
-                        Log.d("Location GeoFire", "Location saved on server successfully!");
-                    }
+            geoFire.setLocation(EAHCONST.CUSTOMER_POSITION, new GeoLocation(address.getLatitude(), address.getLongitude()), (key, error) -> {
+                if (error != null) {
+                    Log.d("Location GeoFire", "There was an error saving the location to GeoFire: " + error);
+                } else {
+                    Log.d("Location GeoFire", "Location saved on server successfully!");
                 }
             });
             Utility.showAlertToUser(this,R.string.notify_save_ok);
@@ -650,6 +662,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
+        outState.putString(ADDRESS_NOTES_KEY, etAddressNotes.getText().toString());
         outState.putSerializable(ADDRESSES_LIST_KEY, (Serializable) addressList);
         outState.putSerializable(POSITIONS_KEY, (Serializable) multiChoiceItems);
         outState.putInt(CHOICE_KEY, choice);
@@ -670,6 +683,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etName.setText(savedInstanceState.getString(NAME_KEY, ""));
         etDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+        etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
         etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
         etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
         choice = savedInstanceState.getInt(CHOICE_KEY);
