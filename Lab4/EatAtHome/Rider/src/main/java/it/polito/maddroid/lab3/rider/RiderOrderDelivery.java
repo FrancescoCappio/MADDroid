@@ -14,6 +14,7 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
     private String restaurantName;
     private String restaurantAddress;
     private String deliveryAddress;
+    private String deliveryAddressNotes;
     private String deliveryTime;
     private String totalCost;
     private String deliveryDate;
@@ -87,6 +88,14 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
     
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+    
+    public String getDeliveryAddressNotes() {
+        return deliveryAddressNotes;
+    }
+    
+    public void setDeliveryAddressNotes(String deliveryAddressNotes) {
+        this.deliveryAddressNotes = deliveryAddressNotes;
     }
     
     @Override

@@ -58,6 +58,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
+    public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
     public static final String POSITION_KEY = "POSITION_KEY";
     public static final String CHOICE_KEY = "CHOICE_KEY";
@@ -138,6 +139,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             selectedDishes = (List<Dish>) dishesExtra;
             
             etDeliveryAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+            etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
             etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
             positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
             choice = savedInstanceState.getInt(CHOICE_KEY);
@@ -428,6 +430,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         if (!etDeliveryAddress.getText().toString().isEmpty()) {
             outState.putString(ADDRESS_KEY, etDeliveryAddress.getText().toString());
+        }
+        
+        if (!etAddressNotes.getText().toString().isEmpty()) {
+            outState.putString(ADDRESS_NOTES_KEY, etAddressNotes.getText().toString());
         }
     
         if (!etDeliveryTime.getText().toString().isEmpty()) {

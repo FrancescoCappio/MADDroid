@@ -7,7 +7,6 @@
     <string name="user_name">Name</string>
     <string name="user_email">Email</string>
     <string name="user_address">Address</string>
-    <string name="address_notes">Address Notes</string>
     <string name="user_description">Description</string>
     <string name="user_phone_number">Phone number</string>
 

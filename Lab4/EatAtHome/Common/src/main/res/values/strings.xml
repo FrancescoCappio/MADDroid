@@ -103,6 +103,8 @@
     <string name="delivery_cost">Considering delivery cost of</string>
     <string name="pay_at_delivery_time">Pay at delivery time</string>
 
+    <string name="address_notes">Address Notes</string>
+
     <string name="order_delivery">Order delivery</string>
     <string name="confirm_order">Confirm order</string>
     <string name="decline_order">Decline order</string>

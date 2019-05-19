@@ -117,6 +117,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private static final String PHONE_KEY = "PHONE_KEY";
     private static final String EMAIL_KEY = "EMAIL_KEY";
     private static final String ADDRESS_KEY = "ADDRESS_KEY";
+    private static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     private static final String ADDRESSES_LIST_KEY = "ADDRESS_LIST_KEY";
     private static final String PHOTO_PRESENT_KEY = "PHOTO_PRESENT_KEY";
     private static final String CHOICE_KEY = "CHOICE_KEY";
@@ -661,6 +662,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
+        outState.putString(ADDRESS_NOTES_KEY, etAddressNotes.getText().toString());
         outState.putSerializable(ADDRESSES_LIST_KEY, (Serializable) addressList);
         outState.putSerializable(POSITIONS_KEY, (Serializable) multiChoiceItems);
         outState.putInt(CHOICE_KEY, choice);
@@ -681,6 +683,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etName.setText(savedInstanceState.getString(NAME_KEY, ""));
         etDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
+        etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
         etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
         etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
         choice = savedInstanceState.getInt(CHOICE_KEY);

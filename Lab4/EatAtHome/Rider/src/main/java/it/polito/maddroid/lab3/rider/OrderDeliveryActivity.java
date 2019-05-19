@@ -10,7 +10,6 @@ import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,15 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -62,13 +53,12 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private List<List<HashMap<String, String>>> restaurantToCustomerRoutes;
     private String restaurantToCustomerDistance;
     private String restaurantToCustomerDuration;
-    private String routeMode;
     
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
     private TextView tvTotalCost;
-    private TextView tvRestaurantAdress;
-    private TextView tvDeliveryAdress;
+    private TextView tvRestaurantAddress;
+    private TextView tvDeliveryAddress;
     private ProgressBar pbLoading;
     private TextView tvCustomerName;
     private TextView tvRestaurantName;
@@ -76,6 +66,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRiderToRestaurantDistTime;
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
+    private TextView tvDeliveryAddressNotes;
 
 
     private Button btGetFood;
@@ -132,7 +123,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         
-        getCustomerName();
+        getCustomerInfo();
         
         setupButtonsEnable();
 
@@ -165,8 +156,9 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryTime = findViewById(R.id.tv_time);
         tvCostDelivery = findViewById(R.id.tv_cost_delivery);
         tvTotalCost = findViewById(R.id.tv_total_cost);
-        tvRestaurantAdress = findViewById(R.id.tv_restaurant_address);
-        tvDeliveryAdress = findViewById(R.id.tv_delivery_address);
+        tvRestaurantAddress = findViewById(R.id.tv_restaurant_address);
+        tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
+        tvDeliveryAddressNotes = findViewById(R.id.tv_delivery_address_notes);
         tvCustomerName = findViewById(R.id.tv_customer_name);
         tvRestaurantName = findViewById(R.id.tv_restaurant_name);
         tvRiderToRestaurantDistKM = findViewById(R.id.tv_restaurant_distance);
@@ -198,9 +190,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvTotalCost.setText(currentOrder.getTotalCost());
         tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
-        tvRestaurantAdress.setText(currentOrder.getRestaurantAddress());
-        tvDeliveryAdress.setText(currentOrder.getDeliveryAddress());
+        tvRestaurantAddress.setText(currentOrder.getRestaurantAddress());
+        tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
+        tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
         
     }
     
@@ -336,7 +329,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         }
     }
     
-    private void getCustomerName() {
+    private void getCustomerInfo() {
         
         setActivityLoading(true);
         
