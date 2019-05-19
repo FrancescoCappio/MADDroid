@@ -223,6 +223,20 @@ public class Utility {
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Token saved"))
                 .addOnFailureListener(e -> Log.d(TAG, "Cannot store token"));
     }
+    
+    public static Intent generateIntentPhoneNumber(String phoneNumber) {
+        return new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null));
+    }
+    
+    public static Intent generateIntentEmail(String emailAddress) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+    
+        String[] addresses = new String[1];
+        addresses[0] = emailAddress;
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+        return intent;
+    }
 }
 
 
