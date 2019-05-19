@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import it.polito.maddroid.lab3.common.Customer;
+import it.polito.maddroid.lab3.common.CustomerDetailActivity;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -67,17 +69,18 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
     private TextView tvDeliveryAddressNotes;
-
-
+    
     private Button btGetFood;
     private Button btDeliverFood;
     private Button btDirectionToRestaurant;
     private Button btDirectionToCustomer;
+    private Button btCustomerInfo;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
     private int waitingCount;
+    private Customer currentCustomer;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +171,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
 
         btDirectionToCustomer = findViewById(R.id.bt_direction_to_customer);
         btDirectionToRestaurant = findViewById(R.id.bt_direction_to_restaurant);
+        btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
     }
@@ -206,6 +210,16 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btDirectionToRestaurant.setOnClickListener(v -> getDirectionToRestaurant());
 
         btDirectionToCustomer.setOnClickListener(v -> getDirectionToCustomer());
+        
+        btCustomerInfo.setOnClickListener(v -> {
+            if (currentCustomer == null) {
+                Utility.showAlertToUser(this, R.string.not_ready_alert);
+                return;
+            }
+            Intent customerInfoIntent = new Intent(this, CustomerDetailActivity.class);
+            customerInfoIntent.putExtra(CustomerDetailActivity.CUSTOMER_KEY, currentCustomer);
+            startActivity(customerInfoIntent);
+        });
     }
 
     private void getDirectionToRestaurant() {
@@ -333,7 +347,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         
         setActivityLoading(true);
         
-        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentOrder.getCustomerId()).child(EAHCONST.CUSTOMER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentOrder.getCustomerId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
@@ -343,7 +357,16 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     return;
                 }
                 
-                tvCustomerName.setText(dataSnapshot.getValue(String.class));
+                String name = dataSnapshot.child(EAHCONST.CUSTOMER_NAME).getValue(String.class);
+                String address = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS).getValue(String.class);
+                String addressNotes = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue(String.class);
+                String phoneNumber = dataSnapshot.child(EAHCONST.CUSTOMER_PHONE).getValue(String.class);
+                String email = dataSnapshot.child(EAHCONST.CUSTOMER_EMAIL).getValue(String.class);
+                String description = dataSnapshot.child(EAHCONST.CUSTOMER_DESCRIPTION).getValue(String.class);
+                
+                tvCustomerName.setText(name);
+                
+                currentCustomer = new Customer(currentOrder.getCustomerId(), name, address, addressNotes, description, phoneNumber, email);
                 
                 setActivityLoading(false);
             }

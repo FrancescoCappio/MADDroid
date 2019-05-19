@@ -18,7 +18,7 @@
     <string name="fill_fields">Please fill all the fields</string>
     <string name="alert_price_not_valid">The inserted price is not valid</string>
     <string name="insert_image">Please insert an image for your dish</string>
-    <string name="alert_not_ready">Please wait, not ready to save</string>
+    <string name="alert_not_ready_save">Please wait, not ready to save</string>
     <string name="Deleted">The dish is successfully deleted</string>
 
     <string name="setup_timetable">Setup restaurant\'s timetable</string>

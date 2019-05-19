@@ -445,7 +445,7 @@
             android:id="@+id/tv_customer_name_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/customer_name"
+            android:text="@string/customer"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginBottom="@dimen/activity_margin"
@@ -469,10 +469,28 @@
             android:maxLines="1"
             android:ellipsize="end"
 
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_delivery_address_dist_title"
+            app:layout_constraintStart_toEndOf="@id/tv_customer_name_title"
+            app:layout_constraintEnd_toStartOf="@+id/bt_customer_info"
             app:layout_constraintTop_toBottomOf="@id/tv_delivery_address_dist_title"
             />
+
+        <Button
+            android:id="@+id/bt_customer_info"
+            android:layout_width="210dp"
+            android:layout_height="35dp"
+            android:background="@color/eah_blue"
+            android:text="@string/customer_info"
+
+            android:textColor="@color/eah_white"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_customer_name"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_customer_name"/>
 
         <Button
             android:id="@+id/bt_deliver_food"
