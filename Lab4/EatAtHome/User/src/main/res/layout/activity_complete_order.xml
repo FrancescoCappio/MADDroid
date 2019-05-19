@@ -5,11 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".CompleteOrderActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
         <ProgressBar
             android:id="@+id/pb_loading"
@@ -73,12 +75,43 @@
             app:layout_constraintTop_toBottomOf="@id/view_time_separator"
             app:layout_constraintStart_toStartOf="parent"/>
 
+        <CheckBox
+            android:id="@+id/cb_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            android:checked="true"
+
+            android:text="@string/your_account_address"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_address_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_address_title" />
+
         <EditText
 
             android:id="@+id/et_delivery_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/your_delivery_address"
+            android:enabled="false"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:textColor="@drawable/et_color_selector"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_address_title"
+            />
+
+        <EditText
+            android:id="@+id/et_delivery_address_notes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/your_delivery_address_notes"
+            android:visibility="gone"
 
             android:layout_marginTop="@dimen/activity_margin"
             android:layout_marginEnd="@dimen/activity_margin"
@@ -86,7 +119,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_address_title"
+            app:layout_constraintTop_toBottomOf="@id/et_delivery_address"
             />
 
         <View
@@ -97,7 +130,7 @@
 
             android:layout_marginTop="@dimen/activity_margin"
 
-            app:layout_constraintTop_toBottomOf="@id/et_delivery_address"
+            app:layout_constraintTop_toBottomOf="@id/et_delivery_address_notes"
             />
 
         <TextView

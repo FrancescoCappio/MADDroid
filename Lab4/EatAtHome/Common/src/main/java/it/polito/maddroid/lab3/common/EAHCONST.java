@@ -74,6 +74,7 @@ public class EAHCONST {
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";
     public final static String CUSTOMER_ADDRESS = "address";
+    public final static String CUSTOMER_ADDRESS_NOTES = "address_notes";
     public final static String CUSTOMER_DESCRIPTION = "decription";
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
@@ -105,6 +106,7 @@ public class EAHCONST {
     public final static String REST_ORDER_DISHES_SUBTREE = "dishes";
     public final static String REST_ORDER_TOTAL_COST = "total_cost";
     public final static String REST_ORDER_DELIVERY_ADDRESS = "delivery_address";
+    public final static String REST_ORDER_DELIVERY_ADDRESS_NOTES = "delivery_address_notes";
     
     // customers order subtree nodes fields
     public final static String CUST_ORDER_STATUS = "order_status";
