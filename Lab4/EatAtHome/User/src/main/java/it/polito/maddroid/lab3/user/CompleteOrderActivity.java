@@ -369,6 +369,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 }
             });
             Toast.makeText(CompleteOrderActivity.this, R.string.order_completed, Toast.LENGTH_LONG).show();
+            
+            Intent mainActIntent = new Intent(this, MainActivity.class);
+            mainActIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(mainActIntent);
             finish();
         }).addOnFailureListener(e -> {
             setActivityLoading(false);

@@ -414,7 +414,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             intent.putExtra(CompleteOrderActivity.DISHES_KEY, (Serializable) choosenDishes);
             intent.putExtra(CompleteOrderActivity.RESTAURANT_KEY, currentRestaurant);
             startActivity(intent);
-            finish();
         }
     }
 }
