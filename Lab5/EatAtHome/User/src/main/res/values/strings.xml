@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_second_name">User</string>
+    <string name="app_complete_name">Eat@Home User</string>
+
+    <string name="user_avatar_content_description">Restaurant\'s avatar image</string>
+
+    <string name="user_name">Name</string>
+    <string name="user_email">Email</string>
+    <string name="user_address">Address</string>
+    <string name="user_description">Description</string>
+    <string name="user_phone_number">Phone number</string>
+
+    <string name="rider_name">Rider\'s name</string>
+
+
+    <string name="restaurant_details">Restaurant details</string>
+
+    <string name="search_all_categories">Search in all categories</string>
+    <string name="search_restaurant_in_category">Search in category:</string>
+    <string name="restaurant_search">Restaurants search</string>
+
+    <string name="alert_search_empty">You have to insert something to search</string>
+
+    <string name="alert_no_restaurant_found">No restaurants found matching your filters</string>
+
+    <string name="complete_order">Complete your order</string>
+
+    <string name="your_delivery_address">Your delivery address</string>
+    <string name="your_account_address">Your account address</string>
+    <string name="your_delivery_address_notes">Delivery address additional info</string>
+
+    <string name="alert_order_problem">There was a problem with your order</string>
+    <string name="alert_order_no_dishes">No dishes have been selected</string>
+    <string name="alert_order_no_time">Please select a delivery time</string>
+    <string name="alert_order_time_not_valid">The restaurateur needs at least 1 hour to prepare your dishes</string>
+    <string name="alert_order_no_address">Please select a delivery address</string>
+    <string name="alert_order_no_address_notes">We need some additional info on the address. I.E: name on the entryphone</string>
+    <string name="alert_order_no_rider">Cannot find a rider</string>
+
+    <string name="alert_error_ordering">There was an error while requesting your order</string>
+
+    <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
+</resources>

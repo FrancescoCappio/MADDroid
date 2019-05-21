@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OrderDetailActivity">
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tv_order_status_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/order_status"
+        android:textSize="15sp"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_order_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CONFIRMED"
+        android:textSize="15sp"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintEnd_toStartOf="@id/view_time_separator"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tv_order_date_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/date"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_order_status_title"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_order_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="07/05/2019"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintEnd_toStartOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@id/tv_order_status_title"
+        />
+
+    <TextView
+        android:id="@+id/tv_delivery_time_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delivery_time"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@+id/tv_order_date"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintEnd_toStartOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@+id/tv_order_date"
+        />
+
+    <View
+        android:id="@+id/view_time_separator"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/eah_background_dark"
+
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/view_payment_separator"
+        />
+
+    <TextView
+        android:id="@+id/tv_restaurant_name_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/restaurant_name"
+        android:textSize="15sp"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/view_time_separator"/>
+
+    <TextView
+        android:id="@+id/tv_restaurant_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Restaurant name"
+        android:textSize="15sp"
+        android:textAlignment="textEnd"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_rider_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rider_name"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_restaurant_name_title"
+        app:layout_constraintStart_toEndOf="@id/view_time_separator"/>
+
+    <TextView
+        android:id="@+id/tv_rider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Rider Name"
+        android:textSize="15sp"
+        android:textAlignment="textEnd"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        android:maxLines="1"
+        android:ellipsize="end"
+
+        app:layout_constraintStart_toEndOf="@+id/tv_rider_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_restaurant_name"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <TextView
+        android:id="@+id/tv_address_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delivery_address"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_rider_title"
+        app:layout_constraintStart_toEndOf="@id/view_time_separator"/>
+
+
+
+    <TextView
+        android:id="@+id/tv_delivery_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Address Customer"
+        android:textSize="15sp"
+        android:textAlignment="textEnd"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@+id/tv_rider"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <TextView
+        android:id="@+id/tv_payment_title"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        android:text="@string/total_cost"
+        android:textSize="15sp"
+
+        app:layout_constraintStart_toEndOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@id/tv_address_title" />
+
+    <TextView
+        android:id="@+id/tv_payment_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="51.30€"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_delivery_address"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_payment_delivery"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        android:text="@string/delivery_cost"
+        android:textSize="15sp"
+
+        app:layout_constraintStart_toEndOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@id/tv_payment_total" />
+
+    <TextView
+        android:id="@+id/tv_delivery_cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="51.30€"
+        android:textSize="15sp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_payment_total"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <View
+        android:id="@+id/view_payment_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/eah_background_dark"
+
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_payment_delivery"
+        />
+
+    <TextView
+        android:id="@+id/dishes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dishes:"
+        android:textSize="15sp"
+
+
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/view_payment_separator"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_order_dishes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintTop_toBottomOf="@id/dishes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/menu_list_item"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
