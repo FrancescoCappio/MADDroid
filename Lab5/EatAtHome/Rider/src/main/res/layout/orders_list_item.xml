@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_element_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:contentPadding="10dp"
+        app:cardElevation="5dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_restaurant_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/restaurant"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tv_restaurant_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/restaurant_name"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_address_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delivery_address"
+                android:textSize="18sp"
+
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/tv_restaurant_title"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="dove voui"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"
+                android:layout_below="@id/tv_restaurant_title"
+                android:layout_marginTop="5dp"/>
+
+
+
+            <TextView
+                android:id="@+id/tv_date_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date"
+                android:textSize="18sp"
+
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/tv_delivery_address_title"/>
+
+            <TextView
+                android:id="@+id/tv_order_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="02/05/2019"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"
+                android:layout_below="@id/tv_delivery_address_title"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_time_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delivery_time"
+                android:textSize="18sp"
+
+                android:layout_below="@id/tv_date_title"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"
+                android:layout_below="@id/tv_date_title"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_cost_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delivery_cost_order"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+
+                android:layout_below="@id/tv_delivery_time_title"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="5.00€"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"
+                android:layout_below="@id/tv_delivery_time_title"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_status_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order_status"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+
+                android:layout_below="@id/tv_cost_title"/>
+
+            <TextView
+                android:id="@+id/tv_order_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/status_waiting_corfirm"
+                android:textSize="18sp"
+                android:textColor="@color/eah_black"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/tv_delivery_address_title"
+                android:layout_below="@id/tv_cost_title"
+                android:layout_marginTop="5dp"/>
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
