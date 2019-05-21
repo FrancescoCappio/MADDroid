@@ -57,6 +57,7 @@
 
     <string name="notify_image_upload_ok">Image uploaded</string>
     <string name="notify_image_upload_ko">Error uploading image</string>
+    <string name="notify_review_upload_ko">Error uploading your review</string>
     <string name="notify_image_download_ko">Error downloading image</string>
 
     <string name="notify_avatar_download_ko">Error downloading avatar</string>
@@ -136,9 +137,20 @@
     <string name="choose_rider">Choose your rider</string>
 
     <string name="customer_info">Customer info</string>
+    <string name="rate_your_rider">Rate your rider</string>
+    <string name="rate_your_restaurant">Rate your restaurant</string>
 
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
     <string name="route_not_ready">Please wait, the route is not ready</string>
+
+    <string name="rate_rider">Rate rider</string>
+    <string name="rate_restaurant">Rate restaurant</string>
+    <string name="give_score">Give a score</string>
+    <string name="write_comment">Write a comment</string>
+    <string name="comment_here">Comment here</string>
+
+    <string name="alert_no_score">Please add a score to your review</string>
+    <string name="alert_no_comment">Please add a comment to your review</string>
 
 </resources>

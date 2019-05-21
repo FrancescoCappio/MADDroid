@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".OrderDetailActivity">
 
     <ProgressBar
@@ -256,6 +257,40 @@
         app:layout_constraintTop_toBottomOf="@id/tv_payment_total"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <Button
+        android:id="@+id/bt_rate_rider"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="@string/rate_rider"
+        android:background="@color/eah_blue"
+        android:textColor="@color/eah_white"
+
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_payment_delivery"/>
+
+    <Button
+        android:id="@+id/bt_rate_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="@string/rate_restaurant"
+        android:background="@color/eah_blue"
+        android:textColor="@color/eah_white"
+
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_payment_delivery"/>
+
 
     <View
         android:id="@+id/view_payment_separator"
@@ -265,7 +300,7 @@
 
         android:layout_marginTop="10dp"
 
-        app:layout_constraintTop_toBottomOf="@id/tv_payment_delivery"
+        app:layout_constraintTop_toBottomOf="@id/bt_rate_rider"
         />
 
     <TextView

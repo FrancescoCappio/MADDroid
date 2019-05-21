@@ -98,6 +98,40 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_order_date"
         />
 
+    <Button
+        android:id="@+id/bt_rate_rider"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="@string/rate_rider"
+        android:background="@color/eah_blue"
+        android:textColor="@color/eah_white"
+
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_delivery_time_title"/>
+
+    <Button
+        android:id="@+id/bt_rate_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="@string/rate_restaurant"
+        android:background="@color/eah_blue"
+        android:textColor="@color/eah_white"
+
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginTop="10dp"
+
+        app:layout_constraintTop_toBottomOf="@+id/tv_delivery_time_title"
+        app:layout_constraintEnd_toStartOf="@+id/view_time_separator"/>
+
     <View
         android:id="@+id/view_time_separator"
         android:layout_width="1dp"

@@ -10,6 +10,7 @@ import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
+import it.polito.maddroid.lab3.common.RatingActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -56,6 +58,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     private TextView tvRiderName;
     private TextView tvDeliveryAddress;
     private RecyclerView rvDishes;
+    private Button btRateRider;
+    private Button btRateRestaurant;
     
     private List<Dish> dishList;
     
@@ -103,6 +107,10 @@ public class OrderDetailActivity extends AppCompatActivity {
         rvDishes.setAdapter(adapter);
         
         getDishesInfo();
+        
+        adaptToOrderStatus();
+        
+        setupClickListeners();
     }
     
     private void getReferencesToViews() {
@@ -115,6 +123,34 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
         tvOrderStatus = findViewById(R.id.tv_order_status);
         rvDishes = findViewById(R.id.rv_order_dishes);
+        btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
+        btRateRider = findViewById(R.id.bt_rate_rider);
+    }
+    
+    private void adaptToOrderStatus() {
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
+            btRateRider.setVisibility(View.VISIBLE);
+            btRateRestaurant.setVisibility(View.VISIBLE);
+        } else {
+            btRateRider.setVisibility(View.GONE);
+            btRateRestaurant.setVisibility(View.GONE);
+        }
+    }
+    
+    private void setupClickListeners() {
+        btRateRider.setOnClickListener(v -> {
+            Intent rateRiderIntent = new Intent(OrderDetailActivity.this, RatingActivity.class);
+            rateRiderIntent.putExtra(RatingActivity.RATING_MODE_KEY, RatingActivity.RATING_MODE_RIDER);
+            rateRiderIntent.putExtra(RatingActivity.RATED_UID_KEY, currentOrder.getRiderId());
+            startActivity(rateRiderIntent);
+        });
+        
+        btRateRestaurant.setOnClickListener(v -> {
+            Intent rateRiderIntent = new Intent(OrderDetailActivity.this, RatingActivity.class);
+            rateRiderIntent.putExtra(RatingActivity.RATING_MODE_KEY, RatingActivity.RATING_MODE_RESTAURANT);
+            rateRiderIntent.putExtra(RatingActivity.RATED_UID_KEY, currentOrder.getRestaurantId());
+            startActivity(rateRiderIntent);
+        });
     }
     
     private synchronized void setActivityLoading(boolean loading) {
