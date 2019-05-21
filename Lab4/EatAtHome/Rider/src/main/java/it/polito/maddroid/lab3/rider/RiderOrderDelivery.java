@@ -127,10 +127,10 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
         }
         
         if (deliveryDate.equals(o.deliveryDate)) {
-            return o.deliveryTime.compareTo(deliveryTime);
+            return this.deliveryTime.compareTo(o.deliveryTime);
         }
         
-        return o.deliveryDate.compareTo(deliveryDate);
+        return this.deliveryDate.compareTo(o.deliveryDate);
     }
     
     public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {

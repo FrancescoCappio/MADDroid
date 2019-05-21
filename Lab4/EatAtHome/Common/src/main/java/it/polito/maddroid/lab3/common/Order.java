@@ -138,9 +138,9 @@ public class Order implements Serializable, Comparable<Order> {
         }
         
         if (date.equals(o.date)) {
-            return o.deliveryTime.compareTo(deliveryTime);
+            return this.deliveryTime.compareTo(o.deliveryTime);
         }
         
-        return o.date.compareTo(date);
+        return this.date.compareTo(o.date);
     }
 }
