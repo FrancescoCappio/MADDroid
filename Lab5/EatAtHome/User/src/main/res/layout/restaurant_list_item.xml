@@ -9,7 +9,7 @@
         android:layout_width="@dimen/restaurant_image_size"
         android:layout_height="@dimen/restaurant_image_size"
         android:layout_marginTop="2dp"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
         android:scaleType="centerCrop"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_restaurant_black_24dp"/>
@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="15dp"
+        android:layout_marginEnd="@dimen/activity_margin"
         android:layout_toEndOf="@id/iv_restaurant_photo"
         android:gravity="center_vertical"
         android:orientation="vertical">
