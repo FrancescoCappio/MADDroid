@@ -28,7 +28,10 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Vector;
@@ -115,9 +118,43 @@ public class Utility {
     
     
     public static String extractTimeTable(String s){
+    
+        Map<String,String> map = new HashMap<>();
+        String[] splitted = s.split(";");
+        
+        for (String dayTimeTable : splitted) {
+            String day = dayTimeTable.split(",")[0];
+    
+            String timetable;
+            if (day.equals(dayTimeTable)) {
+                day = dayTimeTable.split(" ")[0];
+                timetable = "Closed";
+            } else
+                timetable = dayTimeTable.substring(day.length() + 1);
+            
+            if (map.containsKey(timetable)) {
+                map.put(timetable, map.get(timetable) + " " + day);
+            } else {
+                map.put(timetable, day);
+            }
+        }
+        
+        Map<String, String> inverted = new HashMap<>();
+        for (Map.Entry<String,String> entry : map.entrySet()) {
+            inverted.put(entry.getValue(), entry.getKey());
+        }
+    
+        StringBuilder sb = new StringBuilder();
+        List<String> dayslist = new ArrayList<>(inverted.keySet());
+        Collections.sort(dayslist);
+        for (String str : dayslist) {
+            sb.append(str).append(" ").append(inverted.get(str)).append("\n");
+        }
+        
+        s = sb.toString();
         for ( int i = 0; i < 7 ; ++i)
             s = s.replace("Day"+i, days.get(i));
-        s = s.replace("_", " ");
+        s = s.replace("_", "-");
         s = s.replace(",", "\t");
         s = s.replace(";", "\n");
         
