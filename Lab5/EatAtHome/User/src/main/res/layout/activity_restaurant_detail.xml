@@ -156,6 +156,23 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_categories"
                     />
 
+                <TextView
+                    android:id="@+id/tv_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="rating"
+                    android:textSize="16sp"
+                    android:textColor="@color/eah_white"
+
+                    android:layout_marginTop="7dp"
+                    android:layout_marginStart="@dimen/activity_margin"
+                    android:layout_marginEnd="@dimen/activity_margin"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_timetable"
+                    />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

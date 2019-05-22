@@ -42,11 +42,12 @@ public class EAHCONST {
         NOT_ON_DUTY
     }
     
-    public static class Review {
+    public static class Review implements Comparable<Review>{
         private String authorUID;
         private int rate;
         private String date;
         private String comment;
+        private String authorName;
     
         public Review(String authorUID, int rate, String comment, String date) {
             this.authorUID = authorUID;
@@ -54,6 +55,8 @@ public class EAHCONST {
             this.comment = comment;
             this.date = date;
         }
+        
+        public Review(){}
     
         public String getAuthorUID() {
             return authorUID;
@@ -69,6 +72,19 @@ public class EAHCONST {
     
         public String getDate() {
             return date;
+        }
+    
+        public String getAuthorName() {
+            return authorName;
+        }
+    
+        public void setAuthorName(String authorName) {
+            this.authorName = authorName;
+        }
+    
+        @Override
+        public int compareTo(Review o) {
+            return this.getDate().compareTo(o.getDate());
         }
     }
     

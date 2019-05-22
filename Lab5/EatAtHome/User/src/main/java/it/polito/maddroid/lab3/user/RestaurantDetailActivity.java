@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +40,7 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.RestaurantCategory;
+import it.polito.maddroid.lab3.common.ReviewsActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 
@@ -72,6 +71,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private RecyclerView rvOrderDishes;
     private CardView cvTotalCost;
     private TextView tvTotalCost;
+    private TextView tvRating;
     
     private MenuItem menuOrder;
     private boolean appBarExpanded;
@@ -228,6 +228,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         tvTotalCost = findViewById(R.id.tv_total_cost);
     
         appBarLayout = findViewById(R.id.app_bar);
+        tvRating = findViewById(R.id.tv_rating);
         
     }
     
@@ -268,6 +269,13 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         });
         
         cvTotalCost.setOnClickListener(v -> actionCompleteOrder());
+        
+        tvRating.setOnClickListener(v -> {
+            Intent ratingIntent = new Intent(RestaurantDetailActivity.this, ReviewsActivity.class);
+            ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RESTAURANT);
+            ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentRestaurant.getRestaurantID());
+            startActivity(ratingIntent);
+        });
     }
     
     private synchronized void setActivityLoading(boolean loading) {

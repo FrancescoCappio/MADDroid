@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+
+        app:cardBackgroundColor="@color/eah_white"
+        app:cardCornerRadius="3dp"
+        app:contentPadding="15dp"
+        app:cardElevation="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:paddingTop="2dp"
+
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/tv_name"/>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Username"
+
+                android:layout_marginStart="10dp"
+
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+
+                android:layout_toEndOf="@+id/rating_bar"
+                android:layout_alignParentEnd="true"/>
+
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comment"
+
+                android:layout_marginTop="10dp"
+
+                android:layout_below="@+id/tv_name"/>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
