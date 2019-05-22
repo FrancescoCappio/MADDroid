@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -50,6 +51,7 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
             
             GlideApp.with(ivCatImage.getContext())
                     .load(riversRef)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivCatImage);
             
             ivCatImage.setOnClickListener(v -> itemClickListener.clickListener(category));
