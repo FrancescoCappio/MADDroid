@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,6 +55,8 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
         private TextView tvRestaurantName;
         private TextView tvRestaurantDescription;
         private ImageView ivRestaurantPhoto;
+        private TextView tvRating;
+        private RatingBar ratingBar;
     
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,6 +65,8 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             tvRestaurantName = itemView.findViewById(R.id.tv_restaurant_name);
             tvRestaurantDescription = itemView.findViewById(R.id.tv_restaurant_description);
             ivRestaurantPhoto = itemView.findViewById(R.id.iv_restaurant_photo);
+            tvRating = itemView.findViewById(R.id.tv_rating);
+            ratingBar = itemView.findViewById(R.id.rating_bar);
         }
         
         public void setupRestaurant(Restaurant restaurant, ItemClickListener itemClickListener) {
@@ -69,6 +74,20 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             tvRestaurantDescription.setText(restaurant.getDescription());
     
             StorageReference riversRef = storageReference.child("avatar_" + restaurant.getRestaurantID() +".jpg");
+    
+            int count = restaurant.getReviewCount();
+            String review = tvRating.getContext().getString(R.string.review);
+            String reviews = tvRating.getContext().getString(R.string.reviews);
+            String rating;
+            
+            if (count == 1)
+                rating = count + " " + review;
+            else
+                rating = count + " " + reviews;
+            
+            tvRating.setText(rating);
+            ratingBar.setRating(restaurant.getReviewAvg());
+    
     
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)

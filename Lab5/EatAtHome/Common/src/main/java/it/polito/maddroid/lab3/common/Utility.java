@@ -7,11 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.location.Address;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.Vector;
 
 
 public class Utility {
@@ -157,6 +152,8 @@ public class Utility {
         s = s.replace("_", "-");
         s = s.replace(",", "\t");
         s = s.replace(";", "\n");
+        //remove trailing new line
+        s = s.trim();
         
         return s;
     }

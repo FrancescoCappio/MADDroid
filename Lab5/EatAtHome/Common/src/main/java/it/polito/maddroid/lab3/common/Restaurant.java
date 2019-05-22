@@ -4,7 +4,7 @@ package it.polito.maddroid.lab3.common;
 import java.io.Serializable;
 
 
-public class Restaurant implements Serializable {
+public class Restaurant implements Serializable, Comparable<Restaurant> {
 
     private String restaurantID;
     private String name;
@@ -14,6 +14,8 @@ public class Restaurant implements Serializable {
     private String email;
     private String categoriesIds;
     private String timeTableString;
+    private int reviewCount = 0;
+    private float reviewAvg = 0.0f;
 
     public Restaurant(String restaurantID, String name, String description, String address, String phone, String email, String categoriesIds, String timeTableString){
         this.restaurantID = restaurantID;
@@ -64,5 +66,26 @@ public class Restaurant implements Serializable {
     
     public String getTimeTableString() {
         return timeTableString;
+    }
+    
+    public int getReviewCount() {
+        return reviewCount;
+    }
+    
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
+    }
+    
+    public float getReviewAvg() {
+        return reviewAvg;
+    }
+    
+    public void setReviewAvg(float reviewAvg) {
+        this.reviewAvg = reviewAvg;
+    }
+    
+    @Override
+    public int compareTo(Restaurant o) {
+        return (int) (o.getReviewAvg() - getReviewAvg());
     }
 }

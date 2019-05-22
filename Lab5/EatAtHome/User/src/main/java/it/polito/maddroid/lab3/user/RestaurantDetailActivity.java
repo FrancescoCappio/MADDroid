@@ -1,15 +1,18 @@
 package it.polito.maddroid.lab3.user;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -72,6 +75,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private CardView cvTotalCost;
     private TextView tvTotalCost;
     private TextView tvRating;
+    private RatingBar ratingBar;
     
     private MenuItem menuOrder;
     private boolean appBarExpanded;
@@ -113,23 +117,18 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         setupEventListeners();
         
         if (savedInstanceState == null) {
-            
             currentRestaurant = (Restaurant) getIntent().getSerializableExtra(RESTAURANT_KEY);
-            tvDescription.setText(currentRestaurant.getDescription());
-            tvAddress.setText(currentRestaurant.getAddress());
-            tvPhoneNumber.setText(currentRestaurant.getPhone());
-            tvEmail.setText(currentRestaurant.getEmail());
-            
         } else {
-            
             currentRestaurant = (Restaurant) savedInstanceState.getSerializable(RESTAURANT_KEY);
-            tvDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
-            tvAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
-            tvPhoneNumber.setText(savedInstanceState.getString(PHONE_KEY, ""));
-            tvEmail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
             tvCategories.setText(savedInstanceState.getString(CATEGORY_KEY, ""));
-            
         }
+    
+        tvDescription.setText(currentRestaurant.getDescription());
+        tvAddress.setText(currentRestaurant.getAddress());
+        tvPhoneNumber.setText(currentRestaurant.getPhone());
+        tvEmail.setText(currentRestaurant.getEmail());
+        tvRating.setText(currentRestaurant.getReviewCount() + " " + (currentRestaurant.getReviewCount() == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
+        ratingBar.setRating(currentRestaurant.getReviewAvg());
         
         if (currentRestaurant.getTimeTableString() != null)
             tvTimetable.setText(Utility.extractTimeTable(currentRestaurant.getTimeTableString()));
@@ -191,10 +190,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         
         outState.putString(NAME_KEY, currentRestaurant.getName());
-        outState.putString(DESCRIPTION_KEY, tvDescription.getText().toString());
-        outState.putString(PHONE_KEY, tvPhoneNumber.getText().toString());
-        outState.putString(EMAIL_KEY, tvEmail.getText().toString());
-        outState.putString(ADDRESS_KEY, tvAddress.getText().toString());
         outState.putString(CATEGORY_KEY, tvCategories.getText().toString());
         outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
         
@@ -229,9 +224,11 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
         appBarLayout = findViewById(R.id.app_bar);
         tvRating = findViewById(R.id.tv_rating);
+        ratingBar = findViewById(R.id.rating_bar);
         
     }
     
+    @SuppressLint("ClickableViewAccessibility")
     private void setupEventListeners() {
         
         tvPhoneNumber.setOnClickListener(v -> {
@@ -270,12 +267,20 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         cvTotalCost.setOnClickListener(v -> actionCompleteOrder());
         
-        tvRating.setOnClickListener(v -> {
-            Intent ratingIntent = new Intent(RestaurantDetailActivity.this, ReviewsActivity.class);
-            ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RESTAURANT);
-            ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentRestaurant.getRestaurantID());
-            startActivity(ratingIntent);
-        });
+        tvRating.setOnClickListener(v -> openReviewsActivity());
+    }
+    
+    private void openReviewsActivity() {
+        
+        if (currentRestaurant.getReviewCount() == 0) {
+            Utility.showAlertToUser(this, R.string.alert_no_reviews);
+            return;
+        }
+        
+        Intent ratingIntent = new Intent(RestaurantDetailActivity.this, ReviewsActivity.class);
+        ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RESTAURANT);
+        ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentRestaurant.getRestaurantID());
+        startActivity(ratingIntent);
     }
     
     private synchronized void setActivityLoading(boolean loading) {

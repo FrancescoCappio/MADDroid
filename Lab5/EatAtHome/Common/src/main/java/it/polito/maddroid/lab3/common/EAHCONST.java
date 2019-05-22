@@ -119,6 +119,8 @@ public class EAHCONST {
     public final static String RESTAURANT_CATEGORIES = "restaurant_categories";
     public final static String RESTAURANT_TIMETABLE = "time_table";
     public final static String RESTAURANT_POSITION = "position";
+    public final static String RESTAURANT_REVIEW_COUNT = "review_count";
+    public final static String RESTAURANT_REVIEW_AVG = "review_avg";
 
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";

@@ -140,6 +140,8 @@
     <string name="rate_your_rider">Rate your rider</string>
     <string name="rate_your_restaurant">Rate your restaurant</string>
     <string name="all_reviews">All the reviews</string>
+    <string name="reviews">reviews</string>
+    <string name="review">review</string>
 
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
@@ -160,5 +162,7 @@
 
     <string name="alert_no_score">Please add a score to your review</string>
     <string name="alert_no_comment">Please add a comment to your review</string>
+
+    <string name="alert_no_reviews">There are no reviews</string>
 
 </resources>
