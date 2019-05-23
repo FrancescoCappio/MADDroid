@@ -1,6 +1,5 @@
 package it.polito.maddroid.lab3.user;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,9 +28,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.shuhart.stepview.StepView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,7 +52,6 @@ public class OrderDetailActivity extends AppCompatActivity {
     
     //views
     private TextView tvOrderDate;
-    private TextView tvOrderStatus;
     private TextView tvDeliveryTime;
     private TextView tvTotalCost;
     private TextView tvDeliveryCost;
@@ -62,6 +63,15 @@ public class OrderDetailActivity extends AppCompatActivity {
     private Button btRateRestaurant;
     
     private List<Dish> dishList;
+
+    private StepView stepView;
+    private boolean viewLoaded = false;
+
+    //currentStep = 0 Confirmed
+    //currentStep = 1 Pickup Products
+    //currentStep = 2 Delivery
+    //currentStep = 3 Completed
+    private List<String> seekBarStatus = Arrays.asList("Confirmed","Waiting for rider","On the way","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +106,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
         tvTotalCost.setText(currentOrder.getTotalCost());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
-        tvOrderStatus.setText(currentOrder.getOrderStatus().toString());
-        getRiderName(currentOrder.getRiderId());
         
         //recycler view
         rvDishes.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -108,9 +116,51 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         getDishesInfo();
         
-        adaptToOrderStatus();
+        updateUIForOrderStatus();
         
         setupClickListeners();
+
+        stepView.getState().steps(seekBarStatus).commit();
+        
+        View rootView = getWindow().getDecorView().getRootView();
+        ViewTreeObserver observer = rootView .getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                viewLoaded = true;
+                updateUIForOrderStatus();
+            }
+        });
+    
+        getUpdatedOrderStatus();
+        
+        getRiderName(currentOrder.getRiderId());
+    }
+
+    private int getCurrentStep(EAHCONST.OrderStatus orderStatus){
+        switch (orderStatus) {
+            case PENDING:
+                return 0;
+            case CONFIRMED:
+            case WAITING_RIDER:
+                return 1;
+            case ONGOING:
+                return 2;
+            case COMPLETED:
+                return 3;
+        }
+        return 0;
+    }
+    
+    private void setSteps(int currentStep) {
+        if (currentStep != 3)
+            stepView.go(currentStep, true);
+        else {
+            stepView.go(currentStep, true);
+            stepView.done(true);
+        }
     }
     
     private void getReferencesToViews() {
@@ -121,20 +171,11 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvTotalCost = findViewById(R.id.tv_payment_total);
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
-        tvOrderStatus = findViewById(R.id.tv_order_status);
         rvDishes = findViewById(R.id.rv_order_dishes);
         btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
         btRateRider = findViewById(R.id.bt_rate_rider);
-    }
-    
-    private void adaptToOrderStatus() {
-        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
-            btRateRider.setVisibility(View.VISIBLE);
-            btRateRestaurant.setVisibility(View.VISIBLE);
-        } else {
-            btRateRider.setVisibility(View.GONE);
-            btRateRestaurant.setVisibility(View.GONE);
-        }
+
+        stepView = findViewById(R.id.step_view);
     }
     
     private void setupClickListeners() {
@@ -165,9 +206,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                 pbLoading.setVisibility(View.VISIBLE);
             waitingCount++;
         } else {
-            waitingCount--;
-            if (waitingCount == 0)
-                pbLoading.setVisibility(View.INVISIBLE);
+            if (waitingCount > 0) {
+                waitingCount--;
+                if (waitingCount == 0)
+                    pbLoading.setVisibility(View.INVISIBLE);
+            }
         }
     }
     
@@ -250,7 +293,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
         
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -263,5 +306,54 @@ public class OrderDetailActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    private void getUpdatedOrderStatus() {
+        setActivityLoading(true);
+        dbRef.child(EAHCONST.ORDERS_CUST_SUBTREE).child(currentOrder.getCustomerId()).child(currentOrder.getOrderId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!dataSnapshot.hasChildren()) {
+                    Utility.showAlertToUser(OrderDetailActivity.this, R.string.alert_error_downloading_info);
+                    return;
+                }
+                EAHCONST.OrderStatus orderStatus = dataSnapshot.child(EAHCONST.CUST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
+                
+                if (dataSnapshot.child(EAHCONST.CUST_ORDER_RIDER_ID).getValue() != null)
+                    currentOrder.setRiderId(dataSnapshot.child(EAHCONST.CUST_ORDER_RIDER_ID).getValue(String.class));
+
+                currentOrder.setOrderStatus(orderStatus);
+                
+                if (currentOrder.getRiderId() != null && !currentOrder.getRiderId().isEmpty())
+                    getRiderName(currentOrder.getRiderId());
+                
+                updateUIForOrderStatus();
+                
+                setActivityLoading(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
+            }
+        });
+
+    }
+    
+    private void updateUIForOrderStatus() {
+    
+        if (viewLoaded)
+            setSteps(getCurrentStep(currentOrder.getOrderStatus()));
+    
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
+            btRateRider.setVisibility(View.VISIBLE);
+            btRateRestaurant.setVisibility(View.VISIBLE);
+        } else {
+            btRateRider.setVisibility(View.GONE);
+            btRateRestaurant.setVisibility(View.GONE);
+        }
+        
     }
 }
