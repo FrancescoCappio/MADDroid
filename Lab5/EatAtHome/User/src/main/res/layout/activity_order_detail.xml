@@ -51,42 +51,16 @@
         />
 
     <TextView
-        android:id="@+id/tv_order_status_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/order_status"
-        android:textSize="15sp"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginStart="@dimen/activity_margin"
-        app:layout_constraintTop_toBottomOf="@id/step_view"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/tv_order_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CONFIRMED"
-        android:textSize="15sp"
-
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        app:layout_constraintTop_toBottomOf="@id/step_view"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        />
-
-    <TextView
         android:id="@+id/tv_order_date_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/date"
         android:textSize="15sp"
 
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginStart="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/tv_order_status_title"
+        app:layout_constraintTop_toBottomOf="@id/step_view"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
@@ -96,11 +70,11 @@
         android:text="07/05/2019"
         android:textSize="15sp"
 
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
 
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_order_status_title"
+        app:layout_constraintTop_toBottomOf="@id/step_view"
         />
 
     <TextView
