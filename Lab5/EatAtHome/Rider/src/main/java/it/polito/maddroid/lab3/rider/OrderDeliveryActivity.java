@@ -93,7 +93,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     //currentStep = 1 Pickup Products
     //currentStep = 2 Delivery
     //currentStep = 3 Completed
-    private List<String> seekBarStatus = Arrays.asList("Confirmed","Pickup Products","Delivery","Completed");
+    private List<String> seekBarStatus = Arrays.asList("Confirmed","Pickup products","In delivery","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
