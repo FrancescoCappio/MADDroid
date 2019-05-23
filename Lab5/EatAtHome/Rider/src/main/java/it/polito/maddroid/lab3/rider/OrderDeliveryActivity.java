@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,8 +32,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.shuhart.stepview.StepView;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -81,6 +84,16 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private DatabaseReference dbRef;
     private int waitingCount;
     private Customer currentCustomer;
+
+    private StepView stepView;
+    private int currentStep = 0;
+    private boolean viewLoaded = false;
+
+    //currentStep = 0 Confirmed
+    //currentStep = 1 Pickup Products
+    //currentStep = 2 Delivery
+    //currentStep = 3 Completed
+    private List<String> seekBarStatus = Arrays.asList("Confirmed","Pickup Products","Delivery","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +144,32 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         setupButtonsEnable();
 
         getRestaurantLocations();
-        
+
+        stepView.getState().steps(seekBarStatus).commit();
+        stepView.go(0,false);
+
+        View rootView = getWindow().getDecorView().getRootView();
+        ViewTreeObserver observer = rootView .getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                // Do what you need with yourView here...
+                setSteps();
+                viewLoaded = true;
+            }
+        });
+
+    }
+
+    private void setSteps() {
+        if (currentStep != 3)
+            stepView.go(currentStep, true);
+        else {
+            stepView.go(currentStep, true);
+            stepView.done(true);
+        }
     }
 
     private void setupButtonsEnable() {
@@ -140,17 +178,23 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             btGetFood.setEnabled(true);
             btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
             btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_green_accept));
+            currentStep = 1;
         } else if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.ONGOING) {
             btGetFood.setEnabled(false);
             btDeliverFood.setEnabled(true);
             btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
             btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_green_accept));
+            currentStep = 2;
         } else {
             btGetFood.setEnabled(false);
             btDeliverFood.setEnabled(false);
             btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
             btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
+            currentStep=3;
         }
+
+        if (viewLoaded)
+            setSteps();
     }
     
     private void getReferencesToViews(){
@@ -174,6 +218,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
+
+        stepView = findViewById(R.id.step_view);
     }
     
     @Override
@@ -198,7 +244,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
         tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
-        
     }
     
     private void setOnClickListeners() {

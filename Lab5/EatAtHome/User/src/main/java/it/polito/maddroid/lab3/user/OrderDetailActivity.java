@@ -16,10 +16,14 @@ import it.polito.maddroid.lab3.common.Utility;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,9 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.shuhart.stepview.StepView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,8 +66,20 @@ public class OrderDetailActivity extends AppCompatActivity {
     private RecyclerView rvDishes;
     private Button btRateRider;
     private Button btRateRestaurant;
+
+    private MenuItem refreshItem;
     
     private List<Dish> dishList;
+
+    private StepView stepView;
+    private int currentStep = 0;
+    private boolean viewLoaded = false;
+
+    //currentStep = 0 Confirmed
+    //currentStep = 1 Pickup Products
+    //currentStep = 2 Delivery
+    //currentStep = 3 Completed
+    private List<String> seekBarStatus = Arrays.asList("Confirmed","Waiting for rider","On the way","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +129,51 @@ public class OrderDetailActivity extends AppCompatActivity {
         adaptToOrderStatus();
         
         setupClickListeners();
+
+        stepView.getState().steps(seekBarStatus).commit();
+        getCurrentStep(currentOrder.getOrderStatus().toString());
+        stepView.go(currentStep,false);
+        View rootView = getWindow().getDecorView().getRootView();
+        ViewTreeObserver observer = rootView .getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                // Do what you need with yourView here...
+                setSteps();
+                viewLoaded = true;
+            }
+        });
+    }
+
+    private void getCurrentStep(String orderStatus){
+        switch (orderStatus) {
+            case "PENDING":
+                currentStep = 0;
+                break;
+            case "CONFIRMED":
+                currentStep = 1;
+                break;
+            case "WAITING_RIDER":
+                currentStep = 1;
+                break;
+            case "ONGOING":
+                currentStep = 2;
+                break;
+            case "COMPLETED":
+                currentStep = 3;
+                break;
+        }
+    }
+
+    private void setSteps() {
+        if (currentStep != 3)
+            stepView.go(currentStep, true);
+        else {
+            stepView.go(currentStep, true);
+            stepView.done(true);
+        }
     }
     
     private void getReferencesToViews() {
@@ -125,6 +188,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         rvDishes = findViewById(R.id.rv_order_dishes);
         btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
         btRateRider = findViewById(R.id.bt_rate_rider);
+
+        stepView = findViewById(R.id.step_view);
     }
     
     private void adaptToOrderStatus() {
@@ -251,6 +316,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.activity_refresh_menu, menu);
+
+        // Get the action view used in your toggleservice item
+        refreshItem = menu.findItem(R.id.action_refresh);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -261,7 +339,42 @@ public class OrderDetailActivity extends AppCompatActivity {
                 //emulate back pressed
                 onBackPressed();
                 return true;
+            case R.id.action_refresh:
+                refreshOrder();
         }
         return false;
+    }
+
+    private void refreshOrder() {
+        setActivityLoading(true);
+        Query queryRef = dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentOrder.getRestaurantId()).child(currentOrder.getOrderId());
+
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!dataSnapshot.hasChildren()) {
+                    Utility.showAlertToUser(OrderDetailActivity.this, R.string.alert_error_downloading_info);
+                    return;
+                }
+                EAHCONST.OrderStatus orderStatus = dataSnapshot.child(EAHCONST.REST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
+
+                currentOrder.setOrderStatus(orderStatus);
+                getCurrentStep(currentOrder.getOrderStatus().toString());
+
+                if (viewLoaded)
+                    setSteps();
+
+
+                setActivityLoading(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
+            }
+        });
+
     }
 }
