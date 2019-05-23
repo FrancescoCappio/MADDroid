@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class DishDetailsActivity extends AppCompatActivity {
@@ -127,6 +129,9 @@ public class DishDetailsActivity extends AppCompatActivity {
         DESCRIPTION_MAX_LENGTH = res.getInteger(R.integer.description_max_length);
 
         manageLaunchIntent();
+    
+        //do not show the keyboard on activity open
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void getReferencesToViews() {
@@ -376,7 +381,7 @@ public class DishDetailsActivity extends AppCompatActivity {
 
     private void writeDishData() {
         etName.setText(currentDish.getName());
-        etPrice.setText(String.valueOf(currentDish.getPrice()));
+        etPrice.setText(String.format(Locale.US,"%.02f", currentDish.getPrice()) + " €");
         etDescription.setText(currentDish.getDescription());
     }
     

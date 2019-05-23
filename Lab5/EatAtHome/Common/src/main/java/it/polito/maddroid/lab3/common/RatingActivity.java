@@ -161,7 +161,7 @@ public class RatingActivity extends AppCompatActivity {
     
     private void uploadRating() {
         
-        if (currentRating < 0) {
+        if (currentRating < 0.1f) {
             Utility.showAlertToUser(this, R.string.alert_no_score);
             return;
         }
