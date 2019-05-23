@@ -5,7 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:theme="@style/MainAppTheme">
-        <activity android:name=".RatingActivity"></activity>
+        <activity android:name=".ReviewsActivity"></activity>
+        <activity android:name=".RatingActivity" />
         <activity android:name=".CustomerDetailActivity" />
 
         <service

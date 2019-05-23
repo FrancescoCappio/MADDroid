@@ -27,6 +27,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -170,6 +171,14 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     
                     Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds, timetable);
                     
+                    if (ds.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue() != null &&
+                        ds.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue() != null) {
+                        Long reviewCount = ds.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue(Long.class);
+                        Double reviewAvg = ds.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue(Double.class);
+    
+                        r.setReviewAvg(reviewAvg.floatValue());
+                        r.setReviewCount(reviewCount.intValue());
+                    }
                     restaurants.add(r);
                 }
                 // now that we have downloaded all the restaurants matching the name we need to filter them considering the chosen category
@@ -189,6 +198,8 @@ public class RestaurantSearchActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.alert_no_restaurant_found);
             return;
         }
+    
+        Collections.sort(restaurants);
         
         if (restaurantCategory == null) {
             // no category filter: submit the list as is
