@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -145,6 +144,8 @@ public class OrderDetailActivity extends AppCompatActivity {
                 viewLoaded = true;
             }
         });
+        
+        getUpdatedOrderStatus();
     }
 
     private void getCurrentStep(String orderStatus){
@@ -230,9 +231,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                 pbLoading.setVisibility(View.VISIBLE);
             waitingCount++;
         } else {
-            waitingCount--;
-            if (waitingCount == 0)
-                pbLoading.setVisibility(View.INVISIBLE);
+            if (waitingCount > 0) {
+                waitingCount--;
+                if (waitingCount == 0)
+                    pbLoading.setVisibility(View.INVISIBLE);
+            }
         }
     }
     
@@ -340,16 +343,16 @@ public class OrderDetailActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.action_refresh:
-                refreshOrder();
+                getUpdatedOrderStatus();
         }
         return false;
     }
 
-    private void refreshOrder() {
+    private void getUpdatedOrderStatus() {
         setActivityLoading(true);
-        Query queryRef = dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentOrder.getRestaurantId()).child(currentOrder.getOrderId());
+        Query queryRef = dbRef.child(EAHCONST.ORDERS_CUST_SUBTREE).child(currentOrder.getCustomerId()).child(currentOrder.getOrderId());
 
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -364,8 +367,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                 if (viewLoaded)
                     setSteps();
-
-
+                
                 setActivityLoading(false);
             }
 

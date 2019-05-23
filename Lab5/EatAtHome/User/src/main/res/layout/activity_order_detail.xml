@@ -7,22 +7,16 @@
     android:animateLayoutChanges="true"
     tools:context=".OrderDetailActivity">
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-
-        app:layout_constraintTop_toTopOf="parent"
-        />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/step_view"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:padding="10dp"
+        android:layout_height="80dp"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="@dimen/activity_margin"
+
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
 
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -31,15 +25,30 @@
         app:sv_animationType="All"
         app:sv_stepPadding="5dp"
         app:sv_background="@color/eah_yellow"
-        app:sv_selectedCircleColor="@color/colorPrimary"
+        app:sv_selectedCircleColor="@color/eah_white"
         app:sv_selectedTextColor="@color/eah_white"
-        app:sv_selectedStepNumberColor="@color/eah_white"
-        app:sv_selectedCircleRadius="12dp"
-        app:sv_stepLineWidth="3dp"
-        app:sv_stepNumberTextSize="16sp"
-        app:sv_textSize="12sp"
+        app:sv_selectedStepNumberColor="@color/eah_black"
         app:sv_nextTextColor="@color/eah_grey"
+        app:sv_doneTextColor="@color/eah_white"
+        app:sv_doneCircleColor="@color/eah_white"
+
+        app:sv_doneCircleRadius="12dp"
+        app:sv_selectedCircleRadius="18dp"
+        app:sv_stepLineWidth="3dp"
+        app:sv_stepNumberTextSize="18sp"
+        app:sv_textSize="15sp"
         app:sv_animationDuration="200"/>
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+
+        app:layout_constraintTop_toBottomOf="@+id/step_view"
+        />
 
     <TextView
         android:id="@+id/tv_order_status_title"
