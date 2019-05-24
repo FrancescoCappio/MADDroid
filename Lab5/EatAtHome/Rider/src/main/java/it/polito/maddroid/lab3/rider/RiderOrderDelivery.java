@@ -16,14 +16,16 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
     private String deliveryAddress;
     private String deliveryAddressNotes;
     private String deliveryTime;
+    private float deliveryCost;
     private String totalCost;
     private String deliveryDate;
 
-    public RiderOrderDelivery(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus) {
+    public RiderOrderDelivery(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus, float deliveryCost) {
         this.orderId = orderId;
         this.restaurantId = restaurantId;
         this.customerId = riderId;
         this.orderStatus = orderStatus;
+        this.deliveryCost = deliveryCost;
     }
 
     public String getOrderId() {
@@ -132,7 +134,12 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
         
         return this.deliveryDate.compareTo(o.deliveryDate);
     }
-    
+
+
+    public float getDeliveryCost() {
+        return deliveryCost;
+    }
+
     public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }

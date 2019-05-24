@@ -141,4 +141,15 @@
 
     <string name="route_not_ready">Please wait, the route is not ready</string>
 
+    <string name="avarage_grade">Average grade:</string>
+    <string name="today_km">Daily km:</string>
+    <string name="today_profit">Daily income:</string>
+    <string name="monthly_km">Monthly km:</string>
+    <string name="monthly_profit">Monthly income:</string>
+    <string name="total_km">Total km:</string>
+    <string name="total_profit">Total income:</string>
+
+
+    <string name="rider_stats">Your Statistics</string>
+
 </resources>
