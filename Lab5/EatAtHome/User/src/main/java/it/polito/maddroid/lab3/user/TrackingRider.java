@@ -122,26 +122,33 @@ public class TrackingRider extends FragmentActivity implements OnMapReadyCallbac
 
 
     private void drawMarkerAndRoute() {
+        Bitmap bmpTmep;
 
         //Add ORIGIN mark to map
         MarkerOptions options = new MarkerOptions();
         options.position(origin);
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+        bmpTmep = BitmapFactory.decodeResource(getResources(), R.drawable.ic_restaurant_marker);
+        Bitmap restaurantMarker = Bitmap.createScaledBitmap(bmpTmep, 130, 130, false);
+        options.icon(BitmapDescriptorFactory.fromBitmap(restaurantMarker));
         mMap.addMarker(options);
 
         //Add DESTINATION mark to map
         options = new MarkerOptions();
         options.position(destination);
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+        bmpTmep = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delivery_marker);
+        Bitmap deliveryMarker = Bitmap.createScaledBitmap(bmpTmep, 130, 130, false);
+        options.icon(BitmapDescriptorFactory.fromBitmap(deliveryMarker));
         mMap.addMarker(options);
 
         if (lastLocation != null) {
 
             currentLocationMarker.position(lastLocation);
-            Bitmap bb = BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_rider_green);
-            Bitmap smallMarker = Bitmap.createScaledBitmap(bb, 150, 150, false);
+            bmpTmep = BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_rider_green);
+            Bitmap riderMarker = Bitmap.createScaledBitmap(bmpTmep, 150, 150, false);
 
-            currentLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+            currentLocationMarker.icon(BitmapDescriptorFactory.fromBitmap(riderMarker));
 
             mMap.addMarker(currentLocationMarker);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(lastLocation));
