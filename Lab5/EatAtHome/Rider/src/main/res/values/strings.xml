@@ -11,6 +11,7 @@
     <string name="rider_phone_number">Phone number</string>
 
     <string name="all_deliveries">All deliveries</string>
+    <string name="all_statistics">Your Statistics</string>
     <string name="confirm_order_note">You have confirmed the order</string>
 
     <string name="alert_error_confirming">There was an error while confirming the order</string>

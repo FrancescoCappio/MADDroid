@@ -58,6 +58,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private List<List<HashMap<String, String>>> restaurantToCustomerRoutes;
     private String restaurantToCustomerDistance;
     private String restaurantToCustomerDuration;
+    private float kmRestToCust;
     
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
@@ -350,7 +351,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentUser.getUid(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST_CUST), kmRestToCust);
+
         //update customer subtree
         String custOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_CUST_SUBTREE,
@@ -496,6 +498,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
                     restaurantToCustomerRoutes = route;
                     restaurantToCustomerDistance = distances[0];
+                    String[] splits = distances[0].split(" ");
+                    kmRestToCust = Float.parseFloat(splits[0]);
                     tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
                     restaurantToCustomerDuration = distances[1];
                     tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);

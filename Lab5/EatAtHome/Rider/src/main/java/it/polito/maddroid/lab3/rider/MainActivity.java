@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment selectedFragment;
     private CurrentDeliveriesFragment currentDeliveriesFragment;
     private OrdersFragment ordersFragment;
+    private RiderStatistics statisticsFragment;
     
     private List<RiderOrderDelivery> allDeliveries;
     
@@ -370,6 +371,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             dialogInfo.setCancelable(true);
             dialogInfo.create().show();
         }
+        if (id == R.id.nav_statistics) {
+            selectItem(2);
+        }
         
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -433,6 +437,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case 2:
+                Intent intentStatsRider = new Intent(this, RiderStatistics.class);
+                navigationView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        navigationView.setCheckedItem(R.id.nav_current_deliveries);
+                    }
+                });
+                startActivity(intentStatsRider);
 
                 break;
 
@@ -512,13 +524,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String restaurantId = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
                     String customerID = (String) ds.child(EAHCONST.RIDER_ORDER_CUSTOMER_ID).getValue();
                     String orderId = ds.getKey();
+                    float deliveryCost = EAHCONST.DELIVERY_COST;
+                    if(ds.child(EAHCONST.RIDER_INCOME).getValue() != null)
+                         deliveryCost = ds.child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
                     EAHCONST.OrderStatus orderStatus = ds.child(EAHCONST.RIDER_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
                     
                     if (orderStatus == EAHCONST.OrderStatus.PENDING) {
                         Utility.showAlertToUser(MainActivity.this, R.string.new_pending_order);
                     }
                     
-                    RiderOrderDelivery co = new RiderOrderDelivery(orderId, restaurantId, customerID, orderStatus);
+                    RiderOrderDelivery co = new RiderOrderDelivery(orderId, restaurantId, customerID, orderStatus, deliveryCost);
                     allDeliveries.add(co);
                 }
                 
