@@ -5,7 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:theme="@style/MainAppTheme">
-        <activity android:name=".CustomerDetailActivity"></activity>
+        <activity android:name=".ReviewsActivity"></activity>
+        <activity android:name=".RatingActivity" />
+        <activity android:name=".CustomerDetailActivity" />
 
         <service
             android:name=".EAHFirebaseMessagingService"
@@ -25,9 +27,9 @@
             android:name=".LoginActivity"
             android:theme="@style/LoginActivityTheme" />
 
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />

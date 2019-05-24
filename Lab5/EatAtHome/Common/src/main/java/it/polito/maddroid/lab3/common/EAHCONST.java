@@ -42,6 +42,52 @@ public class EAHCONST {
         NOT_ON_DUTY
     }
     
+    public static class Review implements Comparable<Review>{
+        private String authorUID;
+        private int rate;
+        private String date;
+        private String comment;
+        private String authorName;
+    
+        public Review(String authorUID, int rate, String comment, String date) {
+            this.authorUID = authorUID;
+            this.rate = rate;
+            this.comment = comment;
+            this.date = date;
+        }
+        
+        public Review(){}
+    
+        public String getAuthorUID() {
+            return authorUID;
+        }
+    
+        public int getRate() {
+            return rate;
+        }
+    
+        public String getComment() {
+            return comment;
+        }
+    
+        public String getDate() {
+            return date;
+        }
+    
+        public String getAuthorName() {
+            return authorName;
+        }
+    
+        public void setAuthorName(String authorName) {
+            this.authorName = authorName;
+        }
+    
+        @Override
+        public int compareTo(Review o) {
+            return this.getDate().compareTo(o.getDate());
+        }
+    }
+    
     // main subtrees
     public final static String USERS_SUB_TREE = "users";
     public final static String CATEGORIES_ASSOCIATIONS_SUB_TREE = "categories_associations";
@@ -55,6 +101,9 @@ public class EAHCONST {
     public final static String ORDERS_CUST_SUBTREE = "orders_customer";
     public final static String ORDERS_RIDER_SUBTREE = "orders_rider";
     public final static String RIDERS_POSITIONS_SUBTREE = "riders_positions";
+    public final static String RIDERS_RATINGS_SUBTREE = "riders_ratings";
+    public final static String RESTAURANTS_RATINGS_SUBTREE = "restaurants_ratings";
+    public final static String RATINGS_OF_CUSTOMERS_SUBTREE = "ratings_of_customers";
     
     // users subtree nodes fields
     public final static String USERS_MAIL = "email";
@@ -70,6 +119,8 @@ public class EAHCONST {
     public final static String RESTAURANT_CATEGORIES = "restaurant_categories";
     public final static String RESTAURANT_TIMETABLE = "time_table";
     public final static String RESTAURANT_POSITION = "position";
+    public final static String RESTAURANT_REVIEW_COUNT = "review_count";
+    public final static String RESTAURANT_REVIEW_AVG = "review_avg";
 
     // customers subtree nodes fields
     public final static String CUSTOMER_NAME = "name";
@@ -121,6 +172,10 @@ public class EAHCONST {
     public final static String RIDER_INCOME = "rider_income";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String RIDER_ORDER_CUSTOMER_ID = "customer_id";
+    
+    // ratings of customers nodes fields
+    public final static String RIDERS_RATINGS = "riders_ratings";
+    public final static String RESTAURANT_RATINGS = "restaurant_ratings";
     
     public static String generatePath(String... args) {
         StringBuilder sb = new StringBuilder();

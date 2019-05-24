@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReviewsActivity">
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_summary_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="@string/summary"
+
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginTop="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+    <TextView
+        android:id="@+id/tv_excellent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/excellent"
+
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_summary_title"
+        />
+
+    <TextView
+        android:id="@+id/tv_very_good"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/very_good"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_excellent"
+        />
+
+    <TextView
+        android:id="@+id/tv_average"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/average"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_very_good"
+        />
+
+    <TextView
+        android:id="@+id/tv_poor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/poor"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_average"
+        />
+
+    <TextView
+        android:id="@+id/tv_terrible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/terrible"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_poor"
+        />
+
+    <ProgressBar
+        android:id="@+id/pb_excellent"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="@+id/tv_excellent"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_excellent"
+        app:layout_constraintStart_toEndOf="@+id/tv_very_good"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/pb_very_good"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="@+id/tv_very_good"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_very_good"
+        app:layout_constraintStart_toEndOf="@+id/tv_very_good"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/pb_average"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="@+id/tv_average"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_average"
+        app:layout_constraintStart_toEndOf="@+id/tv_very_good"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/pb_poor"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="@+id/tv_poor"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_poor"
+        app:layout_constraintStart_toEndOf="@+id/tv_very_good"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/pb_terrible"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="@dimen/activity_margin"
+
+        app:layout_constraintTop_toTopOf="@+id/tv_terrible"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_terrible"
+        app:layout_constraintStart_toEndOf="@+id/tv_very_good"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <View
+        android:id="@+id/view_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/eah_background_dark"
+        android:layout_marginTop="@dimen/activity_margin"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/tv_terrible"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_reviews"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        app:layout_constraintTop_toBottomOf="@+id/view_separator"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        tools:listitem="@layout/review_list_item"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

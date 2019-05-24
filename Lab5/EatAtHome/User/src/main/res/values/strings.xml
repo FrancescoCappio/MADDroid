@@ -40,4 +40,6 @@
     <string name="alert_error_ordering">There was an error while requesting your order</string>
 
     <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
+
+    <string name="action_refresh">Refresh</string>
 </resources>

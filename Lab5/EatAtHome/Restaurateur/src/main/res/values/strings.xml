@@ -12,7 +12,7 @@
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
 
     <string name="dish_name">Dish\'s name</string>
-    <string name="dish_price">Dish\'s price</string>
+    <string name="dish_price">Dish\'s price (€)</string>
     <string name="dish_description">Dish\'s description</string>
 
     <string name="fill_fields">Please fill all the fields</string>

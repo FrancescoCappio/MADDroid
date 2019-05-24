@@ -52,8 +52,6 @@
         android:id="@+id/rv_restaurants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
         android:layout_marginTop="@dimen/activity_margin"
         tools:listitem="@layout/restaurant_list_item"
 

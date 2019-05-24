@@ -52,6 +52,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0-beta01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-beta01'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.shuhart.stepview:stepview:1.2.6'
 }
 
 apply plugin: 'com.google.gms.google-services'
