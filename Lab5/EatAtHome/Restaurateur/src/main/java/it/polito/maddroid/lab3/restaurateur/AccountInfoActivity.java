@@ -133,6 +133,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private Button btCategories;
     private Button btTimeTable;
     private TextView tvLoginEmail;
+    private EditText etAverageTime;
 
     // Firebase attributes
     private FirebaseAuth mAuth;
@@ -143,6 +144,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
+    private static final String AVERAGE_TIME_KEY = "AVERAGE_TIME_KEY";
     private static final String PHONE_KEY = "PHONE_KEY";
     private static final String EMAIL_KEY = "EMAIL_KEY";
     private static final String ADDRESS_KEY = "ADDRESS_KEY";
@@ -221,13 +223,14 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         outState.putString(NAME_KEY, etName.getText().toString());
         outState.putString(DESCRIPTION_KEY, etDescription.getText().toString());
+        outState.putString(AVERAGE_TIME_KEY, etAverageTime.getText().toString());
         outState.putString(PHONE_KEY, etPhone.getText().toString());
         outState.putString(EMAIL_KEY, etMail.getText().toString());
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
         outState.putString(TIMETABLEINFO, timeTableRest);
         outState.putStringArrayList(CATEGORIES_BEFO, (ArrayList<String>) previousSelectedCategoriesId);
         if(multiChoiceItems != null)
-        outState.putSerializable(POSITIONS, (Serializable) multiChoiceItems);
+            outState.putSerializable(POSITIONS, (Serializable) multiChoiceItems);
         outState.putStringArrayList(CATEGORIES_AFTE, (ArrayList<String>) currentSelectedCategoriesId);
         outState.putInt(CHOICE,choice);
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
@@ -251,6 +254,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         etName.setText(savedInstanceState.getString(NAME_KEY, ""));
         etDescription.setText(savedInstanceState.getString(DESCRIPTION_KEY, ""));
+        etAverageTime.setText(savedInstanceState.getString(AVERAGE_TIME_KEY, ""));
         etAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
         etPhone.setText(savedInstanceState.getString(PHONE_KEY, ""));
         etMail.setText(savedInstanceState.getString(EMAIL_KEY, ""));
@@ -348,6 +352,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etName = findViewById(R.id.et_name);
         etAddress = findViewById(R.id.et_address);
         etDescription = findViewById(R.id.et_description);
+        etAverageTime = findViewById(R.id.et_avg_time);
         etMail = findViewById(R.id.et_mail);
         etPhone = findViewById(R.id.et_phone);
 
@@ -879,6 +884,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         etName.setEnabled(enabled);
         etDescription.setEnabled(enabled);
+        etAverageTime.setEnabled(enabled);
         etMail.setEnabled(enabled);
         etPhone.setEnabled(enabled);
         etAddress.setEnabled(enabled);
@@ -936,12 +942,17 @@ public class AccountInfoActivity extends AppCompatActivity {
         String restaurantAddress = etAddress.getText().toString();
         String restaurantEmail = etMail.getText().toString();
         String restaurantDescription = etDescription.getText().toString();
-
-
+        String averageTime = etAverageTime.getText().toString();
+        
         // now we check if at leat one category has been selected
         boolean categorySelected = !currentSelectedCategoriesId.isEmpty();
 
-        if (restaurantPhone.isEmpty() || restaurantName.isEmpty() || restaurantAddress.isEmpty() || restaurantDescription.isEmpty() || restaurantEmail.isEmpty()) {
+        if (restaurantPhone.isEmpty() ||
+                restaurantName.isEmpty() ||
+                restaurantAddress.isEmpty() ||
+                restaurantDescription.isEmpty() ||
+                restaurantEmail.isEmpty() ||
+                averageTime.isEmpty()) {
             Utility.showAlertToUser(this, R.string.fields_empty_alert);
             return false;
         }
@@ -988,6 +999,15 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         if (photoChanged)
             uploadAvatar(userId);
+        
+        int avgTime;
+        try {
+            avgTime = Integer.parseInt(averageTime);
+        } catch (Exception ex) {
+            Log.e(TAG, "Exception: " + ex.getMessage());
+            Utility.showAlertToUser(this, R.string.alert_invalid_avg_time);
+            return false;
+        }
 
         // userEmail cannot be null because we permit only registration by email
         assert userEmail != null;
@@ -1000,6 +1020,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_DESCRIPTION), restaurantDescription);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_EMAIL), restaurantEmail);
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_PHONE), restaurantPhone);
+        updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_AVG_ORDER_TIME), avgTime);
 
         // put timetable inside both restaurants and timetables subtree
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_TIMETABLE), timeTableRest);
@@ -1011,8 +1032,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             sb.append(id).append(";");
 
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_CATEGORIES), sb.toString());
-
-
+        
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
 
             Log.d(TAG, "Success registering user info");
@@ -1100,6 +1120,11 @@ public class AccountInfoActivity extends AppCompatActivity {
                         currentSelectedCategoriesId.add(id);
                         previousSelectedCategoriesId.add(id);
                     }
+                }
+                
+                if (dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue() != null) {
+                    int averageOrderTime = dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue(Long.class).intValue();
+                    etAverageTime.setText(String.valueOf(averageOrderTime));
                 }
 
                 setActivityLoading(false);

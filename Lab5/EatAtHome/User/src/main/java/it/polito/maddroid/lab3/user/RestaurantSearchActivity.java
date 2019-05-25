@@ -179,6 +179,11 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                         r.setReviewAvg(reviewAvg.floatValue());
                         r.setReviewCount(reviewCount.intValue());
                     }
+                    
+                    if (ds.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue() != null) {
+                        int avgOrderTime = ds.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue(Long.class).intValue();
+                        r.setAvgOrderTime(avgOrderTime);
+                    }
                     restaurants.add(r);
                 }
                 // now that we have downloaded all the restaurants matching the name we need to filter them considering the chosen category
@@ -199,6 +204,7 @@ public class RestaurantSearchActivity extends AppCompatActivity {
             return;
         }
     
+        // sort the restaurants by rating
         Collections.sort(restaurants);
         
         if (restaurantCategory == null) {

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -89,6 +90,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private TextView tvDeliveryCost;
     private EditText etAddressNotes;
     private CheckBox cbAccountAddress;
+    private EditText etTimeDialog;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,6 +282,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private void actionConfirmOrder() {
         
         //checks
+        
+        
         
         if (selectedDishes == null || selectedDishes.isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_order_no_dishes);
@@ -536,5 +540,19 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if(possiblePosition != null) {
             possiblePosition.dismiss();
         }
+    }
+    
+    private void openDeliveryTimeDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.order_delivery_time_dialog, null);
+        
+        etTimeDialog = alertLayout.findViewById(R.id.et_time);
+        
+        TextView tvDialogMessage = alertLayout.findViewById(R.id.tv_dialog_message);
+        
+        String message = getString(R.string.delivery_time_message);
+        
+        int orderTime = currentRestaurant.getAvgOrderTime();
+        
     }
 }
