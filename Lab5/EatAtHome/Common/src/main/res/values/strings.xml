@@ -146,7 +146,15 @@
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
     <string name="route_not_ready">Please wait, the route is not ready</string>
+    <string name="avarage_grade">Average grade:</string>
+    <string name="today_km">Daily km:</string>
+    <string name="today_profit">Daily income:</string>
+    <string name="monthly_km">Monthly km:</string>
+    <string name="monthly_profit">Monthly income:</string>
+    <string name="total_km">Total km:</string>
+    <string name="total_profit">Total income:</string>
 
+    <string name="rider_stats">Your Statistics</string>
     <string name="rate_rider">Rate rider</string>
     <string name="rate_restaurant">Rate restaurant</string>
     <string name="give_score">Give a score</string>
@@ -164,5 +172,4 @@
     <string name="alert_no_comment">Please add a comment to your review</string>
 
     <string name="alert_no_reviews">There are no reviews</string>
-
 </resources>

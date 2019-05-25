@@ -153,7 +153,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             }
             
         }
-        String totalCost = computeTotalCost();
+        String totalCost = computeTotalCost(true);
         tvTotalCost.setText(totalCost);
         tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
     
@@ -224,15 +224,15 @@ public class CompleteOrderActivity extends AppCompatActivity {
         }
     }
     
-    private String computeTotalCost() {
+    private String computeTotalCost(boolean addDelivery) {
         float totalCost = 0;
         
         for (Dish d : selectedDishes) {
             totalCost += d.getQuantity() * d.getPrice();
         }
-        
-        // consider delivery cost
-        totalCost += EAHCONST.DELIVERY_COST;
+
+        if(addDelivery == true)
+            totalCost += EAHCONST.DELIVERY_COST;
         
         return String.format(Locale.US, "%.02f", totalCost) + " €";
     }
@@ -336,7 +336,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),date);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),deliveryTime);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost());
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost(false));
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS_NOTES), addressNotes);
         

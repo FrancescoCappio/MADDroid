@@ -66,6 +66,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     
     private String riderUID;
     private String nextRiderId;
+    private float costTotal;
+    private float kmRider; //km RIder to Restaurant
     private RiderOrderDelivery currentDelivery;
     
     private FloatingActionButton fabConfirm;
@@ -80,6 +82,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
+        costTotal = EAHCONST.DELIVERY_COST;
         
         riderUID = currentUser.getUid();
         
@@ -102,11 +105,13 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         currentDelivery = (RiderOrderDelivery) i.getSerializableExtra(RIDER_ORDER_DELIVERY_KEY);
         
-        setDataToView();
+
         
         fabConfirm.setOnClickListener(v -> actionConfirmOrder());
         fabDecline.setOnClickListener(v -> actionDeclineOrder());
-        
+
+        setDataToView();
+
         setActivityLoading(false);
     
         Utility.showAlertToUser(this, R.string.alert_confirm_decline_order);
@@ -188,7 +193,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
                 riderUID,
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-    
+
+
     
         orderStatus = EAHCONST.OrderStatus.PENDING;
         riderOrderPath = EAHCONST.generatePath(
@@ -198,7 +204,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_RESTAURATEUR_ID), currentDelivery.getRestaurantId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_CUSTOMER_ID), currentDelivery.getCustomerId());
-    
+
     
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
@@ -223,7 +229,9 @@ public class ConfirmOrderActivity extends AppCompatActivity {
                 riderUID,
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-    
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), costTotal);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST), kmRider);
+
         String restaurantOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
                 currentDelivery.getRestaurantId(),
@@ -235,6 +243,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
                 currentDelivery.getCustomerId(),
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(customerOrderPath, EAHCONST.CUST_ORDER_RIDER_ID), riderUID);
+
         
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
@@ -251,7 +260,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private void setDataToView() {
         tvDeliveryTime.setText(currentDelivery.getDeliveryTime());
         tvTotalCost.setText(currentDelivery.getTotalCost());
-        tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
         tvRestaurantAdress.setText(currentDelivery.getRestaurantAddress());
         tvDeliveryAdress.setText(currentDelivery.getDeliveryAddress());
     }
@@ -346,9 +354,12 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private void getRoutes() {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
-            
+
             new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
                 String restaurantDist = distances[0];
+                String[] splits = distances[0].split(" ");
+                kmRider = Float.parseFloat(splits[0]);
+                addCost(kmRider);
                 tvRestaurantDistanceKm.setText(restaurantDist);
                 String restaurantTime = distances[1];
                 tvRestaurantDistanceTime.setText(restaurantTime);
@@ -357,11 +368,26 @@ public class ConfirmOrderActivity extends AppCompatActivity {
             new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
                 String customerDist = distances[0];
                 tvCustomerDistanceKm.setText(customerDist);
+                String[] splits = distances[0].split(" ");
+                float kmRider1 = Float.parseFloat(splits[0]);
+                addCost(kmRider1);
                 String customerTime = distances[1];
                 tvCustomerDistanceTime.setText(customerTime);
             });
         }
     }
-    
-    
+
+    private synchronized void addCost(float kmRider) {
+
+        if(costTotal != 2 )
+        {
+            costTotal = (float) (costTotal + (0.50 * kmRider));
+            tvCostDelivery.setText(String.format(Locale.US,"%.02f",costTotal) + " €");
+        }
+        else
+            costTotal = (float) (costTotal + (0.50 * kmRider));
+    }
+
+
+
 }

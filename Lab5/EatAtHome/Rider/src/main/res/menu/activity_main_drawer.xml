@@ -12,6 +12,11 @@
             android:id="@+id/nav_all_deliveries"
             android:icon="@drawable/ic_bike_24dp"
             android:title="@string/all_deliveries" />
+        <item
+            android:id="@+id/nav_statistics"
+            android:icon="@drawable/ic_poll_stats"
+            android:title="@string/all_statistics" />
+
     </group>
 
     <item android:title="@string/app">

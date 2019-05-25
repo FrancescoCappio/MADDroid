@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".RiderStatistics">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/pb_loading_stats"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_avg_grade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/avarage_grade"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_separator_grade_today"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_avg_grade" />
+
+        <TextView
+            android:id="@+id/tv_km_today_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/today_km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_grade_today" />
+
+        <TextView
+            android:id="@+id/tv_km_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Daily Km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_km_today_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_grade_today" />
+
+        <TextView
+            android:id="@+id/tv_today_profit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/today_profit"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_today_title" />
+
+        <TextView
+            android:id="@+id/tv_today_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Daily Income"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_today_profit_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_today" />
+
+        <View
+            android:id="@+id/view_separator_today_month"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_today_profit_title" />
+
+        <TextView
+            android:id="@+id/tv_km_month_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/monthly_km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
+
+        <TextView
+            android:id="@+id/tv_km_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Monthly Km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_km_month_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
+
+        <TextView
+            android:id="@+id/tv_month_profit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/monthly_profit"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_month_title" />
+
+        <TextView
+            android:id="@+id/tv_month_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Monthly Income"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_month" />
+
+        <View
+            android:id="@+id/view_separator_month_total"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_month_profit" />
+
+        <TextView
+            android:id="@+id/tv_km_total_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/total_km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+
+        <TextView
+            android:id="@+id/tv_km_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Total Km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_km_total_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+
+        <TextView
+            android:id="@+id/tv_total_profit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/total_profit"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_total_title" />
+
+        <TextView
+            android:id="@+id/tv_total_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Total Income"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_total_profit_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_total" />
+
+        <View
+            android:id="@+id/view_separator_final"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_total_profit" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
