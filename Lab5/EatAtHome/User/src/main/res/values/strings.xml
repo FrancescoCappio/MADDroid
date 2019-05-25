@@ -42,4 +42,6 @@
     <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
 
     <string name="action_refresh">Refresh</string>
+    <string name="track_rider">Track rider</string>
+    <string name="title_activity_tracking_rider">Map</string>
 </resources>
