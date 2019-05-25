@@ -10,6 +10,7 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.RatingActivity;
+import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
@@ -22,6 +23,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.LocationCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +38,7 @@ import com.shuhart.stepview.StepView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +55,11 @@ public class OrderDetailActivity extends AppCompatActivity {
     private DatabaseReference dbRef;
     
     private MenuListAdapter adapter;
+
+    private LatLng restaurantLocation;
+    private LatLng customerLocation;
+
+    private List<List<HashMap<String, String>>> restaurantToCustomerRoutes;
     
     //views
     private TextView tvOrderDate;
@@ -61,6 +72,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private RecyclerView rvDishes;
     private Button btRateRider;
     private Button btRateRestaurant;
+    private Button btTrackRider;
     
     private List<Dish> dishList;
 
@@ -174,6 +186,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         rvDishes = findViewById(R.id.rv_order_dishes);
         btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
         btRateRider = findViewById(R.id.bt_rate_rider);
+        btTrackRider = findViewById(R.id.bt_track_rider);
 
         stepView = findViewById(R.id.step_view);
     }
@@ -192,6 +205,8 @@ public class OrderDetailActivity extends AppCompatActivity {
             rateRiderIntent.putExtra(RatingActivity.RATED_UID_KEY, currentOrder.getRestaurantId());
             startActivity(rateRiderIntent);
         });
+
+        btTrackRider.setOnClickListener(v -> getDirectionToCustomer());
     }
     
     private synchronized void setActivityLoading(boolean loading) {
@@ -354,6 +369,92 @@ public class OrderDetailActivity extends AppCompatActivity {
             btRateRider.setVisibility(View.GONE);
             btRateRestaurant.setVisibility(View.GONE);
         }
-        
+
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.ONGOING) {
+            btTrackRider.setVisibility(View.VISIBLE);
+            getRestaurantLocations();
+        }
+        else
+            btTrackRider.setVisibility(View.GONE);
+    }
+
+
+    private void getRestaurantLocations() {
+
+        String restaurantUID = currentOrder.getRestaurantId();
+
+        String restaurantPath = EAHCONST.generatePath(
+                EAHCONST.RESTAURANTS_SUB_TREE,restaurantUID);
+
+        DatabaseReference dbRef1 = dbRef.child(restaurantPath);
+        GeoFire geoFireRestaurant = new GeoFire(dbRef1);
+
+        geoFireRestaurant.getLocation(EAHCONST.RESTAURANT_POSITION, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location != null) {
+                    restaurantLocation = new LatLng(location.latitude, location.longitude);
+                    getCustomerLocation();
+                } else {
+                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.err.println("There was an error getting the GeoFire location: " + databaseError);
+            }
+        });
+    }
+
+    private void getCustomerLocation() {
+
+        String customerPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_REST_SUBTREE,currentOrder.getRestaurantId(),currentOrder.getOrderId());
+
+        DatabaseReference dbRef2 = dbRef.child(customerPath);
+        GeoFire geoFireCustomer = new GeoFire(dbRef2);
+
+        geoFireCustomer.getLocation(EAHCONST.CUSTOMER_POSITION, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location != null) {
+                    customerLocation = new LatLng(location.latitude, location.longitude);
+                    getRoutes();
+                } else {
+                    System.out.println(String.format("There is no location for key %s in GeoFire", key));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.err.println("There was an error getting the GeoFire location: " + databaseError);
+            }
+        });
+    }
+
+    private void getRoutes() {
+        if (restaurantLocation != null && customerLocation != null) {
+            // get Restaurant to customer Routes
+
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                    restaurantToCustomerRoutes = route;
+                }
+            });
+        }
+    }
+
+    private void getDirectionToCustomer() {
+        if (restaurantToCustomerRoutes == null) {
+            Utility.showAlertToUser(this, R.string.route_not_ready);
+            return;
+        }
+
+        Intent intent = new Intent(getApplicationContext(), TrackingRider.class);
+        intent.putExtra(TrackingRider.ORIGIN_LOCATION_KEY, restaurantLocation);
+        intent.putExtra(TrackingRider.DESTINATION_LOCATION_KEY, customerLocation);
+        intent.putExtra(TrackingRider.ROUTE_KEY, (Serializable) restaurantToCustomerRoutes);
+        intent.putExtra(OrderDetailActivity.ORDER_KEY, currentOrder);
+        startActivity(intent);
     }
 }

@@ -306,13 +306,30 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_payment_delivery"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
+            <Button
+                android:id="@+id/bt_track_rider"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="@string/track_rider"
+                android:background="@color/eah_blue"
+                android:textColor="@color/eah_white"
+
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:layout_marginTop="10dp"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bt_rate_rider"/>
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
 
                 android:layout_marginTop="10dp"
 
-                app:layout_constraintTop_toBottomOf="@+id/bt_rate_restaurant"
+                app:layout_constraintTop_toBottomOf="@+id/bt_track_rider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 />

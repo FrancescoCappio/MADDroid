@@ -9,6 +9,8 @@ public class Rider implements Serializable, Comparable<Rider> {
     private String id;
     private String name;
     private String email;
+    private String description;
+    private String phoneNumber;
     private float distance;
     
     public Rider(String id) {
@@ -20,6 +22,15 @@ public class Rider implements Serializable, Comparable<Rider> {
         this.name = name;
         this.email = email;
         this.distance = distance;
+    }
+
+    public Rider(String id, String name, String email, String description, String phoneNumber, float distance) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.distance = distance;
+        this.description = description;
+        this.phoneNumber = phoneNumber;
     }
     
     public String getId() {
@@ -36,6 +47,14 @@ public class Rider implements Serializable, Comparable<Rider> {
     
     public float getDistance() {
         return distance;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
     
     @Override

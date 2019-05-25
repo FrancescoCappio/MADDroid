@@ -15,6 +15,11 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import it.polito.maddroid.lab3.common.EAHCONST;
 
 public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, RiderOrdersListAdapter.MyViewHolder>{
@@ -53,6 +58,7 @@ public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, Ride
         private TextView tvOrderAddress;
         private CardView cvContainer;
 
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -72,7 +78,8 @@ public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, Ride
 
             tvOrderDate.setText(order.getDeliveryDate());
             tvDeliveryTime.setText(order.getDeliveryTime());
-            tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + "€");
+            if(order.getOrderStatus() != EAHCONST.OrderStatus.PENDING)
+             tvDeliveryCost.setText(String.format(Locale.US,"%.02f", order.getDeliveryCost()) + "€");
             tvOrderStatus.setText(order.getOrderStatus().toString());
             tvRestaurantName.setText(order.getRestaurantName());
             tvOrderAddress.setText(order.getDeliveryAddress());
@@ -80,6 +87,7 @@ public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, Ride
             switch (order.getOrderStatus()) {
                 case PENDING:
                     cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
+                    tvDeliveryCost.setText("See order details ");
                     break;
                 case CONFIRMED:
                     cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
@@ -98,6 +106,7 @@ public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, Ride
             }
 
         }
+
 
     }
 

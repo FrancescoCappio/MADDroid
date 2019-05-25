@@ -19,7 +19,7 @@ public class EAHCONST {
     
     public static String RESTAURANT_CATEGORY_EXTRA = "RESTAURANT_CATEGORY_EXTRA";
     
-    public static final float DELIVERY_COST = 4.50f;
+    public static final float DELIVERY_COST = 2.00f;
     
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
@@ -168,6 +168,9 @@ public class EAHCONST {
 
     // riders order subtree nodes fields
     public final static String RIDER_ORDER_STATUS = "order_status";
+    public final static String RIDER_KM_REST = "order_km_rider_restaurant";
+    public final static String RIDER_KM_REST_CUST = "order_km_restaurant_cust";
+    public final static String RIDER_INCOME = "rider_income";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String RIDER_ORDER_CUSTOMER_ID = "customer_id";
     
