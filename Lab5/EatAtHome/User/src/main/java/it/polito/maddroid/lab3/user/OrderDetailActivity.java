@@ -10,6 +10,7 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.RatingActivity;
+import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;

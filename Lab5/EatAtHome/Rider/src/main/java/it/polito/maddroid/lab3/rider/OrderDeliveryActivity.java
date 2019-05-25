@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import it.polito.maddroid.lab3.common.Customer;
 import it.polito.maddroid.lab3.common.CustomerDetailActivity;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.Utility;
 
 import android.content.Intent;
@@ -480,26 +481,20 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
             
-            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
-                @Override
-                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
-                    riderToRestaurantRoutes = route;
-                    riderToRestaurantDistance = distances[0];
-                    tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
-                    riderToRestaurantDuration = distances[1];
-                    tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
-                }
+            new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
+                riderToRestaurantRoutes = route;
+                riderToRestaurantDistance = distances[0];
+                tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
+                riderToRestaurantDuration = distances[1];
+                tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
             });
             
-            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
-                @Override
-                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
-                    restaurantToCustomerRoutes = route;
-                    restaurantToCustomerDistance = distances[0];
-                    tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
-                    restaurantToCustomerDuration = distances[1];
-                    tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
-                }
+            new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
+                restaurantToCustomerRoutes = route;
+                restaurantToCustomerDistance = distances[0];
+                tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
+                restaurantToCustomerDuration = distances[1];
+                tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
             });
         }
     }
