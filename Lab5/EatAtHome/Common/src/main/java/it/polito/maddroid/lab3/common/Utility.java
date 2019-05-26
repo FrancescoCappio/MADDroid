@@ -279,6 +279,73 @@ public class Utility {
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         return intent;
     }
+    
+    public static String minutesToPrettyDuration(Context context, int minutes, boolean longString) {
+        
+        if (minutes < 60) {
+            if (longString) {
+                if (minutes == 1)
+                    return minutes + " " + context.getString(R.string.minute_long);
+                else
+                    return minutes + " " + context.getString(R.string.minutes_long);
+            } else {
+                return minutes + context.getString(R.string.minutes_short);
+            }
+        }
+        
+        int hours = minutes / 60;
+        
+        if (hours < 24) {
+            int remain = minutes - hours * 60;
+    
+            if (longString) {
+                String hoursS;
+                if (hours == 1)
+                    hoursS = hours + " " + context.getString(R.string.hour_long);
+                else
+                    hoursS = hours + " " + context.getString(R.string.hours_long);
+    
+                String minutesS;
+                if (remain == 1)
+                    minutesS = remain + " " + context.getString(R.string.minute_long);
+                else
+                    minutesS = remain + " " + context.getString(R.string.minutes_long);
+    
+                return hoursS + " " + minutesS;
+            }
+            else {
+                return hours + context.getString(R.string.hours_short) + " " + remain + context.getString(R.string.minutes_short);
+            }
+        }
+        
+        int days = hours / 24;
+        int remainMinutes = minutes - hours * 60;
+        int remainHours = hours - days * 24;
+
+        if (longString) {
+            String daysS;
+            if (days == 1)
+                daysS = days + " " + context.getString(R.string.day_long);
+            else
+                daysS = days + " " + context.getString(R.string.days_long);
+    
+            String hoursS;
+            if (remainHours == 1)
+                hoursS = remainHours + " " + context.getString(R.string.hour_long);
+            else
+                hoursS = remainHours + " " + context.getString(R.string.hours_long);
+    
+            String minutesS;
+            if (remainMinutes == 1)
+                minutesS = remainMinutes + " " + context.getString(R.string.minute_long);
+            else
+                minutesS = remainMinutes + " " + context.getString(R.string.minutes_long);
+    
+            return daysS + " " + hoursS + " " + minutesS;
+        }
+        
+        return days + context.getString(R.string.days_short) + " " + remainHours + context.getString(R.string.hours_short) + " " + remainMinutes + context.getString(R.string.minutes_short);
+    }
 }
 
 

@@ -562,8 +562,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         View alertLayout = inflater.inflate(R.layout.order_delivery_time_dialog, null);
         
         etTimeDialog = alertLayout.findViewById(R.id.et_time);
-        
-        //TODO: convert messages in hours + minutes
     
         etTimeDialog.setFocusable(false);
         etTimeDialog.setClickable(true);
@@ -577,7 +575,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         totalMinimumTime = orderTime + deliveryTimeMinutes;
         
-        message = message + " " + totalMinimumTime + " minutes";
+        message = message + " " + Utility.minutesToPrettyDuration(this, totalMinimumTime, true);
         
         tvDialogMessage.setText(message);
     
@@ -600,7 +598,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             
             if (!checkValidDeliveryTime()) {
                 String alert = getString(R.string.alert_order_time_not_valid);
-                alert = alert + " " + totalMinimumTime + " minutes";
+                alert = alert + " " + Utility.minutesToPrettyDuration(this, totalMinimumTime, true);
                 Utility.showAlertToUser(CompleteOrderActivity.this, alert);
                 return;
             }

@@ -171,6 +171,16 @@
     <string name="poor">Poor</string>
     <string name="terrible">Terrible</string>
 
+    <string name="days_long">days</string>
+    <string name="day_long">day</string>
+    <string name="days_short">d</string>
+    <string name="hours_long">hours</string>
+    <string name="hour_long">hour</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_long">minutes</string>
+    <string name="minute_long">minute</string>
+    <string name="minutes_short">m</string>
+
     <string name="alert_no_score">Please add a score to your review</string>
     <string name="alert_no_comment">Please add a comment to your review</string>
     <string name="delivery_time_title">Choose delivery time</string>
