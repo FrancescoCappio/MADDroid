@@ -486,7 +486,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                     etDeliveryAddress.setText("");
                     Utility.showAlertToUser(CompleteOrderActivity.this, R.string.address_not_found );
                     etDeliveryAddress.setHint(R.string.address_not_found);
-                    checkDistanceAndConfirmOrder();
+                    locationAddress = null;
                     break;
                 case 1:
                     bundle = message.getData();
