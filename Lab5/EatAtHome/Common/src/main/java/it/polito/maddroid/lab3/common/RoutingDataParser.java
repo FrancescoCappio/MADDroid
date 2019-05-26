@@ -13,8 +13,9 @@ import java.util.List;
 public class RoutingDataParser {
 
     private JSONObject jObject;
-
-
+    
+    private int durationMinutes = -1;
+    
     public RoutingDataParser(JSONObject jObject) {
         this.jObject = jObject;
     }
@@ -120,6 +121,7 @@ public class RoutingDataParser {
             
             int durationTimeBike = durationTime / 2;
             int durationTimeBikeMins = durationTimeBike / 60;
+            durationMinutes = durationTimeBikeMins;
             
             if (durationTimeBikeMins > 60) {
                 int hours = durationTimeBikeMins / 60;
@@ -133,5 +135,11 @@ public class RoutingDataParser {
             e.printStackTrace();
         }
         return data;
+    }
+    
+    public int getDurationMinutes() {
+        if (durationMinutes < 0)
+            getDistance();
+        return durationMinutes;
     }
 }

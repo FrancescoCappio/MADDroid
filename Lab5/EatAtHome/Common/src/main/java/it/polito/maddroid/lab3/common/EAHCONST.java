@@ -1,6 +1,9 @@
 package it.polito.maddroid.lab3.common;
 
 
+import java.io.Serializable;
+
+
 public class EAHCONST {
 
 
@@ -40,6 +43,24 @@ public class EAHCONST {
     public enum RiderStatus {
         ON_DUTY,
         NOT_ON_DUTY
+    }
+    
+    public static class GeoLocation implements Serializable {
+        private double latitude;
+        private double longitude;
+    
+        public GeoLocation(double latitude, double longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+    
+        public double getLatitude() {
+            return latitude;
+        }
+    
+        public double getLongitude() {
+            return longitude;
+        }
     }
     
     public static class Review implements Comparable<Review>{

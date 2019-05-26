@@ -1,7 +1,6 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -43,7 +42,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -807,7 +805,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             }
         });
 
-
+        //TODO: strings for this dialog!!
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Restaurant Time Table");
         // this is set the view from XML inside AlertDialog
@@ -815,7 +813,6 @@ public class AccountInfoActivity extends AppCompatActivity {
         // disallow cancel of AlertDialog on click of back button and outside touch
         alert.setCancelable(false);
         alert.setNegativeButton("Cancel", (dialog, which) -> {
-            Toast.makeText(getBaseContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
             timetableDialogOpen = false;
             timetableDialog = null;
             dialog.dismiss();

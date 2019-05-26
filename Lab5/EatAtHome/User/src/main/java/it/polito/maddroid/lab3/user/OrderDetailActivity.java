@@ -437,8 +437,13 @@ public class OrderDetailActivity extends AppCompatActivity {
 
             new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
                 @Override
-                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
                     restaurantToCustomerRoutes = route;
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception routing: " + e.getMessage());
                 }
             });
         }

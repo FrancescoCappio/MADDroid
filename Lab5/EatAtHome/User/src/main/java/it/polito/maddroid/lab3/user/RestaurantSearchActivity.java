@@ -19,6 +19,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -159,7 +161,7 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                 restaurants = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     
-                    // do somethind with the individual restaurant
+                    // do something with the individual restaurant
                     String restaurantId = ds.getKey();
                     String name = (String) ds.child(EAHCONST.RESTAURANT_NAME).getValue();
                     String description = (String) ds.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
@@ -183,6 +185,13 @@ public class RestaurantSearchActivity extends AppCompatActivity {
                     if (ds.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue() != null) {
                         int avgOrderTime = ds.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue(Long.class).intValue();
                         r.setAvgOrderTime(avgOrderTime);
+                    }
+                    
+                    if (ds.child(EAHCONST.RESTAURANT_POSITION).getValue() != null) {
+                        double lat = ds.child(EAHCONST.RESTAURANT_POSITION).child("l").child("0").getValue(Double.class);
+                        double longit = ds.child(EAHCONST.RESTAURANT_POSITION).child("l").child("1").getValue(Double.class);
+                        EAHCONST.GeoLocation geoLocation = new EAHCONST.GeoLocation(lat, longit);
+                        r.setGeoLocation(geoLocation);
                     }
                     restaurants.add(r);
                 }

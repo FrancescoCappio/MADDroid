@@ -355,24 +355,40 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
 
-            new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
-                String restaurantDist = distances[0];
-                String[] splits = distances[0].split(" ");
-                kmRider = Float.parseFloat(splits[0]);
-                addCost(kmRider);
-                tvRestaurantDistanceKm.setText(restaurantDist);
-                String restaurantTime = distances[1];
-                tvRestaurantDistanceTime.setText(restaurantTime);
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    String restaurantDist = distances[0];
+                    String[] splits = distances[0].split(" ");
+                    kmRider = Float.parseFloat(splits[0]);
+                    addCost(kmRider);
+                    tvRestaurantDistanceKm.setText(restaurantDist);
+                    String restaurantTime = distances[1];
+                    tvRestaurantDistanceTime.setText(restaurantTime);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
             
-            new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
-                String customerDist = distances[0];
-                tvCustomerDistanceKm.setText(customerDist);
-                String[] splits = distances[0].split(" ");
-                float kmRider1 = Float.parseFloat(splits[0]);
-                addCost(kmRider1);
-                String customerTime = distances[1];
-                tvCustomerDistanceTime.setText(customerTime);
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    String customerDist = distances[0];
+                    tvCustomerDistanceKm.setText(customerDist);
+                    String[] splits = distances[0].split(" ");
+                    float kmRider1 = Float.parseFloat(splits[0]);
+                    addCost(kmRider1);
+                    String customerTime = distances[1];
+                    tvCustomerDistanceTime.setText(customerTime);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
         }
     }

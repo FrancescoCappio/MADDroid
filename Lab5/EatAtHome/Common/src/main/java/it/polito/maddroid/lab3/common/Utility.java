@@ -45,6 +45,14 @@ public class Utility {
         Snackbar.make(activity.findViewById(android.R.id.content),alert,Snackbar.LENGTH_SHORT).show();
     }
     
+    public static void showAlertToUser(Activity activity, String string) {
+        if (activity == null) {
+            Log.e(TAG, "Cannot show alert because the activity is null");
+            return;
+        }
+        Snackbar.make(activity.findViewById(android.R.id.content),string,Snackbar.LENGTH_SHORT).show();
+    }
+    
     public static void startActivityToGetImage(Activity context, String AUTHORITY, File destFile, int requestCode) {
         File myImageFile = destFile;
         

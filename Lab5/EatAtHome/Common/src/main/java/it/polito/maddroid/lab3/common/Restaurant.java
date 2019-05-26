@@ -14,6 +14,7 @@ public class Restaurant implements Serializable, Comparable<Restaurant> {
     private String email;
     private String categoriesIds;
     private String timeTableString;
+    private EAHCONST.GeoLocation geoLocation;
     private int reviewCount = 0;
     private float reviewAvg = 0.0f;
     private int avgOrderTime = 15;
@@ -96,5 +97,13 @@ public class Restaurant implements Serializable, Comparable<Restaurant> {
     
     public void setAvgOrderTime(int avgOrderTime) {
         this.avgOrderTime = avgOrderTime;
+    }
+    
+    public EAHCONST.GeoLocation getGeoLocation() {
+        return geoLocation;
+    }
+    
+    public void setGeoLocation(EAHCONST.GeoLocation geoLocation) {
+        this.geoLocation = geoLocation;
     }
 }

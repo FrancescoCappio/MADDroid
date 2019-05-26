@@ -10,10 +10,10 @@ import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.GeocodingLocation;
 import it.polito.maddroid.lab3.common.Restaurant;
+import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +65,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String POSITION_KEY = "POSITION_KEY";
     public static final String CHOICE_KEY = "CHOICE_KEY";
     public static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
+    public static final String DELIVERY_TIME_DIALOG_KEY = "DELIVERY_TIME_DIALOG_KEY";
+    public static final String TOTAL_MIN_TIME_KEY = "TOTAL_MIN_TIME_KEY";
+    public static final String COMPUTED_DELIVERY_TIME_KEY = "COMPUTED_DELIVERY_TIME_KEY";
+    public static final String CHOSEN_ADDRESS_KEY = "CHOSEN_ADDRESS_KEY";
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -78,13 +83,17 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private Address address;
     private String[] multiChoiceItems;
     private int choice;
+    private int deliveryTimeMinutes = -1;
     private boolean positionDialogOpen = false;
+    private String chosenDeliveryTime;
+    private int totalMinimumTime = -1;
+    private boolean timeDialogOpen = false;
+    private AlertDialog deliveryTimeDialog;
     
     private String currentUserDefaultAddress;
     private String currentUserDefaultAddressNotes;
     
     private TextView tvTotalCost;
-    private EditText etDeliveryTime;
     private EditText etDeliveryAddress;
     private Button btConfirmOrder;
     private TextView tvDeliveryCost;
@@ -142,7 +151,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
             
             etDeliveryAddress.setText(savedInstanceState.getString(ADDRESS_KEY, ""));
             etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
-            etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
+            
+            timeDialogOpen = savedInstanceState.getBoolean(DELIVERY_TIME_DIALOG_KEY, false);
             positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
             choice = savedInstanceState.getInt(CHOICE_KEY);
             multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITION_KEY);
@@ -153,15 +163,21 @@ public class CompleteOrderActivity extends AppCompatActivity {
             if  (positionDialogOpen) {
                 showPositionDialog(multiChoiceItems, choice);
             }
+    
+            totalMinimumTime = savedInstanceState.getInt(TOTAL_MIN_TIME_KEY, -1);
+            deliveryTimeMinutes = savedInstanceState.getInt(COMPUTED_DELIVERY_TIME_KEY, -1);
+            
+            address = savedInstanceState.getParcelable(CHOSEN_ADDRESS_KEY);
+            
+            if (timeDialogOpen)
+                openDeliveryTimeDialog();
+            if (etTimeDialog != null)
+                etTimeDialog.setText(savedInstanceState.getString(TIME_KEY, ""));
             
         }
         String totalCost = computeTotalCost(true);
         tvTotalCost.setText(totalCost);
         tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
-    
-        etDeliveryTime.setFocusable(false);
-        etDeliveryTime.setClickable(true);
-        etDeliveryTime.setOnClickListener(v -> showTimePickerDialog());
         
         btConfirmOrder.setOnClickListener(v ->{
             String userDeliveryAddress = etDeliveryAddress.getText().toString();
@@ -200,7 +216,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         tvTotalCost = findViewById(R.id.tv_payment_total);
         etDeliveryAddress = findViewById(R.id.et_delivery_address);
-        etDeliveryTime = findViewById(R.id.et_time);
         btConfirmOrder = findViewById(R.id.bt_confirm);
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         etAddressNotes = findViewById(R.id.et_delivery_address_notes);
@@ -279,24 +294,33 @@ public class CompleteOrderActivity extends AppCompatActivity {
         });
     }
     
+    private void checkDistanceAndConfirmOrder() {
+        setActivityLoading(true);
+        new RoutingUtility(this,
+                new LatLng(currentRestaurant.getGeoLocation().getLatitude(), currentRestaurant.getGeoLocation().getLongitude()),
+                new LatLng(address.getLatitude(), address.getLongitude()),
+                new RoutingUtility.GetRouteCaller() {
+            @Override
+            public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                deliveryTimeMinutes = minutes;
+                setActivityLoading(false);
+                openDeliveryTimeDialog();
+            }
+    
+            @Override
+            public void routeErrorCallback(Exception e) {
+                setActivityLoading(false);
+                Log.e(TAG, "Exception on routing: " + e.getMessage());
+                Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_computing_distance);
+            }
+        });
+    }
+    
     private void actionConfirmOrder() {
-        
         //checks
-        
-        
         
         if (selectedDishes == null || selectedDishes.isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_order_no_dishes);
-            return;
-        }
-        
-        if (etDeliveryTime.getText().toString().isEmpty()) {
-            Utility.showAlertToUser(this, R.string.alert_order_no_time);
-            return;
-        }
-        
-        if (!checkValidDeliveryTime()) {
-            Utility.showAlertToUser(this, R.string.alert_order_time_not_valid);
             return;
         }
         
@@ -319,7 +343,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         String orderId = Utility.generateUUID();
     
         String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        String deliveryTime = etDeliveryTime.getText().toString();
         
         String deliveryAddress = etDeliveryAddress.getText().toString();
         
@@ -338,7 +361,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 orderId);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_STATUS),orderStatus);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),date);
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),deliveryTime);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),chosenDeliveryTime);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost(false));
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
@@ -386,7 +409,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     }
     
     public boolean checkValidDeliveryTime() {
-        String time = etDeliveryTime.getText().toString();
+        String time = etTimeDialog.getText().toString();
         
         String[] splits = time.split(":");
         
@@ -402,24 +425,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
         int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
         int currentMinutes = calendar.get(Calendar.MINUTE);
         
+        //TODO and another date??
+        int chosenTimeMinutes = timeHour*60 + timeMinutes;
+        int currentTimeMinutes = currentHour*60 + currentMinutes;
         
-        // we want to leave the restaurateur + the rider at least 1 hour to deliver
-        
-        if (currentHour >= timeHour)
+        if (chosenTimeMinutes - currentTimeMinutes < totalMinimumTime)
             return false;
-        
-        if (currentHour < timeHour - 1)
-            return true;
-        
-        if (currentMinutes <= timeMinutes)
-            return true;
-        
-        return false;
-    }
-    
-    public void showTimePickerDialog() {
-        DialogFragment newFragment = new TimePickerFragment(etDeliveryTime);
-        newFragment.show(getSupportFragmentManager(), "timePicker");
+        return true;
     }
     
     @Override
@@ -435,6 +447,16 @@ public class CompleteOrderActivity extends AppCompatActivity {
         outState.putSerializable(ADDRESSES_KEY, (Serializable) addressList);
         outState.putInt(CHOICE_KEY,choice);
         outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
+        outState.putBoolean(DELIVERY_TIME_DIALOG_KEY, timeDialogOpen);
+        
+        if (address != null)
+            outState.putParcelable(CHOSEN_ADDRESS_KEY, address);
+        
+        if (totalMinimumTime != -1)
+            outState.putInt(TOTAL_MIN_TIME_KEY, totalMinimumTime);
+        
+        if (deliveryTimeMinutes != -1)
+            outState.putInt(COMPUTED_DELIVERY_TIME_KEY, deliveryTimeMinutes);
         
         if (!etDeliveryAddress.getText().toString().isEmpty()) {
             outState.putString(ADDRESS_KEY, etDeliveryAddress.getText().toString());
@@ -444,8 +466,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
             outState.putString(ADDRESS_NOTES_KEY, etAddressNotes.getText().toString());
         }
     
-        if (!etDeliveryTime.getText().toString().isEmpty()) {
-            outState.putString(TIME_KEY, etDeliveryTime.getText().toString());
+        if (etTimeDialog != null && !etTimeDialog.getText().toString().isEmpty()) {
+            outState.putString(TIME_KEY, etTimeDialog.getText().toString());
         }
     }
 
@@ -464,7 +486,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                     etDeliveryAddress.setText("");
                     Utility.showAlertToUser(CompleteOrderActivity.this, R.string.address_not_found );
                     etDeliveryAddress.setHint(R.string.address_not_found);
-                    actionConfirmOrder();
+                    checkDistanceAndConfirmOrder();
                     break;
                 case 1:
                     bundle = message.getData();
@@ -472,7 +494,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                     Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
                     address = addressList.get(0);
                     etDeliveryAddress.setText("" + address.getThoroughfare()+" "+ address.getSubThoroughfare()+ ", " + address.getLocality() );
-                    actionConfirmOrder();
+                    checkDistanceAndConfirmOrder();
                     break;
                 case 2:
                     bundle = message.getData();
@@ -501,31 +523,20 @@ public class CompleteOrderActivity extends AppCompatActivity {
 
         possiblePosition = new AlertDialog.Builder(this)
                 .setTitle("Select Your Address")
-                .setSingleChoiceItems(multiChoiceItems, checkedItems, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        choice = which;
-                    }
+                .setSingleChoiceItems(multiChoiceItems, checkedItems, (dialog, which) -> choice = which)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    dialog.dismiss();
+                    etDeliveryAddress.setText(multiChoiceItems[choice]);
+                    Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
+                    address = addressList.get(choice);
+                    checkDistanceAndConfirmOrder();
+                    positionDialogOpen = false;
                 })
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        etDeliveryAddress.setText(multiChoiceItems[choice]);
-                        Log.d("accountInfo latlong", addressList.get(choice).getLatitude() + " " + addressList.get(choice).getLongitude());
-                        address = addressList.get(choice);
-                        actionConfirmOrder();
-                        positionDialogOpen = false;
-                    }
-                })
-                .setNegativeButton("Back", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        etDeliveryAddress.setText("");
-                        actionConfirmOrder();
-                        positionDialogOpen = false;
-                    }
+                .setNegativeButton("Back", (dialog, which) -> {
+                    dialog.dismiss();
+                    etDeliveryAddress.setText("");
+                    checkDistanceAndConfirmOrder();
+                    positionDialogOpen = false;
                 }).create();
 
 
@@ -540,6 +551,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if(possiblePosition != null) {
             possiblePosition.dismiss();
         }
+        
+        if (deliveryTimeDialog != null) {
+            deliveryTimeDialog.dismiss();
+        }
     }
     
     private void openDeliveryTimeDialog() {
@@ -548,11 +563,59 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         etTimeDialog = alertLayout.findViewById(R.id.et_time);
         
+        //TODO: convert messages in hours + minutes
+    
+        etTimeDialog.setFocusable(false);
+        etTimeDialog.setClickable(true);
+        etTimeDialog.setOnClickListener(v -> showTimePickerDialog());
+        
         TextView tvDialogMessage = alertLayout.findViewById(R.id.tv_dialog_message);
         
         String message = getString(R.string.delivery_time_message);
         
         int orderTime = currentRestaurant.getAvgOrderTime();
         
+        totalMinimumTime = orderTime + deliveryTimeMinutes;
+        
+        message = message + " " + totalMinimumTime + " minutes";
+        
+        tvDialogMessage.setText(message);
+    
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this)
+                .setTitle(R.string.delivery_time_title)
+                .setView(alertLayout)
+                .setCancelable(false)
+                .setNegativeButton("Cancel", (dialog, which) -> {
+            deliveryTimeDialog = null;
+            timeDialogOpen = false;
+            dialog.dismiss();
+        }).setPositiveButton(R.string.ok, (dialog, which) -> {
+            timeDialogOpen = false;
+            if (etTimeDialog.getText().toString().isEmpty()) {
+                Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_order_no_time);
+                return;
+            }
+            
+            chosenDeliveryTime = etTimeDialog.getText().toString();
+            
+            if (!checkValidDeliveryTime()) {
+                String alert = getString(R.string.alert_order_time_not_valid);
+                alert = alert + " " + totalMinimumTime + " minutes";
+                Utility.showAlertToUser(CompleteOrderActivity.this, alert);
+                return;
+            }
+            actionConfirmOrder();
+            deliveryTimeDialog = null;
+        });
+        
+        deliveryTimeDialog = alertBuilder.create();
+        
+        timeDialogOpen = true;
+        deliveryTimeDialog.show();
+    }
+    
+    public void showTimePickerDialog() {
+        DialogFragment newFragment = new TimePickerFragment(etTimeDialog);
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 }
