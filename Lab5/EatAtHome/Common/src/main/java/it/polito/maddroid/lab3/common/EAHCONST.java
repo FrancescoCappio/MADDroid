@@ -138,6 +138,8 @@ public class EAHCONST {
     public final static String RIDER_PHONE = "phone";
     public final static String RIDER_EMAIL = "email";
     public final static String RIDER_ON_DUTY = "on_duty_status";
+    public final static String RIDER_REVIEW_COUNT = "review_count";
+    public final static String RIDER_REVIEW_AVG = "review_avg";
     
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
