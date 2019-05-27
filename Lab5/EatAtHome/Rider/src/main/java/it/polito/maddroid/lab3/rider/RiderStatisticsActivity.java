@@ -30,7 +30,7 @@ import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.ReviewsActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
-public class RiderStatistics extends AppCompatActivity {
+public class RiderStatisticsActivity extends AppCompatActivity {
 
     // Firebase attributes
     private FirebaseAuth mAuth;
@@ -306,7 +306,7 @@ public class RiderStatistics extends AppCompatActivity {
             return;
         }
 
-        Intent ratingIntent = new Intent(RiderStatistics.this, ReviewsActivity.class);
+        Intent ratingIntent = new Intent(RiderStatisticsActivity.this, ReviewsActivity.class);
         ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RIDER);
         ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentUser.getUid());
         startActivity(ratingIntent);

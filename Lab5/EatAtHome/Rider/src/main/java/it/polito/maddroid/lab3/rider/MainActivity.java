@@ -5,20 +5,15 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment selectedFragment;
     private CurrentDeliveriesFragment currentDeliveriesFragment;
     private OrdersFragment ordersFragment;
-    private RiderStatistics statisticsFragment;
+    private RiderStatisticsActivity statisticsFragment;
     
     private List<RiderOrderDelivery> allDeliveries;
     
@@ -437,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case 2:
-                Intent intentStatsRider = new Intent(this, RiderStatistics.class);
+                Intent intentStatsRider = new Intent(this, RiderStatisticsActivity.class);
                 navigationView.post(new Runnable() {
                     @Override
                     public void run() {
