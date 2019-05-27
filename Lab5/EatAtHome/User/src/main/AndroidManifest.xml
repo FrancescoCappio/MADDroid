@@ -31,7 +31,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".TrackingRider"
+            android:name=".TrackingRiderActivity"
             android:label="@string/title_activity_tracking_rider"></activity>
         <activity android:name=".OrderDetailActivity" />
         <activity android:name=".CompleteOrderActivity" />

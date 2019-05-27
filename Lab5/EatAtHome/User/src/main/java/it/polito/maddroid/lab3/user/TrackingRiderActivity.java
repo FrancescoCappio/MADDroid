@@ -6,10 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -36,9 +33,9 @@ import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.Utility;
 
-public class TrackingRider extends FragmentActivity implements OnMapReadyCallback {
+public class TrackingRiderActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private static final String TAG = "TrackingRider";
+    private static final String TAG = "TrackingRiderActivity";
 
     public static final String ORIGIN_LOCATION_KEY = "ORIGIN_LOCATION_KEY";
     public static final String DESTINATION_LOCATION_KEY = "DESTINATION_LOCATION_KEY";
@@ -98,7 +95,7 @@ public class TrackingRider extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.hasChildren()) {
-                    Utility.showAlertToUser(TrackingRider.this, R.string.alert_error_downloading_info);
+                    Utility.showAlertToUser(TrackingRiderActivity.this, R.string.alert_error_downloading_info);
                     return;
                 }
                 double lat = (double) dataSnapshot.child("0").getValue();
