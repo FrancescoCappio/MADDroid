@@ -450,10 +450,10 @@ public class OrderDetailActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(getApplicationContext(), TrackingRider.class);
-        intent.putExtra(TrackingRider.ORIGIN_LOCATION_KEY, restaurantLocation);
-        intent.putExtra(TrackingRider.DESTINATION_LOCATION_KEY, customerLocation);
-        intent.putExtra(TrackingRider.ROUTE_KEY, (Serializable) restaurantToCustomerRoutes);
+        Intent intent = new Intent(getApplicationContext(), TrackingRiderActivity.class);
+        intent.putExtra(TrackingRiderActivity.ORIGIN_LOCATION_KEY, restaurantLocation);
+        intent.putExtra(TrackingRiderActivity.DESTINATION_LOCATION_KEY, customerLocation);
+        intent.putExtra(TrackingRiderActivity.ROUTE_KEY, (Serializable) restaurantToCustomerRoutes);
         intent.putExtra(OrderDetailActivity.ORDER_KEY, currentOrder);
         startActivity(intent);
     }

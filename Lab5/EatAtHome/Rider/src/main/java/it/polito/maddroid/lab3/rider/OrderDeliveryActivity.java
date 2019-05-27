@@ -241,7 +241,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvTotalCost.setText(currentOrder.getTotalCost());
-        tvCostDelivery.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
+        tvCostDelivery.setText(String.format(Locale.US,"%.02f", currentOrder.getDeliveryCost()) + " €");
         tvRestaurantAddress.setText(currentOrder.getRestaurantAddress());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
