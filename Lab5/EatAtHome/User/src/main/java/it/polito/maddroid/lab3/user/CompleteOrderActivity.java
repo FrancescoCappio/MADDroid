@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -13,9 +15,16 @@ import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,9 +73,15 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String CHOICE_KEY = "CHOICE_KEY";
     public static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
 
+    private final static int LOCATION_PERMISSION_CODE = 123;
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+
+
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     
     // general purpose attributes
     private int waitingCount = 0;
@@ -89,6 +104,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private TextView tvDeliveryCost;
     private EditText etAddressNotes;
     private CheckBox cbAccountAddress;
+    private Button btGetAddress;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,16 +191,20 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 locationAddress.getAddressFromLocation(userDeliveryAddress, getApplicationContext(), new CompleteOrderActivity.GeocoderHandler());
             }
         } );
+
+        btGetAddress.setOnClickListener(v -> getCurrentLocation());
         
         cbAccountAddress.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 etAddressNotes.setVisibility(View.GONE);
                 etDeliveryAddress.setEnabled(false);
+                btGetAddress.setVisibility(View.GONE);
                 
                 if (currentUserDefaultAddress != null)
                     etDeliveryAddress.setText(currentUserDefaultAddress);
             } else {
                 etAddressNotes.setVisibility(View.VISIBLE);
+                btGetAddress.setVisibility(View.VISIBLE);
                 etDeliveryAddress.setEnabled(true);
             }
     
@@ -193,7 +213,60 @@ public class CompleteOrderActivity extends AppCompatActivity {
         // do not open keyboard on activity open
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
-    
+
+    private void getCurrentLocation() {
+        setActivityLoading(true);
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "We do not have the permission the access the location!");
+            checkPermissions();
+            return;
+        }
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+
+        };
+
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+
+        String provider = locationManager.getBestProvider(crta, true);
+
+        locationManager.requestLocationUpdates(provider, 30000, 0, locationListener);
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        GeocodingLocation locationAddress = new GeocodingLocation();
+        Address addressDetail = locationAddress.getAddress(location, getApplicationContext());
+        if (addressDetail != null ) {
+            String addressLine = addressDetail.getThoroughfare() + " " + addressDetail.getSubThoroughfare()
+                    + ", " + addressDetail.getLocality();
+            etDeliveryAddress.setText(addressLine);
+        }else {
+            Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_error_get_address);
+        }
+        setActivityLoading(false);
+    }
+
     private void getReferencesToViews() {
         
         tvTotalCost = findViewById(R.id.tv_payment_total);
@@ -203,7 +276,12 @@ public class CompleteOrderActivity extends AppCompatActivity {
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         etAddressNotes = findViewById(R.id.et_delivery_address_notes);
         cbAccountAddress = findViewById(R.id.cb_address);
-        
+        btGetAddress = findViewById(R.id.bt_get_address);
+
+        if (cbAccountAddress.isChecked())
+            btGetAddress.setVisibility(View.GONE);
+        else
+            btGetAddress.setVisibility(View.VISIBLE);
     }
     
     private synchronized void setActivityLoading(boolean loading) {
@@ -536,5 +614,25 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if(possiblePosition != null) {
             possiblePosition.dismiss();
         }
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // ask for permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_permissions_title)
+                    .setMessage(R.string.alert_permissions_needed)
+                    .setOnDismissListener(dialog -> checkPermissions()).create().show();
+        }
+
     }
 }

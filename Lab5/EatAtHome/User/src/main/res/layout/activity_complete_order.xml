@@ -101,10 +101,24 @@
             android:layout_marginStart="@dimen/activity_margin"
             android:textColor="@drawable/et_color_selector"
 
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_address_title"
             />
+
+        <Button
+            android:id="@+id/bt_get_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/current_address"
+            android:background="@color/eah_blue"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_address_title"/>
+
 
         <EditText
             android:id="@+id/et_delivery_address_notes"

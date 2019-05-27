@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -76,4 +77,30 @@ public class GeocodingLocation {
         thread.start();
     }
 
-}
+    public Address getAddress(Location location, Context context) {
+
+        Geocoder geocoder;
+
+        List<Address> addresses;
+
+        geocoder = new Geocoder(context, Locale.getDefault());
+
+
+        try {
+
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+            return addresses.get(0);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
+
+        return null;
+    }
+
+
+
+    }
