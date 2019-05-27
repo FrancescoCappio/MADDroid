@@ -354,6 +354,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.PENDING;
         
+        //TODO: distinguish delivery time and orderReadyTime
+        
         // put everything related to order from point of view of restaurateur
         String restOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
