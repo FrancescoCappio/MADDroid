@@ -1,4 +1,4 @@
-package it.polito.maddroid.lab3.rider;
+package it.polito.maddroid.lab3.common;
 
 
 import android.content.Context;

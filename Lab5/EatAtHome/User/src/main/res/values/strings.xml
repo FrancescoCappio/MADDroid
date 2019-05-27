@@ -42,4 +42,14 @@
     <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
 
     <string name="action_refresh">Refresh</string>
+    <string name="track_rider">Track rider</string>
+    <string name="title_activity_tracking_rider">Map</string>
+
+    <string name="current_address">Current address</string>
+
+    <string name="alert_permissions_needed">The app cannot work without the requested permissions</string>
+    <string name="alert_permission_needed_for_function">This function cannot work without the requested permission</string>
+    <string name="alert_permissions_title">Permissions</string>
+    <string name="alert_error_get_address">There was an error while requesting your address</string>
+
 </resources>

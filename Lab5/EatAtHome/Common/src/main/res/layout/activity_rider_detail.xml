@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CustomerDetailActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/activity_margin">
+
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_avatar_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cards_margin_login_phone"
+            android:layout_marginEnd="@dimen/cards_margin_login_phone"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/activity_margin"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="@dimen/cards_corner_radius_login_phone"
+            app:cardElevation="15dp">
+
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="@dimen/detail_image_size_phone"
+                android:layout_height="@dimen/detail_image_size_phone"
+                android:src="@drawable/placeholder_avatar"
+                android:contentDescription="@string/customer" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/name"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/cv_avatar_container"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:text="@string/customer_name"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/cv_avatar_container"
+            app:layout_constraintStart_toEndOf="@+id/tv_phone_number_title"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <TextView
+            android:id="@+id/tv_phone_number_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/phone_number"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/tv_name"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_phone_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:text="@string/delivery_address"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/tv_name"
+            app:layout_constraintStart_toEndOf="@+id/tv_phone_number_title"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_email_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/email"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/tv_phone_number"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:text="@string/delivery_address"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintStart_toEndOf="@+id/tv_phone_number_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_phone_number"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_description_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/description"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintTop_toBottomOf="@+id/tv_email"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:text="@string/delivery_address"
+            android:textSize="15sp"
+
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintStart_toEndOf="@+id/tv_phone_number_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_email"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
