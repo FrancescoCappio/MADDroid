@@ -67,6 +67,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
+    public static final String DEFAULT_ADDRESS_KEY = "DEFAULT_ADDRESS_KEY";
+    public static final String DEFAULT_ADDRESS_NOTES_KEY = "DEFAULT_ADDRESS_NOTES_KEY";
     public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
     public static final String POSITION_KEY = "POSITION_KEY";
@@ -158,6 +160,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
             etAddressNotes.setText(savedInstanceState.getString(ADDRESS_NOTES_KEY, ""));
             etDeliveryTime.setText(savedInstanceState.getString(TIME_KEY, ""));
             positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
+            currentUserDefaultAddress = savedInstanceState.getString(DEFAULT_ADDRESS_KEY);
+            currentUserDefaultAddressNotes = savedInstanceState.getString(DEFAULT_ADDRESS_NOTES_KEY);
             choice = savedInstanceState.getInt(CHOICE_KEY);
             multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITION_KEY);
             addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_KEY);
@@ -220,6 +224,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.e(TAG, "We do not have the permission the access the location!");
             checkPermissions();
+            setActivityLoading(false);
             return;
         }
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -227,7 +232,22 @@ public class CompleteOrderActivity extends AppCompatActivity {
 
             @Override
             public void onLocationChanged(Location location) {
-
+                if (location == null) {
+                    Log.e(TAG, "Location is null");
+                    return;
+                }
+                GeocodingLocation locationAddress = new GeocodingLocation();
+                Address addressDetail = locationAddress.getAddress(location, getApplicationContext());
+                if (addressDetail != null ) {
+                    String addressLine = addressDetail.getThoroughfare() + " " + addressDetail.getSubThoroughfare()
+                            + ", " + addressDetail.getLocality();
+                    etDeliveryAddress.setText(addressLine);
+                }else {
+                    Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_error_get_address);
+                }
+                setActivityLoading(false);
+                
+                locationManager.removeUpdates(this);
             }
 
             @Override
@@ -253,18 +273,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
 
         String provider = locationManager.getBestProvider(crta, true);
 
-        locationManager.requestLocationUpdates(provider, 30000, 0, locationListener);
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        GeocodingLocation locationAddress = new GeocodingLocation();
-        Address addressDetail = locationAddress.getAddress(location, getApplicationContext());
-        if (addressDetail != null ) {
-            String addressLine = addressDetail.getThoroughfare() + " " + addressDetail.getSubThoroughfare()
-                    + ", " + addressDetail.getLocality();
-            etDeliveryAddress.setText(addressLine);
-        }else {
-            Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_error_get_address);
-        }
-        setActivityLoading(false);
+        locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+        
     }
 
     private void getReferencesToViews() {
@@ -507,6 +517,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
         outState.putSerializable(POSITION_KEY, multiChoiceItems);
         outState.putSerializable(ADDRESSES_KEY, (Serializable) addressList);
+        outState.putSerializable(DEFAULT_ADDRESS_KEY, currentUserDefaultAddress);
+        outState.putSerializable(DEFAULT_ADDRESS_NOTES_KEY, currentUserDefaultAddressNotes);
         outState.putInt(CHOICE_KEY,choice);
         outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
         
@@ -630,8 +642,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             new android.app.AlertDialog.Builder(this)
                     .setTitle(R.string.alert_permissions_title)
-                    .setMessage(R.string.alert_permissions_needed)
-                    .setOnDismissListener(dialog -> checkPermissions()).create().show();
+                    .setMessage(R.string.alert_permission_needed_for_function).create().show();
         }
 
     }
