@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import it.polito.maddroid.lab3.common.DatePickerFragment;
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.GeocodingLocation;
@@ -43,6 +44,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -62,6 +65,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
     public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
+    public static final String DATE_KEY = "DATE_KEY";
     public static final String POSITION_KEY = "POSITION_KEY";
     public static final String CHOICE_KEY = "CHOICE_KEY";
     public static final String POSITION_DIALOG_KEY = "POSITION_DIALOG_KEY";
@@ -86,12 +90,14 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private int deliveryTimeMinutes = -1;
     private boolean positionDialogOpen = false;
     private String chosenDeliveryTime;
+    private String chosenDeliveryDate;
     private int totalMinimumTime = -1;
     private boolean timeDialogOpen = false;
     private AlertDialog deliveryTimeDialog;
     
     private String currentUserDefaultAddress;
     private String currentUserDefaultAddressNotes;
+    private EAHCONST.GeoLocation currentUserDefaultPos;
     
     private TextView tvTotalCost;
     private EditText etDeliveryAddress;
@@ -100,6 +106,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private EditText etAddressNotes;
     private CheckBox cbAccountAddress;
     private EditText etTimeDialog;
+    private EditText etDateDialog;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +180,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 openDeliveryTimeDialog();
             if (etTimeDialog != null)
                 etTimeDialog.setText(savedInstanceState.getString(TIME_KEY, ""));
+            if (etDateDialog != null)
+                etDateDialog.setText(savedInstanceState.getString(DATE_KEY, ""));
             
         }
         String totalCost = computeTotalCost(true);
@@ -188,9 +197,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
             }
             else
             {
-                GeocodingLocation locationAddress = new GeocodingLocation();
-                setActivityLoading(true);
-                locationAddress.getAddressFromLocation(userDeliveryAddress, getApplicationContext(), new CompleteOrderActivity.GeocoderHandler());
+                if (cbAccountAddress.isChecked() && currentUserDefaultPos != null) {
+                    checkDistanceAndConfirmOrder();
+                } else {
+                    GeocodingLocation locationAddress = new GeocodingLocation();
+                    setActivityLoading(true);
+                    locationAddress.getAddressFromLocation(userDeliveryAddress, getApplicationContext(), new CompleteOrderActivity.GeocoderHandler());
+                }
             }
         } );
         
@@ -284,6 +297,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 currentUserDefaultAddressNotes = (String) dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue();
                 etDeliveryAddress.setText(currentUserDefaultAddress);
                 setActivityLoading(false);
+                
+                if (dataSnapshot.child(EAHCONST.CUSTOMER_POSITION).child("l").child("0").getValue() != null) {
+                    double latitude = dataSnapshot.child(EAHCONST.CUSTOMER_POSITION).child("l").child("0").getValue(Double.class);
+                    double longitude = dataSnapshot.child(EAHCONST.CUSTOMER_POSITION).child("l").child("1").getValue(Double.class);
+                    currentUserDefaultPos = new EAHCONST.GeoLocation(latitude,longitude);
+                }
+                
             }
     
             @Override
@@ -298,6 +318,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         setActivityLoading(true);
         new RoutingUtility(this,
                 new LatLng(currentRestaurant.getGeoLocation().getLatitude(), currentRestaurant.getGeoLocation().getLongitude()),
+                cbAccountAddress.isChecked() ? new LatLng(currentUserDefaultPos.getLatitude(), currentUserDefaultPos.getLongitude()) :
                 new LatLng(address.getLatitude(), address.getLongitude()),
                 new RoutingUtility.GetRouteCaller() {
             @Override
@@ -341,8 +362,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
         Map<String,Object> updateMap = new HashMap<>();
         
         String orderId = Utility.generateUUID();
-    
-        String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         
         String deliveryAddress = etDeliveryAddress.getText().toString();
         
@@ -362,7 +381,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 currentRestaurant.getRestaurantID(),
                 orderId);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_STATUS),orderStatus);
-        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),date);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DATE),chosenDeliveryDate);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_TIME),chosenDeliveryTime);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_CUSTOMER_ID),currentUser.getUid());
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost(false));
@@ -387,7 +406,12 @@ public class CompleteOrderActivity extends AppCompatActivity {
             setActivityLoading(false);
             DatabaseReference dbRef1 = dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentRestaurant.getRestaurantID()).child(orderId);
             GeoFire geoFire = new GeoFire(dbRef1);
-            geoFire.setLocation(EAHCONST.CUST_ORDER_DELIVERY_POS, new GeoLocation(address.getLatitude(), address.getLongitude()), new GeoFire.CompletionListener() {
+            
+            EAHCONST.GeoLocation location = currentUserDefaultPos;
+            if (!cbAccountAddress.isChecked())
+                location = new EAHCONST.GeoLocation(address.getLatitude(), address.getLongitude());
+            
+            geoFire.setLocation(EAHCONST.CUST_ORDER_DELIVERY_POS, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
                 @Override
                 public void onComplete(String key, DatabaseError error) {
                     if (error != null) {
@@ -412,28 +436,29 @@ public class CompleteOrderActivity extends AppCompatActivity {
     
     public boolean checkValidDeliveryTime() {
         String time = etTimeDialog.getText().toString();
+        String dateS = etDateDialog.getText().toString();
         
-        String[] splits = time.split(":");
-        
-        if (splits.length != 2)
+        //first of all we convert chosen date and time in a Date object
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy-H:m");
+        Date orderDate;
+        try {
+            orderDate = df.parse(dateS + "-" + time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Exception while parsing date");
             return false;
+        }
         
-        int timeHour = Integer.parseInt(splits[0]);
-        int timeMinutes = Integer.parseInt(splits[1]);
-    
-        Date date = new Date();   // given date
-        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-        calendar.setTime(date);   // assigns calendar to given date
-        int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-        int currentMinutes = calendar.get(Calendar.MINUTE);
+        //now we take current date and add the minimum time to deliver
+        Date currentDate = new Date();   // given date
         
-        //TODO and another date??
-        int chosenTimeMinutes = timeHour*60 + timeMinutes;
-        int currentTimeMinutes = currentHour*60 + currentMinutes;
+        long currentTimems = currentDate.getTime();
         
-        if (chosenTimeMinutes - currentTimeMinutes < totalMinimumTime)
-            return false;
-        return true;
+        long orderTimems = orderDate.getTime();
+        
+        long currentMinms = currentTimems + totalMinimumTime*60*1000;
+        
+        return orderTimems > currentMinms;
     }
     
     @Override
@@ -470,6 +495,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
     
         if (etTimeDialog != null && !etTimeDialog.getText().toString().isEmpty()) {
             outState.putString(TIME_KEY, etTimeDialog.getText().toString());
+        }
+    
+        if (etDateDialog != null && !etDateDialog.getText().toString().isEmpty()) {
+            outState.putString(DATE_KEY, etDateDialog.getText().toString());
         }
     }
 
@@ -564,10 +593,30 @@ public class CompleteOrderActivity extends AppCompatActivity {
         View alertLayout = inflater.inflate(R.layout.order_delivery_time_dialog, null);
         
         etTimeDialog = alertLayout.findViewById(R.id.et_time);
+        etDateDialog = alertLayout.findViewById(R.id.et_date_dialog);
     
         etTimeDialog.setFocusable(false);
         etTimeDialog.setClickable(true);
         etTimeDialog.setOnClickListener(v -> showTimePickerDialog());
+    
+        etDateDialog.setFocusable(false);
+        etDateDialog.setClickable(true);
+        etDateDialog.setOnClickListener(v -> showDatePickerDialog());
+    
+        final Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        String sHour = String.format("%02d", hour);
+        int minute = c.get(Calendar.MINUTE);
+        String sMinute = String.format("%02d", minute);
+    
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        String sMonth = String.format("%02d", month+1);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String sDay = String.format("%02d", day);
+        
+        etDateDialog.setText(sDay + "/" + sMonth + "/" + year);
+        etTimeDialog.setText(sHour + ":" + sMinute);
         
         TextView tvDialogMessage = alertLayout.findViewById(R.id.tv_dialog_message);
         
@@ -596,7 +645,13 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 return;
             }
             
+            if (etDateDialog.getText().toString().isEmpty()) {
+                Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_order_no_date);
+                return;
+            }
+            
             chosenDeliveryTime = etTimeDialog.getText().toString();
+            chosenDeliveryDate = etDateDialog.getText().toString();
             
             if (!checkValidDeliveryTime()) {
                 String alert = getString(R.string.alert_order_time_not_valid);
@@ -617,5 +672,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public void showTimePickerDialog() {
         DialogFragment newFragment = new TimePickerFragment(etTimeDialog);
         newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+    
+    public void showDatePickerDialog() {
+        DialogFragment newFragment = new DatePickerFragment(etDateDialog);
+        newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 }

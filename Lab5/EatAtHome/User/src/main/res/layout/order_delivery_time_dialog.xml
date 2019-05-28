@@ -15,14 +15,32 @@
         android:gravity="center"
         android:text="@string/delivery_time_message"/>
 
-    <EditText
-        android:id="@+id/et_time"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="00:00"
-
+        android:orientation="horizontal"
         android:layout_centerHorizontal="true"
 
-        android:layout_below="@+id/tv_dialog_message"/>
+        android:layout_below="@+id/tv_dialog_message">
+
+        <EditText
+            android:id="@+id/et_date_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="28/05/2019"
+
+            android:layout_marginEnd="20dp"
+            />
+
+        <EditText
+            android:id="@+id/et_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="00:00"
+            />
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>

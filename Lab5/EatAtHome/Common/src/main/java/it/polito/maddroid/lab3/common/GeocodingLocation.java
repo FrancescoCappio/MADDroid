@@ -38,9 +38,9 @@ public class GeocodingLocation {
                 } catch (IOException e) {
                     Log.e(TAG, "Unable to connect to Geocoder", e);
                 } finally {
+                    Message message = Message.obtain();
                     if (addressList != null) {
-                        Message message = Message.obtain();
-
+                        
                         message.setTarget(handler);
                         message.what = 1;
 
@@ -56,8 +56,7 @@ public class GeocodingLocation {
 
                             }
                         }
-
-
+                        
                         Bundle bundle = new Bundle();
                         if (message.what == 0) {
                             result = "Unable to get Latitude and Longitude for this address location. " +
@@ -67,6 +66,11 @@ public class GeocodingLocation {
                         } else {
                             bundle.putSerializable("address", (Serializable) addressList);
                         }
+                        message.setData(bundle);
+                        message.sendToTarget();
+                    } else {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("address", "Error getting address info");
                         message.setData(bundle);
                         message.sendToTarget();
                     }
