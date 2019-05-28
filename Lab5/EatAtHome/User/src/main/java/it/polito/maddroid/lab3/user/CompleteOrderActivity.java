@@ -19,7 +19,6 @@ import it.polito.maddroid.lab3.common.Utility;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -59,7 +58,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -74,6 +72,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
     public static final String DEFAULT_ADDRESS_KEY = "DEFAULT_ADDRESS_KEY";
+    public static final String DEFAULT_POSITION_KEY = "DEFAULT_POSITION_KEY";
     public static final String DEFAULT_ADDRESS_NOTES_KEY = "DEFAULT_ADDRESS_NOTES_KEY";
     public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
@@ -185,6 +184,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
             choice = savedInstanceState.getInt(CHOICE_KEY);
             multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITION_KEY);
             addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_KEY);
+            
+            currentUserDefaultPos = (EAHCONST.GeoLocation) savedInstanceState.getSerializable(DEFAULT_POSITION_KEY);
 
             if (etDeliveryAddress.getText().toString().isEmpty())
                 downloadCurrentUserInfo();
@@ -430,16 +431,6 @@ public class CompleteOrderActivity extends AppCompatActivity {
             return;
         }
         
-        if (etDeliveryTime.getText().toString().isEmpty()) {
-            Utility.showAlertToUser(this, R.string.alert_order_no_time);
-            return;
-        }
-        
-        if (!checkValidDeliveryTime()) {
-            Utility.showAlertToUser(this, R.string.alert_order_time_not_valid);
-            return;
-        }
-        
         if (etDeliveryAddress.getText().toString().isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_order_no_address);
             return;
@@ -572,6 +563,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         outState.putInt(CHOICE_KEY,choice);
         outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
         outState.putBoolean(DELIVERY_TIME_DIALOG_KEY, timeDialogOpen);
+        outState.putSerializable(DEFAULT_POSITION_KEY, currentUserDefaultPos);
         
         if (address != null)
             outState.putParcelable(CHOSEN_ADDRESS_KEY, address);
