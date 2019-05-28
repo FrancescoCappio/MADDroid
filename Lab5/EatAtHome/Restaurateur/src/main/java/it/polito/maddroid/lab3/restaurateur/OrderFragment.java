@@ -116,7 +116,6 @@ public class OrderFragment extends Fragment {
                     String deliveryAddress = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS).getValue();
                     String timeDelivery = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_TIME).getValue();
                     String dateDelivery = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
-                    int timeForDelivery = ds.child(EAHCONST.REST_ORDER_TIME_FOR_DELIVERY).getValue(Long.class).intValue();
                     
                     EAHCONST.OrderStatus orderStatus = ds.child(EAHCONST.REST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
 
@@ -129,7 +128,13 @@ public class OrderFragment extends Fragment {
 
                     Order order = new Order(orderId,totalPrice,riderId,customerId,currentUser.getUid(),timeDelivery,dateDelivery,deliveryAddress,orderStatus);
                     order.setDishesMap(dishes);
-
+    
+                    if (ds.child(EAHCONST.REST_ORDER_TIME_FOR_DELIVERY).getValue() != null) {
+                        int timeForDelivery = ds.child(EAHCONST.REST_ORDER_TIME_FOR_DELIVERY).getValue(Long.class).intValue();
+                        order.setTimeForDelivery(timeForDelivery);
+                    }
+    
+    
                     orders.add(order);
                     downloadCustomerName(order);
                 }
