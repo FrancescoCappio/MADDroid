@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -86,7 +87,11 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
             StorageReference riversRef = storageReference.child("dish_"+ restaurantId +"_" + dish.getDishID() +".jpg");
 
             GlideApp.with(ivDishPhoto.getContext())
-                    .load(riversRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+                    .load(riversRef)
+                    .placeholder(R.drawable.ic_dish_black)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivDishPhoto);
 
             itemView.setOnClickListener(v -> itemClickListener.clickListener(dish));
