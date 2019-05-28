@@ -103,6 +103,7 @@
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
     <string name="restaurant_distance">Distance from Restaurant</string>
 
+    <string name="order_ready_time">Order should be ready at</string>
     <string name="delivery_time">Delivery time</string>
     <string name="delivery_distance">Distance from restaurant to custumer</string>
     <string name="delivery_address">Delivery address </string>

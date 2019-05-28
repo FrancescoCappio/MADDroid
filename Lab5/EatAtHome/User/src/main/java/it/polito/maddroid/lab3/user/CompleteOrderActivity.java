@@ -526,10 +526,10 @@ public class CompleteOrderActivity extends AppCompatActivity {
         String dateS = etDateDialog.getText().toString();
         
         //first of all we convert chosen date and time in a Date object
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy-H:m");
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy;H:m");
         Date orderDate;
         try {
-            orderDate = df.parse(dateS + "-" + time);
+            orderDate = df.parse(dateS + ";" + time);
         } catch (ParseException e) {
             e.printStackTrace();
             Log.e(TAG, "Exception while parsing date");

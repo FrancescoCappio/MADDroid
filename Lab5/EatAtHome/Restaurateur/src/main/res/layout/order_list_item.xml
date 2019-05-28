@@ -26,27 +26,24 @@
                 android:id="@+id/tv_customer_order_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/customer"
-                android:textSize="18sp"/>
+                android:text="@string/customer"/>
 
             <TextView
                 android:id="@+id/tv_customer_order_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/tv_customer_order_title"/>
+                android:layout_toEndOf="@+id/tv_delivery_time_title"/>
 
             <TextView
                 android:id="@+id/tv_date_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/date"
-                android:textSize="18sp"
 
                 android:layout_marginTop="5dp"
                 android:layout_below="@id/tv_customer_order_title"/>
@@ -56,12 +53,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="02/05/2019"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/tv_customer_order_title"
+                android:layout_toEndOf="@+id/tv_delivery_time_title"
                 android:layout_below="@id/tv_customer_order_title"
                 android:layout_marginTop="5dp"/>
 
@@ -69,8 +65,7 @@
                 android:id="@+id/tv_delivery_time_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/delivery_time"
-                android:textSize="18sp"
+                android:text="@string/order_ready_time"
 
                 android:layout_below="@id/tv_date_title"
                 android:layout_marginTop="5dp"/>
@@ -80,12 +75,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="00:00"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/tv_customer_order_title"
+                android:layout_toEndOf="@+id/tv_delivery_time_title"
                 android:layout_below="@id/tv_date_title"
                 android:layout_marginTop="5dp"/>
 
@@ -94,7 +88,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/total_cost"
-                android:textSize="18sp"
                 android:layout_marginTop="5dp"
 
                 android:layout_below="@id/tv_delivery_time_title"/>
@@ -104,12 +97,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="45.00€"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/tv_customer_order_title"
+                android:layout_toEndOf="@+id/tv_delivery_time_title"
                 android:layout_below="@id/tv_delivery_time_title"
                 android:layout_marginTop="5dp"/>
 
@@ -118,7 +110,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/order_status"
-                android:textSize="18sp"
                 android:layout_marginTop="5dp"
 
                 android:layout_below="@id/tv_cost_title"/>
@@ -128,12 +119,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/restaurant_status"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/tv_customer_order_title"
+                android:layout_toEndOf="@+id/tv_delivery_time_title"
                 android:layout_below="@id/tv_cost_title"
                 android:layout_marginTop="5dp"/>
 

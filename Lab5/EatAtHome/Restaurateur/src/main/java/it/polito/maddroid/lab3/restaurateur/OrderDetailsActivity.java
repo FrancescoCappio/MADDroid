@@ -105,11 +105,11 @@ public class OrderDetailsActivity extends AppCompatActivity {
         }
 
         tvDeliveryData.setText(currentOrder.getDate());
-        tvDeliveryTime.setText(currentOrder.getDeliveryTime());
+        tvDeliveryTime.setText(currentOrder.getOrderReadyTime());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         
         String [] suddivido = currentOrder.getTotalCost().split(" ");
-        float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
+        float costo = Float.parseFloat(suddivido[0]);
         tvTotPrice.setText(String.format(Locale.US,"%.02f", costo) + " €");
         
         getRiderName(currentOrder.getRiderId());

@@ -34,7 +34,7 @@ public class Order implements Serializable, Comparable<Order> {
 
     private String deliveryAddress;
     
-    private int timeForDelivery;
+    private int timeForDelivery = -1;
 
     private Map<String,Integer> dishesMap;
 
@@ -114,6 +114,28 @@ public class Order implements Serializable, Comparable<Order> {
     
     public void setTimeForDelivery(int timeForDelivery) {
         this.timeForDelivery = timeForDelivery;
+    }
+    
+    public String getOrderReadyTime() {
+        if (timeForDelivery == -1)
+            return deliveryTime;
+        
+        String[] splitted = deliveryTime.split(":");
+        
+        int hour = Integer.parseInt(splitted[0]);
+        int minute = Integer.parseInt(splitted[1]);
+        
+        if (minute > timeForDelivery) {
+            int res = minute - timeForDelivery;
+            return hour + ":" + res;
+        } else {
+            int totMinutes = hour*60 + minute;
+            int time = totMinutes - timeForDelivery;
+            
+            hour = time/60;
+            int remain = time - hour*60;
+            return hour + ":" + remain;
+        }
     }
     
     @Override
