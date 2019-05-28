@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import it.polito.maddroid.lab3.common.DatePickerFragment;
 import it.polito.maddroid.lab3.common.Dish;
@@ -15,8 +17,16 @@ import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.TimePickerFragment;
 import it.polito.maddroid.lab3.common.Utility;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -63,6 +73,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String RESTAURANT_KEY = "RESTAURANT_KEY";
     public static final String ADDRESS_KEY = "ADDRESS_KEY";
     public static final String ADDRESSES_KEY = "ADDRESSES_KEY";
+    public static final String DEFAULT_ADDRESS_KEY = "DEFAULT_ADDRESS_KEY";
+    public static final String DEFAULT_ADDRESS_NOTES_KEY = "DEFAULT_ADDRESS_NOTES_KEY";
     public static final String ADDRESS_NOTES_KEY = "ADDRESS_NOTES_KEY";
     public static final String TIME_KEY = "TIME_KEY";
     public static final String DATE_KEY = "DATE_KEY";
@@ -74,9 +86,15 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public static final String COMPUTED_DELIVERY_TIME_KEY = "COMPUTED_DELIVERY_TIME_KEY";
     public static final String CHOSEN_ADDRESS_KEY = "CHOSEN_ADDRESS_KEY";
 
+    private final static int LOCATION_PERMISSION_CODE = 123;
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
+
+
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     
     // general purpose attributes
     private int waitingCount = 0;
@@ -105,6 +123,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private TextView tvDeliveryCost;
     private EditText etAddressNotes;
     private CheckBox cbAccountAddress;
+    private Button btGetAddress;
     private EditText etTimeDialog;
     private EditText etDateDialog;
     
@@ -161,6 +180,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
             
             timeDialogOpen = savedInstanceState.getBoolean(DELIVERY_TIME_DIALOG_KEY, false);
             positionDialogOpen = savedInstanceState.getBoolean(POSITION_DIALOG_KEY, false);
+            currentUserDefaultAddress = savedInstanceState.getString(DEFAULT_ADDRESS_KEY);
+            currentUserDefaultAddressNotes = savedInstanceState.getString(DEFAULT_ADDRESS_NOTES_KEY);
             choice = savedInstanceState.getInt(CHOICE_KEY);
             multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITION_KEY);
             addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_KEY);
@@ -206,16 +227,20 @@ public class CompleteOrderActivity extends AppCompatActivity {
                 }
             }
         } );
+
+        btGetAddress.setOnClickListener(v -> getCurrentLocation());
         
         cbAccountAddress.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 etAddressNotes.setVisibility(View.GONE);
                 etDeliveryAddress.setEnabled(false);
+                btGetAddress.setVisibility(View.GONE);
                 
                 if (currentUserDefaultAddress != null)
                     etDeliveryAddress.setText(currentUserDefaultAddress);
             } else {
                 etAddressNotes.setVisibility(View.VISIBLE);
+                btGetAddress.setVisibility(View.VISIBLE);
                 etDeliveryAddress.setEnabled(true);
             }
     
@@ -224,7 +249,66 @@ public class CompleteOrderActivity extends AppCompatActivity {
         // do not open keyboard on activity open
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
-    
+
+    private void getCurrentLocation() {
+        setActivityLoading(true);
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "We do not have the permission the access the location!");
+            checkPermissions();
+            setActivityLoading(false);
+            return;
+        }
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(Location location) {
+                if (location == null) {
+                    Log.e(TAG, "Location is null");
+                    return;
+                }
+                GeocodingLocation locationAddress = new GeocodingLocation();
+                Address addressDetail = locationAddress.getAddress(location, getApplicationContext());
+                if (addressDetail != null ) {
+                    String addressLine = addressDetail.getThoroughfare() + " " + addressDetail.getSubThoroughfare()
+                            + ", " + addressDetail.getLocality();
+                    etDeliveryAddress.setText(addressLine);
+                }else {
+                    Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_error_get_address);
+                }
+                setActivityLoading(false);
+                
+                locationManager.removeUpdates(this);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+
+        };
+
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_MEDIUM);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+
+        String provider = locationManager.getBestProvider(crta, true);
+
+        locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+        
+    }
+
     private void getReferencesToViews() {
         
         tvTotalCost = findViewById(R.id.tv_payment_total);
@@ -233,7 +317,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         etAddressNotes = findViewById(R.id.et_delivery_address_notes);
         cbAccountAddress = findViewById(R.id.cb_address);
-        
+        btGetAddress = findViewById(R.id.bt_get_address);
+
     }
     
     private synchronized void setActivityLoading(boolean loading) {
@@ -342,6 +427,16 @@ public class CompleteOrderActivity extends AppCompatActivity {
         
         if (selectedDishes == null || selectedDishes.isEmpty()) {
             Utility.showAlertToUser(this, R.string.alert_order_no_dishes);
+            return;
+        }
+        
+        if (etDeliveryTime.getText().toString().isEmpty()) {
+            Utility.showAlertToUser(this, R.string.alert_order_no_time);
+            return;
+        }
+        
+        if (!checkValidDeliveryTime()) {
+            Utility.showAlertToUser(this, R.string.alert_order_time_not_valid);
             return;
         }
         
@@ -472,6 +567,8 @@ public class CompleteOrderActivity extends AppCompatActivity {
         outState.putSerializable(RESTAURANT_KEY, currentRestaurant);
         outState.putSerializable(POSITION_KEY, multiChoiceItems);
         outState.putSerializable(ADDRESSES_KEY, (Serializable) addressList);
+        outState.putSerializable(DEFAULT_ADDRESS_KEY, currentUserDefaultAddress);
+        outState.putSerializable(DEFAULT_ADDRESS_NOTES_KEY, currentUserDefaultAddressNotes);
         outState.putInt(CHOICE_KEY,choice);
         outState.putBoolean(POSITION_DIALOG_KEY, positionDialogOpen);
         outState.putBoolean(DELIVERY_TIME_DIALOG_KEY, timeDialogOpen);
@@ -677,5 +774,24 @@ public class CompleteOrderActivity extends AppCompatActivity {
     public void showDatePickerDialog() {
         DialogFragment newFragment = new DatePickerFragment(etDateDialog);
         newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // ask for permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_permissions_title)
+                    .setMessage(R.string.alert_permission_needed_for_function).create().show();
+        }
+
     }
 }
