@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    tools:context=".RiderStatisticsActivity">
+    tools:context=".RestaurateurStatisticsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -84,11 +83,11 @@
             app:layout_constraintTop_toBottomOf="@id/tv_best_work_title" />
 
         <TextView
-            android:id="@+id/tv_km_today_title"
+            android:id="@+id/tv_quantity_today_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:text="@string/today_km"
+            android:text="@string/today_dish_quantity"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_separator_grade_today" />
@@ -103,13 +102,13 @@
             app:layout_constraintTop_toBottomOf="@id/view_separator_grade_today" />
 
         <TextView
-            android:id="@+id/tv_km_today"
+            android:id="@+id/tv_quantity_today"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:hint="Daily Km"
+            android:hint="10 Dishes"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
             app:layout_constraintTop_toBottomOf="@id/view_separator_grade_today" />
 
         <TextView
@@ -120,7 +119,7 @@
             android:text="@string/today_profit"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_today_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_today_title" />
 
         <TextView
             android:id="@+id/tv_today_profit"
@@ -129,8 +128,8 @@
             android:layout_margin="@dimen/activity_margin"
             android:hint="Daily Income"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_today" />
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_today" />
 
         <View
             android:id="@+id/view_separator_today_month"
@@ -141,23 +140,23 @@
             app:layout_constraintTop_toBottomOf="@id/tv_today_profit_title" />
 
         <TextView
-            android:id="@+id/tv_km_month_title"
+            android:id="@+id/tv_quantity_month_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:text="@string/monthly_km"
+            android:text="@string/month_dish_quantity"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
 
         <TextView
-            android:id="@+id/tv_km_month"
+            android:id="@+id/tv_quantity_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:hint="Monthly Km"
+            android:hint="100 dishes"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
             app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
 
         <TextView
@@ -168,7 +167,7 @@
             android:text="@string/monthly_profit"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_month_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_month_title" />
 
         <TextView
             android:id="@+id/tv_month_profit"
@@ -177,8 +176,8 @@
             android:layout_margin="@dimen/activity_margin"
             android:hint="Monthly Income"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_month" />
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_month" />
 
         <Button
             android:id="@+id/bt_monthly_statistics"
@@ -190,32 +189,90 @@
             app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
 
         <View
-            android:id="@+id/view_separator_month_total"
+            android:id="@+id/view_separator_month_year"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_margin"
             android:background="@color/eah_background_dark"
-            app:layout_constraintTop_toBottomOf="@id/bt_monthly_statistics" />
+            app:layout_constraintTop_toBottomOf="@id/tv_month_profit" />
+
 
         <TextView
-            android:id="@+id/tv_km_total_title"
+            android:id="@+id/tv_quantity_year_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:text="@string/total_km"
+            android:text="@string/year_dish_quantity"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
 
         <TextView
-            android:id="@+id/tv_km_total"
+            android:id="@+id/tv_quantity_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:hint="Total Km"
+            android:hint="1000 dishes"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
-            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
+
+        <TextView
+            android:id="@+id/tv_year_profit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/yearly_profit"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_year_title" />
+
+        <TextView
+            android:id="@+id/tv_year_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Yearly Income"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_year" />
+
+        <Button
+            android:id="@+id/bt_yearly_statistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="SHOW"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
+
+        <View
+            android:id="@+id/view_separator_year_total"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+            app:layout_constraintTop_toBottomOf="@id/tv_year_profit" />
+
+        <TextView
+            android:id="@+id/tv_quantity_total_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/total_dish_quantity"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_year_total" />
+
+        <TextView
+            android:id="@+id/tv_quantity_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Total Dishesh"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_year_total" />
 
         <TextView
             android:id="@+id/tv_total_profit_title"
@@ -225,7 +282,7 @@
             android:text="@string/total_profit"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_total_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_total_title" />
 
         <TextView
             android:id="@+id/tv_total_profit"
@@ -234,8 +291,8 @@
             android:layout_margin="@dimen/activity_margin"
             android:hint="Total Income"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_km_total" />
+            app:layout_constraintStart_toEndOf="@id/tv_quantity_month_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_quantity_total" />
 
         <View
             android:id="@+id/view_separator_final"
@@ -247,4 +304,5 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>
