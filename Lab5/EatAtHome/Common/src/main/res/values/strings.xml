@@ -45,6 +45,7 @@
     <string name="login_as_restaurateur">Please login with a restaurateur aaccount.</string>
 
     <string name="menu">Menu</string>
+    <string name="all_statistics">Your Statistics</string>
 
     <string name="login_alert">You need to login to use the app</string>
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>
@@ -154,6 +155,12 @@
     <string name="monthly_profit">Monthly income:</string>
     <string name="total_km">Total km:</string>
     <string name="total_profit">Total income:</string>
+
+    <string name="yearly_profit">Yearly income:</string>
+    <string name="today_dish_quantity">Daily dish quantity</string>
+    <string name="month_dish_quantity">Monthly dish quantity</string>
+    <string name="year_dish_quantity">Yearly dish quantity</string>
+    <string name="total_dish_quantity">Total dish quantity</string>
 
     <string name="rider_stats">Your Statistics</string>
     <string name="rate_rider">Rate rider</string>
