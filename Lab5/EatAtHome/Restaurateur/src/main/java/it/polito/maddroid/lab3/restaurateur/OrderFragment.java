@@ -116,6 +116,8 @@ public class OrderFragment extends Fragment {
                     String deliveryAddress = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS).getValue();
                     String timeDelivery = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_TIME).getValue();
                     String dateDelivery = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
+                    int timeForDelivery = ds.child(EAHCONST.REST_ORDER_TIME_FOR_DELIVERY).getValue(Long.class).intValue();
+                    
                     EAHCONST.OrderStatus orderStatus = ds.child(EAHCONST.REST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
 
                     Map<String, Integer> dishes = new HashMap<>();

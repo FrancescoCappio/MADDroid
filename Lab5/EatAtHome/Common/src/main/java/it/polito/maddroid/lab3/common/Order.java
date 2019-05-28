@@ -33,6 +33,8 @@ public class Order implements Serializable, Comparable<Order> {
     private String date;
 
     private String deliveryAddress;
+    
+    private int timeForDelivery;
 
     private Map<String,Integer> dishesMap;
 
@@ -104,6 +106,14 @@ public class Order implements Serializable, Comparable<Order> {
 
     public void setCustomerName(String s) {
         this.customerName = s;
+    }
+    
+    public int getTimeForDelivery() {
+        return timeForDelivery;
+    }
+    
+    public void setTimeForDelivery(int timeForDelivery) {
+        this.timeForDelivery = timeForDelivery;
     }
     
     @Override
