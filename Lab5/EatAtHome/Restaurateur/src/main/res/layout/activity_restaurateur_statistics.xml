@@ -194,7 +194,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_margin"
             android:background="@color/eah_background_dark"
-            app:layout_constraintTop_toBottomOf="@id/bt_monthly_statistics" />
+            app:layout_constraintTop_toBottomOf="@id/tv_month_profit" />
 
 
         <TextView
@@ -252,7 +252,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_margin"
             android:background="@color/eah_background_dark"
-            app:layout_constraintTop_toBottomOf="@id/bt_yearly_statistics" />
+            app:layout_constraintTop_toBottomOf="@id/tv_year_profit" />
 
         <TextView
             android:id="@+id/tv_quantity_total_title"
