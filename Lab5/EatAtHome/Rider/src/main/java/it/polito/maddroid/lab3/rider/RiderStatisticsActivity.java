@@ -278,7 +278,6 @@ public class RiderStatisticsActivity extends AppCompatActivity {
         outState.putFloat(PROFIT_TOTAL_KEY, profitTotal);
         outState.putFloat(AVG_GRADE_KEY, avgGrade);
         outState.putLong(COUNT_GRADE_KEY, totGrade);
-
     }
 
 
@@ -310,7 +309,5 @@ public class RiderStatisticsActivity extends AppCompatActivity {
         ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RIDER);
         ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentUser.getUid());
         startActivity(ratingIntent);
-
     }
-
 }
