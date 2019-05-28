@@ -180,6 +180,7 @@ public class EAHCONST {
     public final static String REST_ORDER_TOTAL_COST = "total_cost";
     public final static String REST_ORDER_DELIVERY_ADDRESS = "delivery_address";
     public final static String REST_ORDER_DELIVERY_ADDRESS_NOTES = "delivery_address_notes";
+    public final static String REST_ORDER_TIME_FOR_DELIVERY = "time_for_delivery";
     
     // customers order subtree nodes fields
     public final static String CUST_ORDER_STATUS = "order_status";

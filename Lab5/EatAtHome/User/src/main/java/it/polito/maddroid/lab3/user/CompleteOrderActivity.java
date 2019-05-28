@@ -473,6 +473,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TOTAL_COST),computeTotalCost(false));
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS), deliveryAddress);
         updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DELIVERY_ADDRESS_NOTES), addressNotes);
+        updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_TIME_FOR_DELIVERY), deliveryTimeMinutes);
         
         for (Dish d : selectedDishes) {
             updateMap.put(EAHCONST.generatePath(restOrderPath, EAHCONST.REST_ORDER_DISHES_SUBTREE, String.valueOf(d.getDishID())), d.getQuantity());
