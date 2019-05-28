@@ -42,8 +42,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         
         String sMonth = String.format("%02d", month+1);
+        String sDay = String.format("%02d", dayOfMonth);
         if (etCaller != null)
-            etCaller.setText(dayOfMonth + "/" + sMonth  + "/" + year);
+            etCaller.setText(sDay + "-" + sMonth  + "-" + year);
     
     }
 }

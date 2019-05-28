@@ -705,7 +705,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         int day = c.get(Calendar.DAY_OF_MONTH);
         String sDay = String.format("%02d", day);
         
-        etDateDialog.setText(sDay + "/" + sMonth + "/" + year);
+        etDateDialog.setText(sDay + "-" + sMonth + "-" + year);
         etTimeDialog.setText(sHour + ":" + sMinute);
         
         TextView tvDialogMessage = alertLayout.findViewById(R.id.tv_dialog_message);
