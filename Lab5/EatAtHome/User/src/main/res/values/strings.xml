@@ -34,6 +34,7 @@
     <string name="alert_order_no_time">Please select a delivery time</string>
     <string name="alert_order_no_date">Please select a delivery date</string>
     <string name="alert_order_time_not_valid">The minimum required time for your order is</string>
+    <string name="alert_restaurant_closed">The restaurant is closed in the chosen date and time</string>
     <string name="alert_order_no_address">Please select a delivery address</string>
     <string name="alert_order_no_address_notes">We need some additional info on the address. I.E: name on the entryphone</string>
     <string name="alert_order_no_rider">Cannot find a rider</string>
