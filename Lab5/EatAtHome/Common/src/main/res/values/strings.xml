@@ -194,6 +194,8 @@
     <string name="alert_no_comment">Please add a comment to your review</string>
     <string name="delivery_time_title">Choose delivery time</string>
 
+    <string name="alert_call_rider">This order should be ready in less than 15 minutes. Remember to call a rider.</string>
+
     <string name="delivery_time_message">Please choose a delivery time. Take into account that considering the time needed to prepare your order and to deliver it to the chosen address we will need at least</string>
 
     <string name="alert_no_reviews">There are no reviews</string>

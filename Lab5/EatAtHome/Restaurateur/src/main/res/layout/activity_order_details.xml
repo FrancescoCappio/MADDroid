@@ -6,6 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".OrderDetailsActivity">
 
+    <TextView
+        android:id="@+id/tv_alert_call_rider_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/eah_orange"
+
+        android:textColor="@color/eah_white"
+
+        android:text="@string/alert_call_rider"
+        android:textAlignment="center"
+
+        android:padding="@dimen/activity_margin"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="@dimen/activity_margin"
+
+
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ProgressBar
         android:id="@+id/pb_loading"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -14,7 +33,7 @@
         android:indeterminate="true"
         android:visibility="invisible"
 
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_alert_call_rider_banner"
         />
 
     <TextView
@@ -27,7 +46,7 @@
         android:layout_marginTop="@dimen/activity_margin"
         android:layout_marginStart="@dimen/activity_margin"
 
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_alert_call_rider_banner"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
@@ -46,7 +65,7 @@
         android:layout_marginStart="10dp"
 
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_alert_call_rider_banner"
         app:layout_constraintStart_toEndOf="@id/tv_order_status_title"
         />
 
@@ -116,7 +135,7 @@
         />
 
     <View
-        android:id="@+id/view_time_separator"
+        android:id="@+id/view_vertical_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/eah_background_dark"
@@ -170,7 +189,7 @@
         android:layout_marginBottom="@dimen/activity_margin"
         android:layout_marginStart="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@id/view_vertical_separator"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
@@ -184,7 +203,7 @@
         android:layout_marginBottom="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
 
-        app:layout_constraintTop_toBottomOf="@id/view_time_separator"
+        app:layout_constraintTop_toBottomOf="@id/view_vertical_separator"
         app:layout_constraintEnd_toEndOf="parent"
         android:maxLines="1"
         android:ellipsize="end"

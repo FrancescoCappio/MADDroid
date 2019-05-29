@@ -2,6 +2,8 @@ package it.polito.maddroid.lab3.restaurateur;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +30,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -68,6 +73,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private RecyclerView rvDishes;
     private FloatingActionButton confirmOrder;
     private FloatingActionButton declineOrder;
+    private TextView tvRiderAlertBanner;
     
     private MenuItem callRiderItem;
 
@@ -85,6 +91,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         getReferencesToViews();
         setupClickListeners();
+        
+        tvRiderAlertBanner.setVisibility(View.GONE);
         
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -123,7 +131,15 @@ public class OrderDetailsActivity extends AppCompatActivity {
         rvDishes.setAdapter(adapter);
 
         getDishesInfo();
-
+        
+        // every minute check if we need to show the banner
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateUIforOrderStatus();
+                new Handler(Looper.getMainLooper()).postDelayed(this, 60000);
+            }
+        }, 60000);
     }
     
     @Override
@@ -157,6 +173,29 @@ public class OrderDetailsActivity extends AppCompatActivity {
         
         if (callRiderItem != null) {
             callRiderItem.setVisible(currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.CONFIRMED));
+        }
+        
+        // check if we need to show
+        if (currentOrder.getOrderStatus().equals(EAHCONST.OrderStatus.CONFIRMED)) {
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+            if (date.equals(currentOrder.getDate())) {
+                final Calendar c = Calendar.getInstance();
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int minute = c.get(Calendar.MINUTE);
+                String orderReadyTime = currentOrder.getOrderReadyTime();
+                String[] splitted = orderReadyTime.split(":");
+                int oHour = Integer.parseInt(splitted[0]);
+                int oMinute = Integer.parseInt(splitted[1]);
+                
+                int currentTime = hour*60 + minute;
+                int orderTime = oHour*60 + oMinute;
+                
+                if (orderTime - currentTime <= 15) {
+                    tvRiderAlertBanner.setVisibility(View.VISIBLE);
+                }
+            }
+        } else {
+            tvRiderAlertBanner.setVisibility(View.GONE);
         }
     }
 
@@ -247,6 +286,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         confirmOrder = findViewById(R.id.fab_accept);
         rvDishes = findViewById(R.id.rv_order_dishes);
 
+        tvRiderAlertBanner = findViewById(R.id.tv_alert_call_rider_banner);
     }
 
     private void getRiderName(String riderId) {
