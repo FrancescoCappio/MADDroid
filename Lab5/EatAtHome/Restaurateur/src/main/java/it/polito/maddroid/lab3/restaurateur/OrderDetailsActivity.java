@@ -201,6 +201,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         declineOrder.setOnClickListener( v -> {
+            setActivityLoading(true);
             Map<String,Object> updateMap = new HashMap<>();
             updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_CUST_SUBTREE, currentOrder.getCustomerId(), currentOrder.getOrderId(), EAHCONST.CUST_ORDER_STATUS), EAHCONST.OrderStatus.DECLINED);
             updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_REST_SUBTREE, currentUser.getUid(), currentOrder.getOrderId(), EAHCONST.REST_ORDER_STATUS), EAHCONST.OrderStatus.DECLINED);
@@ -223,6 +224,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         });
 
         confirmOrder.setOnClickListener(c-> {
+            setActivityLoading(true);
             
             Map<String,Object> updateMap = new HashMap<>();
 
