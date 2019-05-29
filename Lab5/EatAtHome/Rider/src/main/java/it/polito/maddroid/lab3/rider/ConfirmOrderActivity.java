@@ -145,15 +145,15 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     
     private void actionDeclineOrder() {
         startChooseRiderActivity();
-        
     }
     
     private void startChooseRiderActivity() {
         
         Intent intent = new Intent(getApplicationContext(), ChooseRiderActivity.class);
         intent.putExtra(ChooseRiderActivity.RESTAURANT_ID_KEY, currentDelivery.getRestaurantId());
+        intent.putExtra(ChooseRiderActivity.LAUNCH_MODE_KEY, ChooseRiderActivity.LAUNCH_MODE_RIDER);
+        intent.putExtra(ChooseRiderActivity.CURRENT_RIDER_ID_KEY, riderUID);
         startActivityForResult(intent, CHOOSE_RIDER_REQUEST_CODE);
-        
     }
     
     @Override
@@ -162,6 +162,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "Result not ok");
+            Utility.showAlertToUser(this, R.string.order_not_declined_alert);
             return;
         }
         

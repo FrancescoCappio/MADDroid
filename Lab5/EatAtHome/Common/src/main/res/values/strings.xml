@@ -140,6 +140,9 @@
     <string name="search_radius">Search radius (Km)</string>
     <string name="get_directions">Get directions with Google Maps</string>
     <string name="choose_rider">Choose your rider</string>
+    <string name="choose_another_rider">Pass this ordet to another rider</string>
+    <string name="assign_automatically">Assign the order automatically</string>
+    <string name="order_not_declined_alert">The order has not been declined because you haven\'t selected another rider</string>
 
     <string name="customer_info">Customer info</string>
     <string name="rate_your_rider">Rate your rider</string>
