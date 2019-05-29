@@ -309,11 +309,21 @@ public class ChooseRiderActivity extends AppCompatActivity {
             @Override
             public void onGeoQueryReady() {
                 Log.d(TAG, "Geo query ready");
-                
                 riders = new ArrayList<>();
-                setActivityLoading(false);
+                
+                
                 if (lookingForNearestRider) {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> assignRiderAutomatically(), 3000);
+                } else {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+    
+                        setActivityLoading(false);
+                        if (riders.isEmpty()) {
+                            riders = new ArrayList<>();
+                            adapter.submitList(riders);
+                        }
+                    }, 2000);
+                    
                 }
             }
     
