@@ -148,6 +148,7 @@ public class EAHCONST {
     public final static String DISH_NAME = "name";
     public final static String DISH_PRICE = "price";
     public final static String DISH_DESCRIPTION = "description";
+    public final static String DISH_COUNT = "dish_count";
     public final static String DISH_ID = "dishID";
     
     // restaurants orders subtree nodes fields

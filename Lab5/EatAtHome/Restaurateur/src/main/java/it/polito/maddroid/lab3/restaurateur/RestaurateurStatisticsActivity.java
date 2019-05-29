@@ -1,14 +1,17 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -21,10 +24,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import it.polito.maddroid.lab3.common.DateTool;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.ReviewsActivity;
 import it.polito.maddroid.lab3.common.Utility;
@@ -66,6 +74,11 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
     private TextView tvRating;
     private static ProgressBar pbLoading;
 
+    private Button btBusyHour;
+    private Button btDailyStat;
+    private Button btmonthlyStat;
+    private Button btYearlyStat;
+
     private float waitingCount;
 
     private float avgGrade;
@@ -82,6 +95,9 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
     private int quantityYear;
     private int quantityTotal;
 
+    private DateTool dt;
+    private HashMap<String, HashMap<Integer,Integer>> weekHours;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +107,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
+        dt = new DateTool();
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -102,7 +119,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
         getReferencesToViews();
 
-        tvRating.setOnClickListener(v -> openReviewsActivity());
+        setOnClickListeners();
 
         if (savedInstanceState != null) {
 
@@ -126,6 +143,20 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
     }
 
+    private void setOnClickListeners() {
+        tvRating.setOnClickListener(v -> openReviewsActivity());
+        btBusyHour.setOnClickListener(v -> {
+            if (weekHours == null) {
+                Utility.showAlertToUser(this , R.string.alert_to_get_busy_hour);
+                return;
+            }
+
+            Intent intent = new Intent(getApplicationContext(), BusyHoursActivity.class);
+            intent.putExtra(BusyHoursActivity.BUSY_HOURS_KEY,(Serializable) weekHours);
+            startActivity(intent);
+        });
+    }
+
     private void getReferencesToViews() {
 
         pbLoading = findViewById(R.id.pb_loading_stats);
@@ -142,6 +173,11 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         tvIncomeMonthly = findViewById(R.id.tv_month_profit);
         tvIncomeYearly = findViewById(R.id.tv_year_profit);
         tvIncomeTotal = findViewById(R.id.tv_total_profit);
+
+        btBusyHour = findViewById(R.id.bt_busy_hour);
+        btDailyStat = findViewById(R.id.bt_daily_statistics);
+        btmonthlyStat = findViewById(R.id.bt_monthly_statistics);
+        btYearlyStat = findViewById(R.id.bt_yearly_statistics);
     }
 
 
@@ -180,6 +216,12 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     String dateOrder = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
+                    String timeOrder = (String) ds.child(EAHCONST.REST_ORDER_DELIVERY_TIME).getValue();
+
+                    Timestamp dateTime = dt.stringToDate(dateOrder + " " + timeOrder);
+                    if (dateTime != null)
+                        calculateBusyHour(dateTime);
+
                     String orderMonth = dateOrder.split("-")[1];
                     String orderYear = dateOrder.split("-")[2];
                     String totalCostString = (String) ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue();
@@ -224,6 +266,37 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
                 setActivityLoading(false);
             }
         });
+    }
+
+    private HashMap<Integer,Integer> createHashmap(){
+        HashMap<Integer,Integer> hours = new HashMap<>();
+        for (int i= 0 ; i <24; i++){
+            hours.put(i, 0);
+        }
+        return hours;
+    }
+
+    private void createListWeek (){
+
+        weekHours = new HashMap<>();
+        weekHours.put("Mon",createHashmap());
+        weekHours.put("Tue",createHashmap());
+        weekHours.put("Wed",createHashmap());
+        weekHours.put("Thu",createHashmap());
+        weekHours.put("Fri",createHashmap());
+        weekHours.put("Sat",createHashmap());
+        weekHours.put("Sun",createHashmap());
+    }
+
+
+    private void calculateBusyHour(Timestamp ts) {
+        if (weekHours == null)
+            createListWeek();
+        String DayOfWeek = dt.DayOfTheWeek(ts);
+        int hour = dt.getHour(ts);
+
+        HashMap<Integer,Integer> hours = weekHours.get(DayOfWeek);
+        hours.put(hour,hours.get(hour)+1);
     }
 
     private void setDataToView() {

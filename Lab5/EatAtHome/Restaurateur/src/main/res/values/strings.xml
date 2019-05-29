@@ -45,4 +45,20 @@
     <string name="customer">Customer Name</string>
 
 
+    <string name="show_busy_hour">Show busy hour</string>
+    <string name="alert_to_get_busy_hour">Could not load busy hours</string>
+
+    <string name="day_prompt">Choose a day</string>
+
+    <string-array name="week_arrays">
+        <item>MONDAY</item>
+        <item>TUESDAY</item>
+        <item>WEDNESDAY</item>
+        <item>THURSDAY</item>
+        <item>FRIDAY</item>
+        <item>SATURDAY</item>
+        <item>SUNDAY</item>
+    </string-array>
+
+
 </resources>
