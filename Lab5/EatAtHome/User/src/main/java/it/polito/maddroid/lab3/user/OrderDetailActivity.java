@@ -84,8 +84,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     //currentStep = 1 Pickup Products
     //currentStep = 2 Delivery
     //currentStep = 3 Completed
+    
     private List<String> seekBarStatus = Arrays.asList("Confirmed","Waiting for rider","On the way","Completed");
-    private List<String> seekBarStatusDeclined = Arrays.asList("Declined","Waiting for rider","On the way","Completed");
+    private List<String> seekBarStatusWaiting = Arrays.asList("Waiting confirm","Waiting rider","On the way","Completed");
+    private List<String> seekBarStatusDeclined = Arrays.asList("Declined","Waiting rider","On the way","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +136,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         setupClickListeners();
 
-        stepView.getState().steps(seekBarStatus).commit();
+        stepView.getState().steps(seekBarStatusWaiting).commit();
         
         View rootView = getWindow().getDecorView().getRootView();
         ViewTreeObserver observer = rootView .getViewTreeObserver();
@@ -365,6 +367,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
     
     private void updateUIForOrderStatus() {
+        
+        if (currentOrder.getOrderStatus() != EAHCONST.OrderStatus.PENDING) {
+            stepView.getState().steps(seekBarStatus).commit();
+        }
     
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
             btRateRider.setVisibility(View.VISIBLE);
