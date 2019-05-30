@@ -39,25 +39,27 @@
 
     <string name="order_status">Order Status</string>
     <string name="date">Date</string>
+    <string name="no_orders_this_day">No orders for this day</string>
     <string name="total_cost">Total Cost</string>
     <string name="customer_not_assigned">Customer Id not find</string>
     <string name="restaurant_status">Pending Order</string>
     <string name="customer">Customer Name</string>
 
 
-    <string name="show_busy_hour">Show busy hour</string>
+    <string name="show_busy_hour">Show most busy hours</string>
+    <string name="busy_hours">Busy hours</string>
     <string name="alert_to_get_busy_hour">Could not load busy hours</string>
 
     <string name="day_prompt">Choose a day</string>
 
     <string-array name="week_arrays">
-        <item>MONDAY</item>
-        <item>TUESDAY</item>
-        <item>WEDNESDAY</item>
-        <item>THURSDAY</item>
-        <item>FRIDAY</item>
-        <item>SATURDAY</item>
-        <item>SUNDAY</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
 
 

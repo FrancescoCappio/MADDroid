@@ -47,7 +47,7 @@
 
     <string name="menu">Menu</string>
     <string name="all_statistics">Your Statistics</string>
-    <string name="most_popular">Most popular Dishes</string>
+    <string name="most_popular_dishes">Most popular dishes</string>
 
     <string name="login_alert">You need to login to use the app</string>
     <string name="account_info_alert">You need to fill your account\'s info before continuing</string>

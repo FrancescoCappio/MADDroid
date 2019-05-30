@@ -3,7 +3,6 @@ package it.polito.maddroid.lab3.restaurateur;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
@@ -309,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 navigationView.setCheckedItem(R.id.nav_most_popular);
 
-                getSupportActionBar().setTitle(R.string.most_popular);
+                getSupportActionBar().setTitle(R.string.most_popular_dishes);
 
                 break;
 

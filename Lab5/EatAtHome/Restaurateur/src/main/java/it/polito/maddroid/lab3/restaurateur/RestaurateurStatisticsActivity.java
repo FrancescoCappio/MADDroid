@@ -1,12 +1,10 @@
 package it.polito.maddroid.lab3.restaurateur;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,7 +27,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import it.polito.maddroid.lab3.common.DateTool;
@@ -54,6 +51,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
     public static final String COUNT_GRADE_KEY = "COUNT_GRADE_KEY";
 
     public static final String BEST_WORK_KEY = "BEST_WORK_KEY";
+    public static final String BUSY_HOURS_KEY = "BUSY_HOURS_KEY";
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -136,6 +134,8 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
             quantityMonth = savedInstanceState.getInt(QUANTITY_MONTH_KEY);
             quantityYear = savedInstanceState.getInt(QUANTITY_YEAR_KEY);
             quantityTotal = savedInstanceState.getInt(QUANTITY_TOTAL_KEY);
+            
+            weekHours = (HashMap<String, HashMap<Integer, Integer>>) savedInstanceState.getSerializable(BUSY_HOURS_KEY);
             setDataToView();
         }
         else
@@ -220,7 +220,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
                     Timestamp dateTime = dt.stringToDate(dateOrder + " " + timeOrder);
                     if (dateTime != null)
-                        calculateBusyHour(dateTime);
+                        addToBusyHour(dateTime);
 
                     String orderMonth = dateOrder.split("-")[1];
                     String orderYear = dateOrder.split("-")[2];
@@ -289,7 +289,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
     }
 
 
-    private void calculateBusyHour(Timestamp ts) {
+    private void addToBusyHour(Timestamp ts) {
         if (weekHours == null)
             createListWeek();
         String DayOfWeek = dt.DayOfTheWeek(ts);
@@ -391,5 +391,6 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         outState.putFloat(AVG_GRADE_KEY, avgGrade);
         outState.putLong(COUNT_GRADE_KEY, totGrade);
         outState.putFloat(BEST_WORK_KEY, bestIncomingOrder);
+        outState.putSerializable(BUSY_HOURS_KEY, weekHours);
     }
 }
