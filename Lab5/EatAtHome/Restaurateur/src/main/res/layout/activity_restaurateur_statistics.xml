@@ -302,6 +302,19 @@
             android:background="@color/eah_background_dark"
             app:layout_constraintTop_toBottomOf="@id/tv_total_profit" />
 
+        <Button
+            android:id="@+id/bt_busy_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text= "@string/show_busy_hour"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginStart="@dimen/activity_margin"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_final"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

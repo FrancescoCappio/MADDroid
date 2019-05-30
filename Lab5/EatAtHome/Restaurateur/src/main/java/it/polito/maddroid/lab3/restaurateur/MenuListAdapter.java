@@ -25,6 +25,7 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
     
     public static final String MODE_RESTAURANT_MENU = "MODE_RESTAURANT_MENU";
     public static final String MODE_ORDER_DISH_LIST = "MODE_ORDER_DISH_LIST";
+    public static final String MODE_MOST_POPULAR_DISHES_LIST = "MODE_MOST_POPULAR_DISHES_LIST";
 
     private static StorageReference storageReference;
     private ItemClickListener itemClickListener;
@@ -95,17 +96,19 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
                     .into(ivDishPhoto);
 
             itemView.setOnClickListener(v -> itemClickListener.clickListener(dish));
+            String quantity = tvQuantity.getContext().getString(R.string.quantity);
             
             if (adapterMode.equals(MODE_RESTAURANT_MENU)) {
                 tvQuantity.setVisibility(View.GONE);
             } else if (adapterMode.equals(MODE_ORDER_DISH_LIST)){
                 tvQuantity.setVisibility(View.VISIBLE);
-                String quantity = tvQuantity.getContext().getString(R.string.quantity);
                 
                 tvQuantity.setText(quantity + ": " + dish.getQuantity());
             }
-
+            else if (adapterMode.equals(MODE_MOST_POPULAR_DISHES_LIST)){
+                tvDishPrice.setVisibility(View.GONE);
+                tvQuantity.setText(quantity + ": " + dish.getQuantity());
+            }
         }
-
     }
 }
