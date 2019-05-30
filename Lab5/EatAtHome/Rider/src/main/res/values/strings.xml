@@ -46,4 +46,6 @@
 
     <string name="cannot_find_gmaps_alert">Cannot find google maps on your device</string>
 
+    <string name="see_order_details">See order details</string>
+
 </resources>

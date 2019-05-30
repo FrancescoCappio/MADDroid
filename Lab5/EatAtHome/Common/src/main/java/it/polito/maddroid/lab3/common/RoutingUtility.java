@@ -22,7 +22,8 @@ import java.util.List;
 public class RoutingUtility {
     
     public interface GetRouteCaller {
-        void routeCallback(List<List<HashMap<String, String>>> route, String[] distances);
+        void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int durationMinutes);
+        void routeErrorCallback(Exception e);
     }
     
     private LatLng origin;
@@ -80,6 +81,7 @@ public class RoutingUtility {
             
         } catch (Exception e) {
             Log.d("Exception", e.toString());
+            throw e;
         } finally {
             iStream.close();
             urlConnection.disconnect();
@@ -116,10 +118,15 @@ public class RoutingUtility {
             
             RoutingDataParser parser = new RoutingDataParser(jObject);
             
-            caller.routeCallback(parser.parse(), parser.getDistance());
+            List<List<HashMap<String, String>>> parsing = parser.parse();
+            String[] distances = parser.getDistance();
+            int minutes = parser.getDurationMinutes();
+            
+            caller.routeCallback(parsing, distances, minutes);
             
         } catch (Exception e) {
             Log.d("ParserTask",e.toString());
+            caller.routeErrorCallback(e);
             e.printStackTrace();
         }
     }

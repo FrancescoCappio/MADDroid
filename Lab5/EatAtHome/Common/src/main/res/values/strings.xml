@@ -1,5 +1,6 @@
 <resources>
     <string name="yes">Yes</string>
+    <string name="ok">Ok</string>
     <string name="no">No</string>
 
     <string name="app_name">Eat@Home</string>
@@ -68,6 +69,7 @@
     <string name="image_empty_alert">Please set an image</string>
     <string name="no_category_alert">Please set at least one Category</string>
     <string name="no_timetable_alert">Please set the time Table</string>
+    <string name="alert_invalid_avg_time">Invalid value for the average time to complete an order</string>
     <string name="address_not_found"> Address NOT found</string>
 
     <string name="title_activity_main">MainActivity</string>
@@ -96,11 +98,13 @@
     <string name="restaurant_email">Restaurant\'s email</string>
     <string name="restaurant_address">Restaurant\'s address </string>
     <string name="restaurant_description">Restaurant\'s description</string>
+    <string name="restaurant_avg_time">Average time to prepare an order (min)</string>
     <string name="restaurant_phone_number">Restaurant\'s phone number</string>
     <string name="restaurant_categories">Restaurant\'s categories</string>
     <string name="restaurant_timetable">Restaurant\'s timetable</string>
     <string name="restaurant_distance">Distance from Restaurant</string>
 
+    <string name="order_ready_time">Order should be ready at</string>
     <string name="delivery_time">Delivery time</string>
     <string name="delivery_distance">Distance from restaurant to custumer</string>
     <string name="delivery_address">Delivery address </string>
@@ -137,6 +141,9 @@
     <string name="search_radius">Search radius (Km)</string>
     <string name="get_directions">Get directions with Google Maps</string>
     <string name="choose_rider">Choose your rider</string>
+    <string name="choose_another_rider">Pass this ordet to another rider</string>
+    <string name="assign_automatically">Assign the order automatically</string>
+    <string name="order_not_declined_alert">The order has not been declined because you haven\'t selected another rider</string>
 
     <string name="customer_info">Customer info</string>
     <string name="rate_your_rider">Rate your rider</string>
@@ -177,8 +184,23 @@
     <string name="poor">Poor</string>
     <string name="terrible">Terrible</string>
 
+    <string name="days_long">days</string>
+    <string name="day_long">day</string>
+    <string name="days_short">d</string>
+    <string name="hours_long">hours</string>
+    <string name="hour_long">hour</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_long">minutes</string>
+    <string name="minute_long">minute</string>
+    <string name="minutes_short">m</string>
+
     <string name="alert_no_score">Please add a score to your review</string>
     <string name="alert_no_comment">Please add a comment to your review</string>
+    <string name="delivery_time_title">Choose delivery time</string>
+
+    <string name="alert_call_rider">This order should be ready in less than 15 minutes. Remember to call a rider.</string>
+
+    <string name="delivery_time_message">Please choose a delivery time. Take into account that considering the time needed to prepare your order and to deliver it to the chosen address we will need at least</string>
 
     <string name="alert_no_reviews">There are no reviews</string>
 </resources>

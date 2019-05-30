@@ -59,6 +59,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private TextView tvRestaurantDistanceTime;
     private TextView tvCustomerDistanceKm;
     private TextView tvCustomerDistanceTime;
+    private TextView tvDeliveryDate;
     
     private LatLng lastLocation;
     private LatLng restaurantLocation;
@@ -105,7 +106,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         currentDelivery = (RiderOrderDelivery) i.getSerializableExtra(RIDER_ORDER_DELIVERY_KEY);
         
-
         
         fabConfirm.setOnClickListener(v -> actionConfirmOrder());
         fabDecline.setOnClickListener(v -> actionDeclineOrder());
@@ -145,15 +145,15 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     
     private void actionDeclineOrder() {
         startChooseRiderActivity();
-        
     }
     
     private void startChooseRiderActivity() {
         
         Intent intent = new Intent(getApplicationContext(), ChooseRiderActivity.class);
         intent.putExtra(ChooseRiderActivity.RESTAURANT_ID_KEY, currentDelivery.getRestaurantId());
+        intent.putExtra(ChooseRiderActivity.LAUNCH_MODE_KEY, ChooseRiderActivity.LAUNCH_MODE_RIDER);
+        intent.putExtra(ChooseRiderActivity.CURRENT_RIDER_ID_KEY, riderUID);
         startActivityForResult(intent, CHOOSE_RIDER_REQUEST_CODE);
-        
     }
     
     @Override
@@ -162,6 +162,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "Result not ok");
+            Utility.showAlertToUser(this, R.string.order_not_declined_alert);
             return;
         }
         
@@ -262,6 +263,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         tvTotalCost.setText(currentDelivery.getTotalCost());
         tvRestaurantAdress.setText(currentDelivery.getRestaurantAddress());
         tvDeliveryAdress.setText(currentDelivery.getDeliveryAddress());
+        tvDeliveryDate.setText(currentDelivery.getDeliveryDate());
     }
     
     private void getReferencesToViews() {
@@ -270,6 +272,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         tvTotalCost = findViewById(R.id.tv_total_cost);
         tvRestaurantAdress = findViewById(R.id.tv_restaurant_address);
         tvDeliveryAdress = findViewById(R.id.tv_delivery_address);
+        tvDeliveryDate = findViewById(R.id.tv_date);
         
         fabConfirm = findViewById(R.id.fab_accept);
         fabDecline = findViewById(R.id.fab_decline);
@@ -355,24 +358,40 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
 
-            new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
-                String restaurantDist = distances[0];
-                String[] splits = distances[0].split(" ");
-                kmRider = Float.parseFloat(splits[0]);
-                addCost(kmRider);
-                tvRestaurantDistanceKm.setText(restaurantDist);
-                String restaurantTime = distances[1];
-                tvRestaurantDistanceTime.setText(restaurantTime);
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    String restaurantDist = distances[0];
+                    String[] splits = distances[0].split(" ");
+                    kmRider = Float.parseFloat(splits[0]);
+                    addCost(kmRider);
+                    tvRestaurantDistanceKm.setText(restaurantDist);
+                    String restaurantTime = distances[1];
+                    tvRestaurantDistanceTime.setText(restaurantTime);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
             
-            new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
-                String customerDist = distances[0];
-                tvCustomerDistanceKm.setText(customerDist);
-                String[] splits = distances[0].split(" ");
-                float kmRider1 = Float.parseFloat(splits[0]);
-                addCost(kmRider1);
-                String customerTime = distances[1];
-                tvCustomerDistanceTime.setText(customerTime);
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    String customerDist = distances[0];
+                    tvCustomerDistanceKm.setText(customerDist);
+                    String[] splits = distances[0].split(" ");
+                    float kmRider1 = Float.parseFloat(splits[0]);
+                    addCost(kmRider1);
+                    String customerTime = distances[1];
+                    tvCustomerDistanceTime.setText(customerTime);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
         }
     }

@@ -391,7 +391,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             totalCost += d.getQuantity() * d.getPrice();
         }
     
-        return String.format(Locale.US, "%.02f", totalCost) + " € \uD83D\uDCB6️";
+        return String.format(Locale.US, "%.02f", totalCost) + " €";
     }
     
     private void updateTotalVisibility() {
@@ -403,11 +403,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             return;
         }
         
+        String completeOrder = getString(R.string.complete_order);
+        
         String total = computeTotalCost();
-        tvTotalCost.setText(total);
+        
+        String msg = completeOrder + " " + total;
+        
+        tvTotalCost.setText(msg);
         
         if (menuOrder != null)
-            menuOrder.setTitle(total);
+            menuOrder.setTitle(msg);
         
         if (appBarExpanded) {
             cvTotalCost.setVisibility(View.VISIBLE);

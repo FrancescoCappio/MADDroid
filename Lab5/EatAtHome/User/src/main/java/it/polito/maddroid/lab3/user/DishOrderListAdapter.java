@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -105,6 +106,8 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
             
             GlideApp.with(ivDishPhoto.getContext())
                     .load(riversRef)
+                    .placeholder(R.drawable.ic_dish_black)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivDishPhoto);
             
             ibAddDish.setOnClickListener(v -> {
