@@ -23,6 +23,7 @@
             android:id="@+id/rv_deliveries"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/eah_fair_grey"
 
             android:visibility="visible"
             tools:listitem="@layout/orders_list_item">
