@@ -27,15 +27,13 @@
                 android:id="@+id/tv_restaurant_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/restaurant"
-                android:textSize="18sp"/>
+                android:text="@string/restaurant"/>
 
             <TextView
                 android:id="@+id/tv_restaurant_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/restaurant_name"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -47,7 +45,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/delivery_address"
-                android:textSize="18sp"
 
                 android:layout_marginTop="5dp"
                 android:layout_below="@id/tv_restaurant_title"/>
@@ -57,7 +54,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="dove voui"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
 
@@ -73,7 +69,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/date"
-                android:textSize="18sp"
 
                 android:layout_marginTop="5dp"
                 android:layout_below="@id/tv_delivery_address_title"/>
@@ -83,7 +78,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="02/05/2019"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -97,7 +91,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/delivery_time"
-                android:textSize="18sp"
 
                 android:layout_below="@id/tv_date_title"
                 android:layout_marginTop="5dp"/>
@@ -107,7 +100,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="00:00"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -121,7 +113,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/delivery_cost_order"
-                android:textSize="18sp"
                 android:layout_marginTop="5dp"
 
                 android:layout_below="@id/tv_delivery_time_title"/>
@@ -131,7 +122,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="5.00€"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -145,7 +135,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/order_status"
-                android:textSize="18sp"
                 android:layout_marginTop="5dp"
 
                 android:layout_below="@id/tv_cost_title"/>
@@ -155,7 +144,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/status_waiting_corfirm"
-                android:textSize="18sp"
                 android:textColor="@color/eah_black"
                 android:maxLines="1"
                 android:ellipsize="end"

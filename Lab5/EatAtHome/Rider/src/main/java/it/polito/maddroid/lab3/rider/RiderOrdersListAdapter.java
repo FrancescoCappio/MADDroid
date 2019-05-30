@@ -86,21 +86,18 @@ public class RiderOrdersListAdapter extends ListAdapter<RiderOrderDelivery, Ride
 
             switch (order.getOrderStatus()) {
                 case PENDING:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
-                    tvDeliveryCost.setText("See order details ");
+                    tvDeliveryCost.setText(R.string.see_order_details);
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
                     break;
                 case CONFIRMED:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
-                    break;
                 case ONGOING:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
-                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
                     break;
                 case DECLINED:
                     tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
                     break;
                 case COMPLETED:
-                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_black));
                     break;
 
             }

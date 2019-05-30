@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -51,7 +52,9 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
             
             GlideApp.with(ivCatImage.getContext())
                     .load(riversRef)
+                    .placeholder(R.drawable.ic_dish_white)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivCatImage);
             
             ivCatImage.setOnClickListener(v -> itemClickListener.clickListener(category));

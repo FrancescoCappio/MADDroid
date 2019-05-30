@@ -36,7 +36,7 @@
         app:sv_selectedCircleRadius="18dp"
         app:sv_stepLineWidth="3dp"
         app:sv_stepNumberTextSize="18sp"
-        app:sv_textSize="15sp"
+        app:sv_textSize="12sp"
         app:sv_animationDuration="200"/>
 
     <ProgressBar

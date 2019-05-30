@@ -74,6 +74,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
     private TextView tvDeliveryAddressNotes;
+    private TextView tvDeliveryDate;
     
     private Button btGetFood;
     private Button btDeliverFood;
@@ -220,6 +221,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
+        tvDeliveryDate = findViewById(R.id.tv_date);
 
         stepView = findViewById(R.id.step_view);
     }
@@ -246,6 +248,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
         tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
+        tvDeliveryDate.setText(currentOrder.getDeliveryDate());
     }
     
     private void setOnClickListeners() {
@@ -483,22 +486,38 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
             
-            new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
-                riderToRestaurantRoutes = route;
-                riderToRestaurantDistance = distances[0];
-                tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
-                riderToRestaurantDuration = distances[1];
-                tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    riderToRestaurantRoutes = route;
+                    riderToRestaurantDistance = distances[0];
+                    tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
+                    riderToRestaurantDuration = distances[1];
+                    tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
             
-            new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
-                restaurantToCustomerRoutes = route;
-                restaurantToCustomerDistance = distances[0];
-                String[] splits = distances[0].split(" ");
-                kmRestToCust = Float.parseFloat(splits[0]);
-                tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
-                restaurantToCustomerDuration = distances[1];
-                tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    restaurantToCustomerRoutes = route;
+                    restaurantToCustomerDistance = distances[0];
+                    String[] splits = distances[0].split(" ");
+                    kmRestToCust = Float.parseFloat(splits[0]);
+                    tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
+                    restaurantToCustomerDuration = distances[1];
+                    tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
         }
     }

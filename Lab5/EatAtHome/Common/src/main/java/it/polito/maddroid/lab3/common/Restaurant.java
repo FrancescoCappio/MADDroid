@@ -14,8 +14,10 @@ public class Restaurant implements Serializable, Comparable<Restaurant> {
     private String email;
     private String categoriesIds;
     private String timeTableString;
+    private EAHCONST.GeoLocation geoLocation;
     private int reviewCount = 0;
     private float reviewAvg = 0.0f;
+    private int avgOrderTime = 15;
 
     public Restaurant(String restaurantID, String name, String description, String address, String phone, String email, String categoriesIds, String timeTableString){
         this.restaurantID = restaurantID;
@@ -87,5 +89,21 @@ public class Restaurant implements Serializable, Comparable<Restaurant> {
     @Override
     public int compareTo(Restaurant o) {
         return (int) (o.getReviewAvg() - getReviewAvg());
+    }
+    
+    public int getAvgOrderTime() {
+        return avgOrderTime;
+    }
+    
+    public void setAvgOrderTime(int avgOrderTime) {
+        this.avgOrderTime = avgOrderTime;
+    }
+    
+    public EAHCONST.GeoLocation getGeoLocation() {
+        return geoLocation;
+    }
+    
+    public void setGeoLocation(EAHCONST.GeoLocation geoLocation) {
+        this.geoLocation = geoLocation;
     }
 }

@@ -7,7 +7,7 @@
     <color name="eah_white">#FFFFFF</color>
     <color name="eah_black">#000000</color>
     <color name="eah_grey">#4D4D4D</color>
-    <color name="eah_fair_grey">#D6D6D6</color>
+    <color name="eah_fair_grey">#ECECEC</color>
 
     <color name="eah_green">#009E05</color>
     <color name="eah_red">#DF0A0A</color>
@@ -17,7 +17,7 @@
     <color name="eah_background_fair">#F1F1F1</color>
 
     <color name="eah_orange_alert">#FF9800</color>
-    <color name="eah_green_alert">#C98BC34A</color>
+    <color name="eah_green_alert">#4CAF50</color>
     <color name="eah_red_alert">#F44336</color>
     <color name="eah_green_accept">#4EC021</color>
     <color name="eah_red_decline">#E90606</color>
