@@ -36,7 +36,6 @@
                     android:layout_height="300dp"
                     android:scaleType="centerCrop"
 
-                    android:src="@drawable/ic_launcher_foreground"
 
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
