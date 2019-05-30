@@ -59,6 +59,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private TextView tvRestaurantDistanceTime;
     private TextView tvCustomerDistanceKm;
     private TextView tvCustomerDistanceTime;
+    private TextView tvDeliveryDate;
     
     private LatLng lastLocation;
     private LatLng restaurantLocation;
@@ -105,7 +106,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         
         currentDelivery = (RiderOrderDelivery) i.getSerializableExtra(RIDER_ORDER_DELIVERY_KEY);
         
-
         
         fabConfirm.setOnClickListener(v -> actionConfirmOrder());
         fabDecline.setOnClickListener(v -> actionDeclineOrder());
@@ -263,6 +263,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         tvTotalCost.setText(currentDelivery.getTotalCost());
         tvRestaurantAdress.setText(currentDelivery.getRestaurantAddress());
         tvDeliveryAdress.setText(currentDelivery.getDeliveryAddress());
+        tvDeliveryDate.setText(currentDelivery.getDeliveryDate());
     }
     
     private void getReferencesToViews() {
@@ -271,6 +272,7 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         tvTotalCost = findViewById(R.id.tv_total_cost);
         tvRestaurantAdress = findViewById(R.id.tv_restaurant_address);
         tvDeliveryAdress = findViewById(R.id.tv_delivery_address);
+        tvDeliveryDate = findViewById(R.id.tv_date);
         
         fabConfirm = findViewById(R.id.fab_accept);
         fabDecline = findViewById(R.id.fab_decline);

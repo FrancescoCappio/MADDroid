@@ -74,6 +74,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
     private TextView tvDeliveryAddressNotes;
+    private TextView tvDeliveryDate;
     
     private Button btGetFood;
     private Button btDeliverFood;
@@ -220,6 +221,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
+        tvDeliveryDate = findViewById(R.id.tv_date);
 
         stepView = findViewById(R.id.step_view);
     }
@@ -246,6 +248,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
         tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
+        tvDeliveryDate.setText(currentOrder.getDeliveryDate());
     }
     
     private void setOnClickListeners() {
