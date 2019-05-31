@@ -196,15 +196,28 @@ public class RatingActivity extends AppCompatActivity {
         String path2 = EAHCONST.generatePath(
                 EAHCONST.RATINGS_OF_CUSTOMERS_SUBTREE,
                 currentUser.getUid());
+    
+        Map<String, Object> updateMap = new HashMap<>();
+        
         if (currentMode.equals(RATING_MODE_RIDER)) {
+            
             path2 = EAHCONST.generatePath(path2, EAHCONST.RIDERS_RATINGS, currentUID, ratingID);
             path1 = EAHCONST.generatePath(EAHCONST.RIDERS_RATINGS_SUBTREE, currentUID, ratingID);
+            
+            if (currentRaterType.equals(RATER_TYPE_USER)) {
+                updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_CUST_SUBTREE, currentRaterUID, currentOrderId, EAHCONST.CUST_ORDER_RIDER_RATED), true);
+            } else {
+                updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_REST_SUBTREE, currentRaterUID, currentOrderId, EAHCONST.REST_ORDER_RIDER_RATED), true);
+            }
+            
         } else {
             path2 = EAHCONST.generatePath(path2, EAHCONST.RESTAURANT_RATINGS, currentUID, ratingID);
             path1 = EAHCONST.generatePath(EAHCONST.RESTAURANTS_RATINGS_SUBTREE, currentUID, ratingID);
+    
+            if (currentRaterType.equals(RATER_TYPE_USER)) {
+                updateMap.put(EAHCONST.generatePath(EAHCONST.ORDERS_CUST_SUBTREE, currentRaterUID, currentOrderId, EAHCONST.CUST_ORDER_RESTAURANT_RATED), true);
+            }
         }
-        
-        Map<String, Object> updateMap = new HashMap<>();
         
         updateMap.put(path1, review);
         updateMap.put(path2, review);
@@ -217,6 +230,8 @@ public class RatingActivity extends AppCompatActivity {
             }
             
             Log.d(TAG, "Saved correctly");
+            
+            setResult(RESULT_OK, new Intent());
             finish();
         });
         
