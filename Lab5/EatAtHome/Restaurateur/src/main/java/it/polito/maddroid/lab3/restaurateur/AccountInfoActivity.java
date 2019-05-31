@@ -831,6 +831,15 @@ public class AccountInfoActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
+                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") )
+                        {
+                            // TODO
+                            Utility.showAlertToUser(this, R.string.error_time_table);
+                            timeTableRest = "";
+                            timetableDialog = null;
+                            dialog.dismiss();
+                            return;
+                        }
                         s = s + openFirst[i].getText() + "_";
                         s = s + closeFirst[i].getText() + ";";
 
@@ -840,6 +849,17 @@ public class AccountInfoActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
+
+                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") || openSecond[i].getText().equals("") || closeSecond[i].getText().equals("") )
+                        {
+                            // TODO
+
+                            Utility.showAlertToUser(this, R.string.error_time_table );
+                            timeTableRest = "";
+                            timetableDialog = null;
+                            dialog.dismiss();
+                            return;
+                        }
                         s = s + openFirst[i].getText() + "_";
                         s = s + closeFirst[i].getText() + ",";
                         s = s + openSecond[i].getText() + "_";
