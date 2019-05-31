@@ -35,9 +35,18 @@ public class RatingActivity extends AppCompatActivity {
     public static final String RATING_MODE_RESTAURANT = "MODE_RESTAURANT";
     public static final String RATING_MODE_RIDER = "MODE_RIDER";
     public static final String RATED_UID_KEY = "RATED_UID_KEY";
+    public static final String RATER_TYPE_KEY = "RATER_TYPE_KEY";
+    public static final String RATER_TYPE_USER = "RATER_TYPE_USER";
+    public static final String RATER_TYPE_RESTAURANT = "RATER_TYPE_RESTAURANT";
+    public static final String RATER_UID_KEY = "RATER_UID_KEY";
+    public static final String RATING_ORDER_KEY = "RATING_ORDER_KEY";
     
     private String currentMode;
     private String currentUID;
+    
+    private String currentRaterType;
+    private String currentRaterUID;
+    private String currentOrderId;
     
     private float currentRating = -1.0f;
     
@@ -61,8 +70,12 @@ public class RatingActivity extends AppCompatActivity {
     
         Intent intent = getIntent();
         
-        if (intent.getStringExtra(RATING_MODE_KEY) == null || intent.getStringExtra(RATED_UID_KEY) == null) {
-            Log.e(TAG, "Cannot start ratingActivity without mode or uid");
+        if (intent.getStringExtra(RATING_MODE_KEY) == null ||
+                intent.getStringExtra(RATED_UID_KEY) == null ||
+                intent.getStringExtra(RATER_TYPE_KEY) == null ||
+                intent.getStringExtra(RATER_UID_KEY) == null ||
+                intent.getStringExtra(RATING_ORDER_KEY) == null) {
+            Log.e(TAG, "Cannot start ratingActivity without all needed extras");
             finish();
             return;
         }
@@ -70,6 +83,9 @@ public class RatingActivity extends AppCompatActivity {
         // get intent extras
         currentMode = intent.getStringExtra(RATING_MODE_KEY);
         currentUID = intent.getStringExtra(RATED_UID_KEY);
+        currentRaterType = intent.getStringExtra(RATER_TYPE_KEY);
+        currentRaterUID = intent.getStringExtra(RATER_UID_KEY);
+        currentOrderId = intent.getStringExtra(RATING_ORDER_KEY);
     
         // get firebase vars references
         dbRef = FirebaseDatabase.getInstance().getReference();
