@@ -12,6 +12,14 @@
             android:id="@+id/nav_menu"
             android:icon="@drawable/ic_restaurant_black"
             android:title="@string/menu" />
+        <item
+            android:id="@+id/nav_statistics"
+            android:icon="@drawable/ic_poll_stats"
+            android:title="@string/all_statistics" />
+        <item
+            android:id="@+id/nav_most_popular"
+            android:icon="@drawable/ic_star_24dp"
+            android:title="@string/most_popular_dishes" />
     </group>
 
     <item android:title="@string/app">

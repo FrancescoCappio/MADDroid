@@ -75,7 +75,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRestaurantToCustomerDistKM;
     private TextView tvRestaurantToCustomerDistTime;
     private TextView tvDeliveryAddressNotes;
-
+    private TextView tvDeliveryDate;
+    
     private Button btGetFood;
     private Button btDeliverFood;
     private Button btDirectionToRestaurant;
@@ -102,57 +103,57 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_delivery);
-
+        
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
-
+        
         if (intent.getSerializableExtra(ORDER_DELIVERY_KEY) == null) {
             Log.e(TAG, "Cannot show null order delivery");
             finish();
             return;
         }
-
+        
         currentOrder = (RiderOrderDelivery) intent.getSerializableExtra(ORDER_DELIVERY_KEY);
 
 
         RiderLocationService service = RiderLocationService.getInstance();
         //to get last location from MainActivity
-        if (service != null) {
+        if (service != null ){
             Location loc = service.getLastLocation();
-
+            
             if (loc != null)
-                lastLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
+                lastLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
             if (lastLocation == null)
-                Utility.showAlertToUser(this, R.string.not_find_location);
+                Utility.showAlertToUser(this,R.string.not_find_location);
         }
 
         getReferencesToViews();
-
+        
         setDataToView();
-
+        
         setOnClickListeners();
-
+    
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.order_delivery);
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
+        
         getCustomerInfo();
-
+        
         setupButtonsEnable();
 
         getRestaurantLocations();
 
         stepView.getState().steps(seekBarStatus).commit();
-        stepView.go(0, false);
+        stepView.go(0,false);
 
         View rootView = getWindow().getDecorView().getRootView();
-        ViewTreeObserver observer = rootView.getViewTreeObserver();
+        ViewTreeObserver observer = rootView .getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             @Override
@@ -199,10 +200,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         if (viewLoaded)
             setSteps();
     }
-
-    private void getReferencesToViews() {
+    
+    private void getReferencesToViews(){
         pbLoading = findViewById(R.id.pb_loading);
-
+        
         tvDeliveryTime = findViewById(R.id.tv_time);
         tvCostDelivery = findViewById(R.id.tv_cost_delivery);
         tvTotalCost = findViewById(R.id.tv_total_cost);
@@ -221,44 +222,46 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         btCustomerInfo = findViewById(R.id.bt_customer_info);
         btGetFood = findViewById(R.id.bt_get_food);
         btDeliverFood = findViewById(R.id.bt_deliver_food);
+        tvDeliveryDate = findViewById(R.id.tv_date);
 
         stepView = findViewById(R.id.step_view);
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-
+        
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
         }
-
+        
         return false;
     }
-
+    
     private void setDataToView() {
-
+        
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvTotalCost.setText(currentOrder.getTotalCost());
-        tvCostDelivery.setText(String.format(Locale.US, "%.02f", currentOrder.getDeliveryCost()) + " €");
+        tvCostDelivery.setText(String.format(Locale.US,"%.02f", currentOrder.getDeliveryCost()) + " €");
         tvRestaurantAddress.setText(currentOrder.getRestaurantAddress());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
         tvDeliveryAddressNotes.setText(currentOrder.getDeliveryAddressNotes());
+        tvDeliveryDate.setText(currentOrder.getDeliveryDate());
     }
-
+    
     private void setOnClickListeners() {
-
+        
         btDeliverFood.setOnClickListener(v -> deliverFoodAction());
-
+        
         btGetFood.setOnClickListener(v -> getFoodAction());
 
         btDirectionToRestaurant.setOnClickListener(v -> getDirectionToRestaurant());
 
         btDirectionToCustomer.setOnClickListener(v -> getDirectionToCustomer());
-
+        
         btCustomerInfo.setOnClickListener(v -> {
             if (currentCustomer == null) {
                 Utility.showAlertToUser(this, R.string.not_ready_alert);
@@ -289,7 +292,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.route_not_ready);
             return;
         }
-
+        
         Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
         intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY, restaurantLocation);
         intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY, customerLocation);
@@ -298,11 +301,11 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
 
     private void getFoodAction() {
-
+        
         setActivityLoading(true);
-
-        Map<String, Object> updateMap = new HashMap<>();
-
+        
+        Map<String,Object> updateMap = new HashMap<>();
+        
         //update Rider SubTree
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.ONGOING;
         String riderOrderPath = EAHCONST.generatePath(
@@ -318,7 +321,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getCustomerId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
-
+    
         //update Restaurant SubTree
         orderStatus = EAHCONST.OrderStatus.COMPLETED;
         String restaurantOrderPath = EAHCONST.generatePath(
@@ -326,28 +329,28 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getRestaurantId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_STATUS), orderStatus);
-
-
+        
+        
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
             currentOrder.setOrderStatus(EAHCONST.OrderStatus.ONGOING);
             setupButtonsEnable();
             Utility.showAlertToUser(this, R.string.get_food_note);
-
+            
         }).addOnFailureListener(e -> {
             setActivityLoading(false);
             Utility.showAlertToUser(this, R.string.alert_error_get_food);
         });
-
+        
     }
-
+    
     private void deliverFoodAction() {
-
+        
         setActivityLoading(true);
-
-        Map<String, Object> updateMap = new HashMap<>();
-
+        
+        Map<String,Object> updateMap = new HashMap<>();
+        
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.COMPLETED;
         String riderOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_RIDER_SUBTREE,
@@ -466,8 +469,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         // as downloading data or uploading data
         // how to use: call with loading = true to notify that a new transmission has been started
         // call with loading = false to notify end of transmission
-
-
+        
+        
         if (loading) {
             if (waitingCount == 0)
                 pbLoading.setVisibility(View.VISIBLE);
@@ -478,11 +481,11 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 pbLoading.setVisibility(View.INVISIBLE);
         }
     }
-
+    
     private void getCustomerInfo() {
-
+        
         setActivityLoading(true);
-
+        
         dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentOrder.getCustomerId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -492,21 +495,21 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     setActivityLoading(false);
                     return;
                 }
-
+                
                 String name = dataSnapshot.child(EAHCONST.CUSTOMER_NAME).getValue(String.class);
                 String address = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS).getValue(String.class);
                 String addressNotes = dataSnapshot.child(EAHCONST.CUSTOMER_ADDRESS_NOTES).getValue(String.class);
                 String phoneNumber = dataSnapshot.child(EAHCONST.CUSTOMER_PHONE).getValue(String.class);
                 String email = dataSnapshot.child(EAHCONST.CUSTOMER_EMAIL).getValue(String.class);
                 String description = dataSnapshot.child(EAHCONST.CUSTOMER_DESCRIPTION).getValue(String.class);
-
+                
                 tvCustomerName.setText(name);
-
+                
                 currentCustomer = new Customer(currentOrder.getCustomerId(), name, address, addressNotes, description, phoneNumber, email);
-
+                
                 setActivityLoading(false);
             }
-
+    
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "Database error: " + databaseError.getMessage());
@@ -520,7 +523,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         String restaurantUID = currentOrder.getRestaurantId();
 
         String restaurantPath = EAHCONST.generatePath(
-                EAHCONST.RESTAURANTS_SUB_TREE, restaurantUID);
+                EAHCONST.RESTAURANTS_SUB_TREE,restaurantUID);
 
         DatabaseReference dbRef1 = dbRef.child(restaurantPath);
         GeoFire geoFireRestaurant = new GeoFire(dbRef1);
@@ -535,7 +538,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     System.out.println(String.format("There is no location for key %s in GeoFire", key));
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.err.println("There was an error getting the GeoFire location: " + databaseError);
@@ -572,23 +574,39 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private void getRoutes() {
         if (lastLocation != null && restaurantLocation != null && customerLocation != null) {
             // get Rider to Restaurant Routes
-
-            new RoutingUtility(this, lastLocation, restaurantLocation, (route, distances) -> {
-                riderToRestaurantRoutes = route;
-                riderToRestaurantDistance = distances[0];
-                tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
-                riderToRestaurantDuration = distances[1];
-                tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+            
+            new RoutingUtility(this, lastLocation, restaurantLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    riderToRestaurantRoutes = route;
+                    riderToRestaurantDistance = distances[0];
+                    tvRiderToRestaurantDistKM.setText(riderToRestaurantDistance);
+                    riderToRestaurantDuration = distances[1];
+                    tvRiderToRestaurantDistTime.setText(riderToRestaurantDuration);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
-
-            new RoutingUtility(this, restaurantLocation, customerLocation, (route, distances) -> {
-                restaurantToCustomerRoutes = route;
-                restaurantToCustomerDistance = distances[0];
-                String[] splits = distances[0].split(" ");
-                kmRestToCust = Float.parseFloat(splits[0]);
-                tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
-                restaurantToCustomerDuration = distances[1];
-                tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+            
+            new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
+                @Override
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
+                    restaurantToCustomerRoutes = route;
+                    restaurantToCustomerDistance = distances[0];
+                    String[] splits = distances[0].split(" ");
+                    kmRestToCust = Float.parseFloat(splits[0]);
+                    tvRestaurantToCustomerDistKM.setText(restaurantToCustomerDistance);
+                    restaurantToCustomerDuration = distances[1];
+                    tvRestaurantToCustomerDistTime.setText(restaurantToCustomerDuration);
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception in routing: " + e.getMessage());
+                }
             });
         }
     }

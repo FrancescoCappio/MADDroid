@@ -6,15 +6,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
 
 public class RoutingDataParser {
 
     private JSONObject jObject;
-
-
+    
+    private int durationMinutes = -1;
+    
     public RoutingDataParser(JSONObject jObject) {
         this.jObject = jObject;
     }
@@ -99,7 +104,7 @@ public class RoutingDataParser {
         return poly;
     }
 
-    public String[] getDistance() {
+    public String[] getDistance() throws JSONException, ParseException {
         String[] data = new String[2];
         JSONArray jRoutes;
         JSONArray jLegs;
@@ -107,7 +112,10 @@ public class RoutingDataParser {
             jRoutes = this.jObject.getJSONArray("routes");
             jLegs = ((JSONObject) jRoutes.get(0)).getJSONArray("legs");
             String distance = (String) ((JSONObject) ((JSONObject) jLegs.get(0)).get("distance")).get("text");
-            data[0] = Double.parseDouble(distance.split(" ")[0]) + " Km";
+            NumberFormat format = NumberFormat.getInstance(Locale.US);
+            Number number = format.parse(distance.split(" ")[0]);
+            
+            data[0] = number.doubleValue() + " Km";
     
             int durationTime;
             
@@ -120,6 +128,7 @@ public class RoutingDataParser {
             
             int durationTimeBike = durationTime / 2;
             int durationTimeBikeMins = durationTimeBike / 60;
+            durationMinutes = durationTimeBikeMins;
             
             if (durationTimeBikeMins > 60) {
                 int hours = durationTimeBikeMins / 60;
@@ -129,9 +138,16 @@ public class RoutingDataParser {
                 data[1] = durationTimeBikeMins + "m";
             }
             
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
         return data;
+    }
+    
+    public int getDurationMinutes() throws JSONException, ParseException {
+        if (durationMinutes < 0)
+            getDistance();
+        return durationMinutes;
     }
 }

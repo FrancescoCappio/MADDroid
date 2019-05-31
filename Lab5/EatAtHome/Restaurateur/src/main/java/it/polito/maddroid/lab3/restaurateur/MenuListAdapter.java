@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -24,6 +25,7 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
     
     public static final String MODE_RESTAURANT_MENU = "MODE_RESTAURANT_MENU";
     public static final String MODE_ORDER_DISH_LIST = "MODE_ORDER_DISH_LIST";
+    public static final String MODE_MOST_POPULAR_DISHES_LIST = "MODE_MOST_POPULAR_DISHES_LIST";
 
     private static StorageReference storageReference;
     private ItemClickListener itemClickListener;
@@ -86,21 +88,27 @@ public class MenuListAdapter extends ListAdapter<Dish, MenuListAdapter.MyViewHol
             StorageReference riversRef = storageReference.child("dish_"+ restaurantId +"_" + dish.getDishID() +".jpg");
 
             GlideApp.with(ivDishPhoto.getContext())
-                    .load(riversRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+                    .load(riversRef)
+                    .placeholder(R.drawable.ic_dish_black)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivDishPhoto);
 
             itemView.setOnClickListener(v -> itemClickListener.clickListener(dish));
+            String quantity = tvQuantity.getContext().getString(R.string.quantity);
             
             if (adapterMode.equals(MODE_RESTAURANT_MENU)) {
                 tvQuantity.setVisibility(View.GONE);
             } else if (adapterMode.equals(MODE_ORDER_DISH_LIST)){
                 tvQuantity.setVisibility(View.VISIBLE);
-                String quantity = tvQuantity.getContext().getString(R.string.quantity);
                 
                 tvQuantity.setText(quantity + ": " + dish.getQuantity());
             }
-
+            else if (adapterMode.equals(MODE_MOST_POPULAR_DISHES_LIST)){
+                tvDishPrice.setVisibility(View.GONE);
+                tvQuantity.setText(quantity + ": " + dish.getQuantity());
+            }
         }
-
     }
 }

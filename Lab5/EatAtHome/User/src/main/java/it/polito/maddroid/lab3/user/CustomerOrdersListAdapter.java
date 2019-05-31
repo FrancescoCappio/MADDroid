@@ -75,19 +75,17 @@ public class CustomerOrdersListAdapter extends ListAdapter<Order, CustomerOrders
             
             switch (order.getOrderStatus()) {
                 case PENDING:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
                     break;
                 case ONGOING:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
+                case CONFIRMED:
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
                     break;
                 case DECLINED:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
-                    break;
-                case CONFIRMED:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
                     break;
                 case COMPLETED:
-                    cvContainer.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_white));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_white));
                     break;
             }
             

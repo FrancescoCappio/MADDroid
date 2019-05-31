@@ -32,12 +32,15 @@
     <string name="alert_order_problem">There was a problem with your order</string>
     <string name="alert_order_no_dishes">No dishes have been selected</string>
     <string name="alert_order_no_time">Please select a delivery time</string>
-    <string name="alert_order_time_not_valid">The restaurateur needs at least 1 hour to prepare your dishes</string>
+    <string name="alert_order_no_date">Please select a delivery date</string>
+    <string name="alert_order_time_not_valid">The minimum required time for your order is</string>
+    <string name="alert_restaurant_closed">The restaurant is closed in the chosen date and time</string>
     <string name="alert_order_no_address">Please select a delivery address</string>
     <string name="alert_order_no_address_notes">We need some additional info on the address. I.E: name on the entryphone</string>
     <string name="alert_order_no_rider">Cannot find a rider</string>
 
     <string name="alert_error_ordering">There was an error while requesting your order</string>
+    <string name="alert_computing_distance">There was an error while computing the distance between the restaurant and the delivery address</string>
 
     <string name="order_completed">Order completed. Remember that the restaurateur still needs to confirm it</string>
 

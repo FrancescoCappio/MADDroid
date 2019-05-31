@@ -3,7 +3,6 @@ package it.polito.maddroid.lab3.restaurateur;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
@@ -55,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentSelectedPosition;
     private MenuFragment menuFragment;
     private OrderFragment orderFragment;
+    private MostPopularDishesFragment mostPopularDishesFragment;
     
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -221,6 +221,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectItem(1);
         
         }
+        else if (id == R.id.nav_statistics){
+            selectItem(2);
+        }
+        else if (id == R.id.nav_most_popular){
+            selectItem(3);
+        }
         else if (id == R.id.nav_app_info) {
             AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
             dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
@@ -247,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof MenuFragment) || (fr instanceof  OrderFragment)) {
+            if ((fr instanceof MenuFragment) || (fr instanceof  OrderFragment) || (fr instanceof  MostPopularDishesFragment) ) {
                 fragment = fr;
                 break;
             }
@@ -284,6 +290,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case 2:
+                Intent intentStatsRider = new Intent(this, RestaurateurStatisticsActivity.class);
+                navigationView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        navigationView.setCheckedItem(R.id.nav_statistics);
+                    }
+                });
+                startActivity(intentStatsRider);
+
+                break;
+            case 3:
+                if (!(fragment instanceof MostPopularDishesFragment) ) {
+                    mostPopularDishesFragment = new MostPopularDishesFragment();
+                    fragment = mostPopularDishesFragment;
+                    changed = true;
+                }
+                navigationView.setCheckedItem(R.id.nav_most_popular);
+
+                getSupportActionBar().setTitle(R.string.most_popular_dishes);
 
                 break;
 

@@ -22,11 +22,17 @@ import androidx.core.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -43,6 +49,14 @@ public class Utility {
         }
         String alert = activity.getResources().getString(stringResId);
         Snackbar.make(activity.findViewById(android.R.id.content),alert,Snackbar.LENGTH_SHORT).show();
+    }
+    
+    public static void showAlertToUser(Activity activity, String string) {
+        if (activity == null) {
+            Log.e(TAG, "Cannot show alert because the activity is null");
+            return;
+        }
+        Snackbar.make(activity.findViewById(android.R.id.content),string,Snackbar.LENGTH_SHORT).show();
     }
     
     public static void startActivityToGetImage(Activity context, String AUTHORITY, File destFile, int requestCode) {
@@ -158,7 +172,7 @@ public class Utility {
         return s;
     }
     
-    public static boolean openRestaurant ( String timeTable, int day, int hour, int minutes)
+    public static boolean checkRestaurantOpen(String timeTable, String dateS, String timeS)
     {
         int timeHourP;
         int timeMinutesP;
@@ -166,10 +180,34 @@ public class Utility {
         int timeMinutesA;
         boolean [] restaurantWeeklyOpen = new boolean[10080];
         
-        if ((hour < 0 || hour > 23 )&& (minutes < 0 || minutes > 59) && (day < 0 || day > 6) && timeTable.isEmpty())
+        //first of all we convert chosen date and time in a Date object
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        Date orderDate;
+        try {
+            orderDate = df.parse(dateS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Exception while parsing date");
+            return false;
+        }
+        
+        Calendar c = Calendar.getInstance();
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+        c.setTime(orderDate);
+        int day = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        if (day < 0)
+            day = 7;
+        
+        String splitted[] = timeS.split(":");
+        
+        int hour = Integer.parseInt(splitted[0]);
+        int minutes = Integer.parseInt(splitted[1]);
+        
+        if ((hour < 0 || hour > 23 ) || (minutes < 0 || minutes > 59) || (day < 0 || day > 6) || timeTable.isEmpty())
             return false;
         
         String [] allWeek = timeTable.split(";");
+        
         if (allWeek[day].contains("closed"))
             return false;
         
@@ -270,6 +308,73 @@ public class Utility {
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         return intent;
+    }
+    
+    public static String minutesToPrettyDuration(Context context, int minutes, boolean longString) {
+        
+        if (minutes < 60) {
+            if (longString) {
+                if (minutes == 1)
+                    return minutes + " " + context.getString(R.string.minute_long);
+                else
+                    return minutes + " " + context.getString(R.string.minutes_long);
+            } else {
+                return minutes + context.getString(R.string.minutes_short);
+            }
+        }
+        
+        int hours = minutes / 60;
+        
+        if (hours < 24) {
+            int remain = minutes - hours * 60;
+    
+            if (longString) {
+                String hoursS;
+                if (hours == 1)
+                    hoursS = hours + " " + context.getString(R.string.hour_long);
+                else
+                    hoursS = hours + " " + context.getString(R.string.hours_long);
+    
+                String minutesS;
+                if (remain == 1)
+                    minutesS = remain + " " + context.getString(R.string.minute_long);
+                else
+                    minutesS = remain + " " + context.getString(R.string.minutes_long);
+    
+                return hoursS + " " + minutesS;
+            }
+            else {
+                return hours + context.getString(R.string.hours_short) + " " + remain + context.getString(R.string.minutes_short);
+            }
+        }
+        
+        int days = hours / 24;
+        int remainMinutes = minutes - hours * 60;
+        int remainHours = hours - days * 24;
+
+        if (longString) {
+            String daysS;
+            if (days == 1)
+                daysS = days + " " + context.getString(R.string.day_long);
+            else
+                daysS = days + " " + context.getString(R.string.days_long);
+    
+            String hoursS;
+            if (remainHours == 1)
+                hoursS = remainHours + " " + context.getString(R.string.hour_long);
+            else
+                hoursS = remainHours + " " + context.getString(R.string.hours_long);
+    
+            String minutesS;
+            if (remainMinutes == 1)
+                minutesS = remainMinutes + " " + context.getString(R.string.minute_long);
+            else
+                minutesS = remainMinutes + " " + context.getString(R.string.minutes_long);
+    
+            return daysS + " " + hoursS + " " + minutesS;
+        }
+        
+        return days + context.getString(R.string.days_short) + " " + remainHours + context.getString(R.string.hours_short) + " " + remainMinutes + context.getString(R.string.minutes_short);
     }
 }
 

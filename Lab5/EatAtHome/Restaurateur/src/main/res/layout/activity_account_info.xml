@@ -245,6 +245,30 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_avg_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_description"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_avg_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/restaurant_avg_time"
+                android:inputType="number"
+                android:textColor="@drawable/et_color_selector"
+                android:singleLine="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <View
             android:id="@+id/view_separator_timetable"
             android:layout_width="match_parent"
@@ -253,7 +277,7 @@
             android:layout_marginTop="@dimen/activity_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/til_description" />
+            app:layout_constraintTop_toBottomOf="@id/til_avg_time" />
 
         <Button
             android:id="@+id/bt_restaurant_categories"

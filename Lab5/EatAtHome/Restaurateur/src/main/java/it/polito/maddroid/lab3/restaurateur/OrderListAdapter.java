@@ -14,12 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.Locale;
 
-import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 
 
@@ -61,7 +58,7 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
         private TextView tvOrderCustomer;
         private TextView tvOrderTotPrice;
         private TextView tvOrderDate;
-        private TextView tvOrderTimeTable;
+        private TextView tvOrderTime;
         private TextView tvOrderStatus;
         private CardView cardView;
 
@@ -73,7 +70,7 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
             tvOrderCustomer = itemView.findViewById(R.id.tv_customer_order_name);
             tvOrderDate = itemView.findViewById(R.id.tv_order_date);
             tvOrderTotPrice = itemView.findViewById(R.id.tv_total_cost);
-            tvOrderTimeTable =  itemView.findViewById(R.id.tv_delivery_time);
+            tvOrderTime =  itemView.findViewById(R.id.tv_delivery_time);
             tvOrderStatus = itemView.findViewById(R.id.tv_order_status);
             this.itemView = itemView;
 
@@ -83,24 +80,27 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
             tvOrderCustomer.setText(order.getCustomerName());
             tvOrderDate.setText(order.getDate());
             String [] suddivido = order.getTotalCost().split(" ");
-            float costo = Float.parseFloat(suddivido[0]) - EAHCONST.DELIVERY_COST;
+            float costo = Float.parseFloat(suddivido[0]);
             tvOrderTotPrice.setText(String.format(Locale.US,"%.02f", costo) + " €");
-            tvOrderTimeTable.setText(order.getDeliveryTime());
+            tvOrderTime.setText(order.getOrderReadyTime());
             tvOrderStatus.setText(order.getOrderStatus().toString());
             itemView.setOnClickListener(v -> itemClickListener.clickListener(order));
             switch ( order.getOrderStatus()) {
                 case PENDING:
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
+//                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
+//                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.eah_fair_grey));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
                     break;
                 case DECLINED:
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
                     break;
                 case CONFIRMED:
                 case WAITING_RIDER:
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
                     break;
                 default:
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_white));
+//                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_fair_grey));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_black));
                     break;
             }
         }

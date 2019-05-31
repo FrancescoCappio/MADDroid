@@ -3,6 +3,7 @@ package it.polito.maddroid.lab3.user;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
@@ -83,7 +84,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     //currentStep = 1 Pickup Products
     //currentStep = 2 Delivery
     //currentStep = 3 Completed
+    
     private List<String> seekBarStatus = Arrays.asList("Confirmed","Waiting for rider","On the way","Completed");
+    private List<String> seekBarStatusWaiting = Arrays.asList("Waiting confirm","Waiting rider","On the way","Completed");
+    private List<String> seekBarStatusDeclined = Arrays.asList("Declined","Waiting rider","On the way","Completed");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +136,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         setupClickListeners();
 
-        stepView.getState().steps(seekBarStatus).commit();
+        stepView.getState().steps(seekBarStatusWaiting).commit();
         
         View rootView = getWindow().getDecorView().getRootView();
         ViewTreeObserver observer = rootView .getViewTreeObserver();
@@ -162,11 +166,16 @@ public class OrderDetailActivity extends AppCompatActivity {
                 return 2;
             case COMPLETED:
                 return 3;
+            case DECLINED:
+                return -1;
         }
         return 0;
     }
     
     private void setSteps(int currentStep) {
+        if (currentStep == -1) {
+            stepView.done(true);
+        }
         if (currentStep != 3)
             stepView.go(currentStep, true);
         else {
@@ -358,9 +367,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
     
     private void updateUIForOrderStatus() {
-    
-        if (viewLoaded)
-            setSteps(getCurrentStep(currentOrder.getOrderStatus()));
+        
+        if (currentOrder.getOrderStatus() != EAHCONST.OrderStatus.PENDING) {
+            stepView.getState().steps(seekBarStatus).commit();
+        }
     
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
             btRateRider.setVisibility(View.VISIBLE);
@@ -369,6 +379,11 @@ public class OrderDetailActivity extends AppCompatActivity {
             btRateRider.setVisibility(View.GONE);
             btRateRestaurant.setVisibility(View.GONE);
         }
+        
+        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.DECLINED) {
+            stepView.getState().steps(seekBarStatusDeclined).commit();
+            stepView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.eah_red_alert));
+        }
 
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.ONGOING) {
             btTrackRider.setVisibility(View.VISIBLE);
@@ -376,6 +391,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         }
         else
             btTrackRider.setVisibility(View.GONE);
+    
+        if (viewLoaded)
+            setSteps(getCurrentStep(currentOrder.getOrderStatus()));
     }
 
 
@@ -437,8 +455,13 @@ public class OrderDetailActivity extends AppCompatActivity {
 
             new RoutingUtility(this, restaurantLocation, customerLocation, new RoutingUtility.GetRouteCaller() {
                 @Override
-                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances) {
+                public void routeCallback(List<List<HashMap<String, String>>> route, String[] distances, int minutes) {
                     restaurantToCustomerRoutes = route;
+                }
+    
+                @Override
+                public void routeErrorCallback(Exception e) {
+                    Log.e(TAG, "Exception routing: " + e.getMessage());
                 }
             });
         }
