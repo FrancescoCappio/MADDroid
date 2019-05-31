@@ -152,10 +152,15 @@
     <string name="today_profit">Daily income:</string>
     <string name="monthly_km">Monthly km:</string>
     <string name="monthly_profit">Monthly income:</string>
+    <string name="yearly_profit">Yearly income:</string>
+    <string name="yearly_KM">Yearly km:</string>
     <string name="total_km">Total km:</string>
     <string name="total_profit">Total income:</string>
 
     <string name="rider_stats">Your Statistics</string>
+    <string name="rider_stats_daily">Your last daily incomes</string>
+    <string name="rider_stats_monthly">Your last monthly incomes</string>
+    <string name="rider_stats_yearly">Your last yearly incomes</string>
     <string name="rate_rider">Rate rider</string>
     <string name="rate_restaurant">Rate restaurant</string>
     <string name="give_score">Give a score</string>

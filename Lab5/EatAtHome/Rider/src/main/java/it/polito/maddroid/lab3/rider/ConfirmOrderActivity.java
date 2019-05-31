@@ -229,8 +229,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
                 riderUID,
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), costTotal);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST), kmRider);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_DATE), currentDelivery.getDeliveryDate());
 
         String restaurantOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
@@ -386,6 +386,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         }
         else
             costTotal = (float) (costTotal + (0.50 * kmRider));
+
+        currentDelivery.setDeliveryCost(costTotal);
     }
 
 

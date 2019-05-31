@@ -4,6 +4,7 @@ package it.polito.maddroid.lab3.common;
 public class EAHCONST {
 
 
+
     // String cost to use as keys and values for intents extras
     public static String LAUNCH_APP_KEY = "LAUNCH_APP_KEY";
     public static String LAUNCH_APP_RESTAURATEUR = "LAUNCH_APP_RESTAURATEUR";
@@ -13,7 +14,7 @@ public class EAHCONST {
     public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
     
     public static String NOTIFICATION_KEY = "NOTIFICATION_KEY";
-    
+    public static String ARRAY_INCOME_KEY = "ARRAY_INCOME_KEY";
     public static String LAUNCH_EDIT_ENABLED_KEY = "LAUNCH_EDIT_ENABLED_KEY";
     public static String ACCOUNT_INFO_EMPTY = "ACCOUNT_INFO_EMPTY";
     
@@ -95,6 +96,7 @@ public class EAHCONST {
     public final static String CATEGORIES_SUB_TREE = "restaurant_categories";
     public final static String CUSTOMERS_SUB_TREE = "customers";
     public final static String RIDERS_SUB_TREE = "riders";
+    public final static String RIDERS_INCOME_SUB_TREE = "riders_income";
     public final static String DISHES_SUB_TREE = "dishes";
     public final static String RESTAURANTS_TIMETABLES_SUB_TREE = "restaurants_timetables";
     public final static String ORDERS_REST_SUBTREE = "orders_restaurateur";
@@ -140,7 +142,8 @@ public class EAHCONST {
     public final static String RIDER_ON_DUTY = "on_duty_status";
     public final static String RIDER_REVIEW_COUNT = "review_count";
     public final static String RIDER_REVIEW_AVG = "review_avg";
-    
+    public final static String RIDER_DAILY_INCOME = "rider_income";
+
     // categories subtree nodes fields
     public final static String CATEGORIES_NAME = "name";
 
@@ -170,8 +173,9 @@ public class EAHCONST {
     // riders order subtree nodes fields
     public final static String RIDER_ORDER_STATUS = "order_status";
     public final static String RIDER_KM_REST = "order_km_rider_restaurant";
+    public final static String RIDER_ORDER_DATE = "order_rider_date";
     public final static String RIDER_KM_REST_CUST = "order_km_restaurant_cust";
-    public final static String RIDER_INCOME = "rider_income";
+    public final static String RIDER_INCOME = "rider_income_tot";
     public final static String RIDER_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String RIDER_ORDER_CUSTOMER_ID = "customer_id";
     
