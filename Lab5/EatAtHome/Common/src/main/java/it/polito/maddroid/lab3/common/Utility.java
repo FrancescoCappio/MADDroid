@@ -228,8 +228,9 @@ public class Utility {
                 timeHourA = Integer.parseInt(timeFirst[1].substring(0, 2));
                 timeMinutesA = Integer.parseInt(timeFirst[1].substring(3));
                 if(timeHourP > timeHourA)
-                    indexDay ++;
-                timeMinutesA = (timeHourA*60)+ timeMinutesA + (1440* indexDay);
+                    timeMinutesA = (timeHourA*60)+ timeMinutesA + (1440* (indexDay+1));
+                else
+                    timeMinutesA = (timeHourA*60)+ timeMinutesA + (1440* indexDay);
                 
                 
                 for (int count = timeMinutesP ; count < timeMinutesA ; ++count)
