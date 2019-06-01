@@ -446,11 +446,21 @@ public class AccountInfoActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.action_confirm, (dialog, which) -> {
                     categoriesDialogOpen = false;
                     categoriesDialog = null;
+                    if(currentSelectedCategoriesId.contains("homemade"))
+                    {
+                        btTimeTable.setEnabled(false);
+                        timeTableRest = "";
+                        etAverageTime.setText("0");
+                        etAverageTime.setEnabled(false);
+
+                    }
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.action_cancel, (dialog, which) -> {
                     categoriesDialogOpen = false;
                     categoriesDialog = null;
+                    currentSelectedCategoriesId.clear();
+                    currentSelectedCategoriesId.addAll(previousSelectedCategoriesId);
                     dialog.dismiss();
                 }).create();
 
@@ -986,7 +996,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             return false;
         }
 
-        if (timeTableRest == null || timeTableRest.isEmpty()) {
+        if (timeTableRest == null || (timeTableRest.isEmpty() && !currentSelectedCategoriesId.contains("homemade"))) {
             Utility.showAlertToUser(this, R.string.no_timetable_alert);
             return false;
         }
