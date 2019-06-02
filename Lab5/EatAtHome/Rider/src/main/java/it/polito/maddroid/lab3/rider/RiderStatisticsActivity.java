@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -139,17 +140,16 @@ public class RiderStatisticsActivity extends AppCompatActivity {
             bestWork = savedInstanceState.getFloat(BEST_WORK_KEY);
             avgGrade = savedInstanceState.getFloat(AVG_GRADE_KEY);
             totGrade = savedInstanceState.getLong(COUNT_GRADE_KEY);
-            kmToday.setText("" + kmDay);
-            kmMonthly.setText("" + kmMonth);
-            kmYearly.setText("" + kmYear);
-            kmTotal.setText("" + allKm);
-            bestTravel.setText(""+bestWork);
-            incomeToday.setText("" + profitDay);
-            incomeMonthly.setText("" + profitMonth);
-            incomeYearly.setText("" + profitYear);
-            incomeTotal.setText("" + profitTotal);
-            tvRating.setText(""+totGrade);
-
+            kmMonthly.setText("" + String.format("%.02f", kmMonth));
+            kmToday.setText("" + String.format("%.02f", kmDay));
+            kmYearly.setText("" + String.format("%.02f", kmYear));
+            incomeToday.setText("" + String.format("%.02f", profitDay) + " €");
+            incomeMonthly.setText("" + String.format("%.02f", profitMonth) + " €");
+            incomeYearly.setText("" + String.format("%.02f", profitYear) + " €");
+            kmTotal.setText("" +  String.format("%.02f", allKm));
+            bestTravel.setText("" +  String.format("%.02f", bestWork));
+            incomeTotal.setText("" +  String.format("%.02f", profitTotal) + " €");
+            tvRating.setText("" + totGrade + " " + (totGrade == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
         } else {
             kmDay = 0;
             kmMonth = 0;
@@ -162,21 +162,27 @@ public class RiderStatisticsActivity extends AppCompatActivity {
             bestWork = 0;
             avgGrade = 0.0f;
             totGrade = 0;
+            kmMonthly.setText("" + String.format("%.02f", kmMonth));
+            kmToday.setText("" + String.format("%.02f", kmDay));
+            kmYearly.setText("" + String.format("%.02f", kmYear));
+            incomeToday.setText("" + String.format("%.02f", profitDay) + " €");
+            incomeMonthly.setText("" + String.format("%.02f", profitMonth) + " €");
+            incomeYearly.setText("" + String.format("%.02f", profitYear) + " €");
+
 
             calculateStats();
         }
 
 
         tvRating.setOnClickListener(v -> openReviewsActivity());
-        btshowDay.setOnClickListener(v -> openLineChart(DAY_KEY) );
-        btshowMonth.setOnClickListener(v -> openLineChart(MONTH_KEY) );
-        btshowYear.setOnClickListener(v -> openLineChart(YEAR_KEY) );
+        btshowDay.setOnClickListener(v -> openLineChart(DAY_KEY));
+        btshowMonth.setOnClickListener(v -> openLineChart(MONTH_KEY));
+        btshowYear.setOnClickListener(v -> openLineChart(YEAR_KEY));
 
     }
 
     private void openLineChart(String timeKey) {
-        if(timeKey.equals(DAY_KEY))
-        {
+        if (timeKey.equals(DAY_KEY)) {
             setActivityLoading(true);
             //prendo gli ultimi sette day
             Intent intentRiderDay = new Intent(this, LineChartActivity.class);
@@ -185,51 +191,38 @@ public class RiderStatisticsActivity extends AppCompatActivity {
             dbRef.child(EAHCONST.RIDERS_INCOME_SUB_TREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot == null)
-                    {
+                    if (dataSnapshot == null) {
 
-                    }
-                    else
-                    {
+                    } else {
+                        for (int i = 6; i >= 0; --i) {
 
-                        for(int i = 6; i >= 0 ; --i)
-                        {
-
-                            String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-                            String parseDate[] = date.split("-");
-                            int firstDay = Integer.parseInt(parseDate[0]);
-                            firstDay = firstDay - i ;
-                            if(firstDay <= 0 )
-                            {
-                                if(parseDate[1].equals("05")|| parseDate[1].equals("07") ||  parseDate[1].equals("10") || parseDate[1].equals("12"))
-                                    firstDay = 30;
-                                if(parseDate[1].equals("03"))
-                                    firstDay = 28;
-                                if(parseDate[1].equals("01")||parseDate[1].equals("02")||parseDate[1].equals("04")||parseDate[1].equals("06")||parseDate[1].equals("08") ||parseDate[1].equals("09")||parseDate[1].equals("11"))
-                                    firstDay = 31;
-
-                                if(parseDate[1].equals("01"))
-                                    parseDate[2] = String.valueOf(Integer.parseInt(parseDate[2])-1);
-
-                                parseDate[1] = String.valueOf(Integer.parseInt(parseDate[1])-1);
-                            }
-                            if(dataSnapshot.hasChild(parseDate[2]))
-                            {
-                                if (dataSnapshot.child(parseDate[2]).hasChild(parseDate[1])){
-                                    if(dataSnapshot.child(parseDate[2]).child(parseDate[1]).hasChild(String.valueOf(firstDay)))
-                                        incomeDays.add(6-i, dataSnapshot.child(parseDate[2]).child(parseDate[1]).child(String.valueOf(firstDay)).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
-                                    else
-                                        incomeDays.add(6-i,0.0f);
-                                }
-                                else
-                                {
-                                    incomeDays.add(6-i,0.0f);
-                                }
-                            }
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(new Date());
+                            cal.add(Calendar.DATE, (-i));
+                            String date = new String();
+                            if (cal.get(Calendar.DATE) > 10)
+                                date = "" + cal.get(Calendar.DATE) + "-";
                             else
-                                incomeDays.add(6-i, 0.0f);
+                                date = "0" + cal.get(Calendar.DATE) + "-";
+                            if ((cal.get(Calendar.MONTH) + 1) >= 10)
+                                date = date + (cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                            else
+                                date = date + "0" + (cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                            String parseDate[] = date.split("-");
+                            if (dataSnapshot.hasChild(parseDate[2])) {
+                                if (dataSnapshot.child(parseDate[2]).hasChild(parseDate[1])) {
+                                    if (dataSnapshot.child(parseDate[2]).child(parseDate[1]).hasChild(parseDate[0]))
+                                        incomeDays.add(6 - i, dataSnapshot.child(parseDate[2]).child(parseDate[1]).child(parseDate[0]).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
+                                    else
+                                        incomeDays.add(6 - i, 0.0f);
+                                } else {
+                                    incomeDays.add(6 - i, 0.0f);
+                                }
+                            } else
+                                incomeDays.add(6 - i, 0.0f);
                         }
                         setActivityLoading(false);
+                        Log.d("RiderStatisticsAct", String.valueOf(incomeDays.size()));
                         intentRiderDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
                         startActivity(intentRiderDay);
                     }
@@ -242,13 +235,8 @@ public class RiderStatisticsActivity extends AppCompatActivity {
             });
 
 
-
-
-        }
-        else
-        {
-            if(timeKey.equals(MONTH_KEY))
-            {
+        } else {
+            if (timeKey.equals(MONTH_KEY)) {
                 // prendo gli ultimi 30 day
                 setActivityLoading(true);
                 Intent intentRiderDay = new Intent(this, LineChartActivity.class);
@@ -257,51 +245,39 @@ public class RiderStatisticsActivity extends AppCompatActivity {
                 dbRef.child(EAHCONST.RIDERS_INCOME_SUB_TREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot == null)
-                        {
+                        if (dataSnapshot == null) {
 
-                        }
-                        else
-                        {
+                        } else {
 
-                            for(int i = 30; i >= 0 ; --i)
-                            {
+                            for (int i = 30; i >= 0; --i) {
 
-                                String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-                                String parseDate[] = date.split("-");
-                                int firstDay = Integer.parseInt(parseDate[0]);
-                                firstDay = firstDay - i ;
-                                if(firstDay <= 0 )
-                                {
-                                    if(parseDate[1].equals("05")|| parseDate[1].equals("07") ||  parseDate[1].equals("10") || parseDate[1].equals("12"))
-                                        firstDay = 30;
-                                    if(parseDate[1].equals("03"))
-                                        firstDay = 28;
-                                    if(parseDate[1].equals("01")||parseDate[1].equals("02")||parseDate[1].equals("04")||parseDate[1].equals("06")||parseDate[1].equals("08") ||parseDate[1].equals("09")||parseDate[1].equals("11"))
-                                        firstDay = 31;
-
-                                    if(parseDate[1].equals("01"))
-                                        parseDate[2] = String.valueOf(Integer.parseInt(parseDate[2])-1);
-
-                                    parseDate[1] = String.valueOf(Integer.parseInt(parseDate[1])-1);
-                                }
-                                if(dataSnapshot.hasChild(parseDate[2]))
-                                {
-                                    if (dataSnapshot.child(parseDate[2]).hasChild(parseDate[1])){
-                                        if(dataSnapshot.child(parseDate[2]).child(parseDate[1]).hasChild(String.valueOf(firstDay)))
-                                            incomeDays.add(30-i, dataSnapshot.child(parseDate[2]).child(parseDate[1]).child(String.valueOf(firstDay)).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
-                                        else
-                                            incomeDays.add(30-i,0.0f);
-                                    }
-                                    else
-                                    {
-                                        incomeDays.add(30-i,0.0f);
-                                    }
-                                }
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTime(new Date());
+                                cal.add(Calendar.DATE, (-i));
+                                String date = new String();
+                                if (cal.get(Calendar.DATE) > 10)
+                                    date = "" + cal.get(Calendar.DATE) + "-";
                                 else
-                                    incomeDays.add(30-i, 0.0f);
+                                    date = "0" + cal.get(Calendar.DATE) + "-";
+                                if ((cal.get(Calendar.MONTH) + 1) >= 10)
+                                    date = date + (cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                                else
+                                    date = date + "0" + (cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                                String parseDate[] = date.split("-");
+                                if (dataSnapshot.hasChild(parseDate[2])) {
+                                    if (dataSnapshot.child(parseDate[2]).hasChild(parseDate[1])) {
+                                        if (dataSnapshot.child(parseDate[2]).child(parseDate[1]).hasChild(parseDate[0]))
+                                            incomeDays.add(30 - i, dataSnapshot.child(parseDate[2]).child(parseDate[1]).child(parseDate[0]).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
+                                        else
+                                            incomeDays.add(30 - i, 0.0f);
+                                    } else {
+                                        incomeDays.add(30 - i, 0.0f);
+                                    }
+                                } else
+                                    incomeDays.add(30 - i, 0.0f);
                             }
                             setActivityLoading(false);
+                            Log.d("RiderStatisticsAct", String.valueOf(incomeDays.size()));
                             intentRiderDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
                             startActivity(intentRiderDay);
                         }
@@ -314,9 +290,7 @@ public class RiderStatisticsActivity extends AppCompatActivity {
                 });
 
 
-
-            }
-            else {
+            } else {
                 // prendo gli ultimi 12 month
                 setActivityLoading(true);
                 Intent intentRiderDay = new Intent(this, LineChartActivity.class);
@@ -326,38 +300,31 @@ public class RiderStatisticsActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String month;
-                        if(dataSnapshot == null)
-                        {
+                        if (dataSnapshot == null) {
 
-                        }
-                        else
-                        {
-                            for(int i = 11; i >= 0 ; --i)
-                            {
+                        } else {
+                            for (int i = 11; i >= 0; --i) {
                                 Calendar cal = Calendar.getInstance();
                                 cal.setTime(new Date());
                                 cal.add(Calendar.MONTH, (-i));
-                                int mese = cal.get(Calendar.MONTH) + 1 ;
-                                if(mese < 10)
+                                int mese = cal.get(Calendar.MONTH) + 1;
+                                if (mese < 10)
                                     month = "0" + mese;
                                 else
                                     month = "" + mese;
-                                if(dataSnapshot.hasChild(String.valueOf(cal.get(Calendar.YEAR))))
-                                {
-                                    if(dataSnapshot.child(String.valueOf(cal.get(Calendar.YEAR))).hasChild(month))
-                                    {
+                                if (dataSnapshot.hasChild(String.valueOf(cal.get(Calendar.YEAR)))) {
+                                    if (dataSnapshot.child(String.valueOf(cal.get(Calendar.YEAR))).hasChild(month)) {
                                         System.out.println(String.valueOf(cal.get(Calendar.YEAR)));
                                         System.out.println(month);
                                         System.out.println(dataSnapshot.child(String.valueOf(cal.get(Calendar.YEAR))).child(month).child(EAHCONST.RIDER_INCOME).getValue());
-                                        incomeDays.add(11-i,dataSnapshot.child(String.valueOf(cal.get(Calendar.YEAR))).child(month).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
-                                    }
-                                    else
-                                        incomeDays.add(11-i, 0.0f);
-                                }
-                                else
-                                    incomeDays.add(11-i, 0.0f);
+                                        incomeDays.add(11 - i, dataSnapshot.child(String.valueOf(cal.get(Calendar.YEAR))).child(month).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue());
+                                    } else
+                                        incomeDays.add(11 - i, 0.0f);
+                                } else
+                                    incomeDays.add(11 - i, 0.0f);
                             }
                             setActivityLoading(false);
+                            Log.d("RiderStatisticsAct", String.valueOf(incomeDays.size()));
                             intentRiderDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
                             startActivity(intentRiderDay);
                         }
@@ -380,13 +347,12 @@ public class RiderStatisticsActivity extends AppCompatActivity {
         dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if((dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue() != null)&&(dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue() != null))
-                {
+                if ((dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue() != null) && (dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue() != null)) {
                     totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
                     avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
                 }
                 ratingBar.setRating(avgGrade);
-                tvRating.setText(""+totGrade+" "+ (totGrade == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
+                tvRating.setText("" + totGrade + " " + (totGrade == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
 
             }
 
@@ -399,33 +365,37 @@ public class RiderStatisticsActivity extends AppCompatActivity {
         dbRef.child(EAHCONST.ORDERS_RIDER_SUBTREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    float kmtoRest = 0;
-                    float kmtoCust = 0;
-                    float profit = 0;
+                if (dataSnapshot == null) {
 
-                    String orderId = ds.getKey();
-                    String restaurantId = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
-                    if (ds.child(EAHCONST.RIDER_KM_REST).getValue() != null)
-                        kmtoRest =  ds.child(EAHCONST.RIDER_KM_REST).getValue(Double.class).floatValue();
-                    if (ds.child(EAHCONST.RIDER_KM_REST_CUST).getValue() != null)
-                        kmtoCust =  ds.child(EAHCONST.RIDER_KM_REST_CUST).getValue(Double.class).floatValue();
-                    if (ds.child(EAHCONST.RIDER_INCOME).getValue() != null)
-                        profit = ds.child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
-                    if(bestWork < (kmtoCust + kmtoRest))
-                        bestWork = kmtoCust + kmtoRest;
-                    allKm = kmtoCust + kmtoRest + allKm;
-                    profitTotal = profitTotal + profit;
+                } else {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
-                    if (kmtoCust != 0 || kmtoRest != 0)
-                    {
-                        count++;
-                        computeDayAndMonthAndYear(kmtoCust, kmtoRest, restaurantId, orderId, profit);
+                        float kmtoRest = 0;
+                        float kmtoCust = 0;
+                        float profit = 0;
+
+                        String orderId = ds.getKey();
+                        String restaurantId = (String) ds.child(EAHCONST.RIDER_ORDER_RESTAURATEUR_ID).getValue();
+                        if (ds.child(EAHCONST.RIDER_KM_REST).getValue() != null)
+                            kmtoRest = ds.child(EAHCONST.RIDER_KM_REST).getValue(Double.class).floatValue();
+                        if (ds.child(EAHCONST.RIDER_KM_REST_CUST).getValue() != null)
+                            kmtoCust = ds.child(EAHCONST.RIDER_KM_REST_CUST).getValue(Double.class).floatValue();
+                        if (ds.child(EAHCONST.RIDER_INCOME).getValue() != null)
+                            profit = ds.child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
+                        if (bestWork < (kmtoCust + kmtoRest))
+                            bestWork = kmtoCust + kmtoRest;
+                        allKm = kmtoCust + kmtoRest + allKm;
+                        profitTotal = profitTotal + profit;
+
+                        if (kmtoCust != 0 || kmtoRest != 0) {
+                            count++;
+                            computeDayAndMonthAndYear(kmtoCust, kmtoRest, restaurantId, orderId, profit);
+                        }
                     }
 
-                    kmTotal.setText("" +  String.format("%.02f",allKm));
-                    incomeTotal.setText("" +  String.format("%.02f",profitTotal));
-                    bestTravel.setText(""+ String.format("%.02f",bestWork)+" km");
+                    kmTotal.setText("" + String.format("%.02f", allKm));
+                    incomeTotal.setText("" + String.format("%.02f", profitTotal) + " €");
+                    bestTravel.setText("" + String.format("%.02f", bestWork) + " km");
                 }
                 setActivityLoading(false);
 
@@ -442,13 +412,16 @@ public class RiderStatisticsActivity extends AppCompatActivity {
     }
 
     private void computeDayAndMonthAndYear(float kmtoCust, float kmtoRest, String restaurantId, String orderId, float profit) {
-
+        kmDay = 0.0f;
+        kmMonth = 0.0f;
+        kmYear = 0.0f;
         dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(restaurantId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
                 String currentM = date.split("-")[1];
                 String currentY = date.split("-")[2];
+
                 count--;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (ds.getKey().equals(orderId)) {
@@ -462,16 +435,13 @@ public class RiderStatisticsActivity extends AppCompatActivity {
                             profitMonth = profitMonth + profit;
                             profitDay = profitDay + profit;
                             profitYear = profitYear + profit;
-                        } else if (currentM.equals(monthDb))
-                        {
+                        } else if (currentM.equals(monthDb)) {
                             kmMonth = kmMonth + kmtoCust + kmtoRest;
                             profitMonth = profitMonth + profit;
                             kmYear = kmtoCust + kmtoRest + kmYear;
                             profitYear = profitYear + profit;
 
-                        }
-                        else if(yearDb.equals(currentY))
-                        {
+                        } else if (yearDb.equals(currentY)) {
                             kmYear = kmtoCust + kmtoRest + kmYear;
                             profitYear = profitYear + profit;
                         }
@@ -484,10 +454,10 @@ public class RiderStatisticsActivity extends AppCompatActivity {
                 if (count == 0) {
                     kmMonthly.setText("" + String.format("%.02f", kmMonth));
                     kmToday.setText("" + String.format("%.02f", kmDay));
-                    kmYearly.setText(""+String.format("%.02f",kmYear));
-                    incomeToday.setText("" + String.format("%.02f", profitDay));
-                    incomeMonthly.setText("" + String.format("%.02f",profitMonth));
-                    incomeYearly.setText("" + String.format("%.02f",profitYear));
+                    kmYearly.setText("" + String.format("%.02f", kmYear));
+                    incomeToday.setText("" + String.format("%.02f", profitDay) + " €");
+                    incomeMonthly.setText("" + String.format("%.02f", profitMonth) + " €");
+                    incomeYearly.setText("" + String.format("%.02f", profitYear) + " €");
                     setActivityLoading(false);
                 }
 

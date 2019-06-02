@@ -66,11 +66,11 @@ public class LineChartActivity extends AppCompatActivity {
             if(listIncome.size() == 12)
             {
                 vectorDate = new String[13];
-                actionBar.setTitle(R.string.rider_stats_monthly);
+                actionBar.setTitle(R.string.rider_stats_yearly);
             }
             else{
                 vectorDate = new String[32];
-                actionBar.setTitle(R.string.rider_stats_yearly);
+                actionBar.setTitle(R.string.rider_stats_monthly);
             }
         }
         for(int i = 0, j = listIncome.size()-1 ; i <= listIncome.size(); ++i, --j) {

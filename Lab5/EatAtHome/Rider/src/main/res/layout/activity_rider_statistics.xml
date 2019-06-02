@@ -49,7 +49,7 @@
             android:layout_margin="@dimen/activity_margin"
             android:hint="Avarage Grade"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/rating_bar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -232,7 +232,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:hint="Monthly Income"
+            android:hint="Yearly Income"
             android:textSize="15sp"
             app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
             app:layout_constraintTop_toBottomOf="@id/tv_km_year" />
