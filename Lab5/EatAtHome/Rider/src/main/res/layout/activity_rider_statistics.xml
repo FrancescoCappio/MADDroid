@@ -49,7 +49,7 @@
             android:layout_margin="@dimen/activity_margin"
             android:hint="Avarage Grade"
             android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@id/rating_bar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -190,12 +190,69 @@
             app:layout_constraintTop_toBottomOf="@id/view_separator_today_month" />
 
         <View
-            android:id="@+id/view_separator_month_total"
+            android:id="@+id/view_separator_month_year"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_margin"
             android:background="@color/eah_background_dark"
-            app:layout_constraintTop_toBottomOf="@id/bt_monthly_statistics" />
+            app:layout_constraintTop_toBottomOf="@id/tv_month_profit_title" />
+
+        <TextView
+            android:id="@+id/tv_km_year_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/yearly_KM"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
+
+        <TextView
+            android:id="@+id/tv_km_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Yearly Km"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
+
+        <TextView
+            android:id="@+id/tv_year_profit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/yearly_profit"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_year_title" />
+
+        <TextView
+            android:id="@+id/tv_year_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Yearly Income"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_km_year" />
+
+        <Button
+            android:id="@+id/bt_yearly_statistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="SHOW"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator_month_year" />
+
+        <View
+            android:id="@+id/view_separator_year_total"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:background="@color/eah_background_dark"
+            app:layout_constraintTop_toBottomOf="@id/tv_year_profit_title" />
 
         <TextView
             android:id="@+id/tv_km_total_title"
@@ -205,7 +262,7 @@
             android:text="@string/total_km"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+            app:layout_constraintTop_toBottomOf="@id/view_separator_year_total" />
 
         <TextView
             android:id="@+id/tv_km_total"
@@ -215,7 +272,7 @@
             android:hint="Total Km"
             android:textSize="15sp"
             app:layout_constraintStart_toEndOf="@id/tv_month_profit_title"
-            app:layout_constraintTop_toBottomOf="@id/view_separator_month_total" />
+            app:layout_constraintTop_toBottomOf="@id/view_separator_year_total" />
 
         <TextView
             android:id="@+id/tv_total_profit_title"

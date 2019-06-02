@@ -25,12 +25,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import it.polito.maddroid.lab3.common.DateTool;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.LineChartActivity;
 import it.polito.maddroid.lab3.common.ReviewsActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -74,7 +78,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
     private Button btBusyHour;
     private Button btDailyStat;
-    private Button btmonthlyStat;
+    private Button btMonthlyStat;
     private Button btYearlyStat;
 
     private float waitingCount;
@@ -94,7 +98,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
     private int quantityTotal;
 
     private DateTool dt;
-    private HashMap<String, HashMap<Integer,Integer>> weekHours;
+    private HashMap<String, HashMap<Integer, Integer>> weekHours;
 
 
     @Override
@@ -134,27 +138,180 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
             quantityMonth = savedInstanceState.getInt(QUANTITY_MONTH_KEY);
             quantityYear = savedInstanceState.getInt(QUANTITY_YEAR_KEY);
             quantityTotal = savedInstanceState.getInt(QUANTITY_TOTAL_KEY);
-            
+
             weekHours = (HashMap<String, HashMap<Integer, Integer>>) savedInstanceState.getSerializable(BUSY_HOURS_KEY);
             setDataToView();
-        }
-        else
+        } else
             getRating();
+
 
     }
 
     private void setOnClickListeners() {
         tvRating.setOnClickListener(v -> openReviewsActivity());
+        btMonthlyStat.setOnClickListener(v -> openMonthlyStats());
+        btDailyStat.setOnClickListener(v -> openDailyStats());
+        btYearlyStat.setOnClickListener(v -> openYearlyStats());
         btBusyHour.setOnClickListener(v -> {
             if (weekHours == null) {
-                Utility.showAlertToUser(this , R.string.alert_to_get_busy_hour);
+                Utility.showAlertToUser(this, R.string.alert_to_get_busy_hour);
                 return;
             }
 
             Intent intent = new Intent(getApplicationContext(), BusyHoursActivity.class);
-            intent.putExtra(BusyHoursActivity.BUSY_HOURS_KEY,(Serializable) weekHours);
+            intent.putExtra(BusyHoursActivity.BUSY_HOURS_KEY, (Serializable) weekHours);
             startActivity(intent);
         });
+    }
+
+    private void openYearlyStats() {
+        setActivityLoading(true);
+        Intent intentRestaurantDay = new Intent(this, LineChartActivity.class);
+        ArrayList<Float> incomeDays = new ArrayList<>();
+        dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                for (int i = 11; i >= 0; --i) {
+                    float income = 0.0f;
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(new Date());
+                    String date = new String();
+                    cal.add(Calendar.MONTH, (-i));
+                    if((cal.get(Calendar.MONTH) + 1) >= 10)
+                        date = (cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    else
+                        date = "0"+(cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if(ds.hasChild(EAHCONST.REST_ORDER_DATE)) {
+                            String x = ds.child(EAHCONST.REST_ORDER_DATE).getValue(String.class);
+                            x = x.split("-")[1] + "-" + x.split("-")[2];
+                            if (x.equals(date))
+                                income = income + Float.parseFloat(ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue(String.class).split(" ")[0]);
+                        }
+                        else
+                            income = income ;
+
+
+                    }
+                    incomeDays.add(11 - i, income);
+                }
+                setActivityLoading(false);
+                intentRestaurantDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
+                startActivity(intentRestaurantDay);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void openMonthlyStats() {
+        setActivityLoading(true);
+        Intent intentRestaurantDay = new Intent(this, LineChartActivity.class);
+        ArrayList<Float> incomeDays = new ArrayList<>();
+        dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                for (int i = 30; i >= 0; --i) {
+                    float income = 0.0f;
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(new Date());
+                    String date = new String();
+                    cal.add(Calendar.DATE, (-i));
+                    if(cal.get(Calendar.DATE) > 10)
+                        date = "" + cal.get(Calendar.DATE) + "-" ;
+                    else
+                        date = "0" + cal.get(Calendar.DATE) + "-" ;
+                    if((cal.get(Calendar.MONTH) + 1) >= 10)
+                        date = date +(cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    else
+                        date = date +"0"+(cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if(ds.hasChild(EAHCONST.REST_ORDER_DATE)) {
+                            String x = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
+                            if (ds.child(EAHCONST.REST_ORDER_DATE).getValue(String.class).equals(date)) {
+
+                                income = income + Float.parseFloat(ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue(String.class).split(" ")[0]);
+                            }
+                        }
+                        else
+                            income = income ;
+
+
+                    }
+                    incomeDays.add(30 - i, income);
+                }
+                setActivityLoading(false);
+                intentRestaurantDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
+                startActivity(intentRestaurantDay);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void openDailyStats() {
+        setActivityLoading(true);
+        Intent intentRestaurantDay = new Intent(this, LineChartActivity.class);
+        ArrayList<Float> incomeDays = new ArrayList<>();
+        dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                for (int i = 6; i >= 0; --i) {
+                    float income = 0.0f;
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(new Date());
+                    cal.add(Calendar.DATE, (-i));
+                    String date = new String() ;
+                    if(cal.get(Calendar.DATE) > 10)
+                        date = "" + cal.get(Calendar.DATE) + "-" ;
+                    else
+                        date = "0" + cal.get(Calendar.DATE) + "-" ;
+                    if((cal.get(Calendar.MONTH) + 1) >= 10)
+                        date = date +(cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    else
+                        date = date +"0"+(cal.get(Calendar.MONTH) + 1) + "-" + (cal.get(Calendar.YEAR));
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if(ds.hasChild(EAHCONST.REST_ORDER_DATE)) {
+                            String x = (String) ds.child(EAHCONST.REST_ORDER_DATE).getValue();
+                            if (ds.child(EAHCONST.REST_ORDER_DATE).getValue(String.class).equals(date)) {
+
+                                income = income + Float.parseFloat(ds.child(EAHCONST.REST_ORDER_TOTAL_COST).getValue(String.class).split(" ")[0]);
+                            }
+                        }
+                        else
+                            income = income ;
+
+
+                    }
+                    incomeDays.add(6 - i, income);
+                }
+                setActivityLoading(false);
+                intentRestaurantDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
+                startActivity(intentRestaurantDay);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void getReferencesToViews() {
@@ -176,7 +333,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
         btBusyHour = findViewById(R.id.bt_busy_hour);
         btDailyStat = findViewById(R.id.bt_daily_statistics);
-        btmonthlyStat = findViewById(R.id.bt_monthly_statistics);
+        btMonthlyStat = findViewById(R.id.bt_monthly_statistics);
         btYearlyStat = findViewById(R.id.bt_yearly_statistics);
     }
 
@@ -187,13 +344,15 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if((dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue() != null)&&(dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue() != null))
-                {
-                    setVariableZero();
+                setVariableZero();
+                if ((dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue() != null) && (dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue() != null)) {
                     totGrade = (long) dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue();
                     avgGrade = dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue(Double.class).floatValue();
-                    calculateStats();
+                } else {
+                    totGrade = 0;
+                    avgGrade = 0.0f;
                 }
+                calculateStats();
             }
 
             @Override
@@ -204,10 +363,16 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         });
     }
 
-    private void calculateStats(){
+    private void calculateStats() {
+
         dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    setActivityLoading(false);
+                    setDataToView();
+                    return;
+                }
                 String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
                 String currentYear = date.split("-")[2];
                 String currentMonth = date.split("-")[1];
@@ -240,17 +405,17 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
                     quantityTotal += quantityOrder;
 
                     // Calculate DAILY Incoming and Quantity
-                    if(dateOrder.equals(date)){
+                    if (dateOrder.equals(date)) {
                         profitDay += totalCost;
                         quantityDay += quantityOrder;
                     }
 
                     // Calculate MONTHLY and YEARLY Incoming and Quantity
-                    if (currentYear.equals(orderYear)){
+                    if (currentYear.equals(orderYear)) {
                         profitYear += totalCost;
                         quantityYear += quantityOrder;
 
-                        if(currentMonth.equals(orderMonth)){
+                        if (currentMonth.equals(orderMonth)) {
                             profitMonth += totalCost;
                             quantityMonth += quantityOrder;
                         }
@@ -268,24 +433,24 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         });
     }
 
-    private HashMap<Integer,Integer> createHashmap(){
-        HashMap<Integer,Integer> hours = new HashMap<>();
-        for (int i= 0 ; i <24; i++){
+    private HashMap<Integer, Integer> createHashmap() {
+        HashMap<Integer, Integer> hours = new HashMap<>();
+        for (int i = 0; i < 24; i++) {
             hours.put(i, 0);
         }
         return hours;
     }
 
-    private void createListWeek (){
+    private void createListWeek() {
 
         weekHours = new HashMap<>();
-        weekHours.put("Mon",createHashmap());
-        weekHours.put("Tue",createHashmap());
-        weekHours.put("Wed",createHashmap());
-        weekHours.put("Thu",createHashmap());
-        weekHours.put("Fri",createHashmap());
-        weekHours.put("Sat",createHashmap());
-        weekHours.put("Sun",createHashmap());
+        weekHours.put("Mon", createHashmap());
+        weekHours.put("Tue", createHashmap());
+        weekHours.put("Wed", createHashmap());
+        weekHours.put("Thu", createHashmap());
+        weekHours.put("Fri", createHashmap());
+        weekHours.put("Sat", createHashmap());
+        weekHours.put("Sun", createHashmap());
     }
 
 
@@ -295,32 +460,33 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
         String DayOfWeek = dt.DayOfTheWeek(ts);
         int hour = dt.getHour(ts);
 
-        HashMap<Integer,Integer> hours = weekHours.get(DayOfWeek);
-        hours.put(hour,hours.get(hour)+1);
+        HashMap<Integer, Integer> hours = weekHours.get(DayOfWeek);
+        hours.put(hour, hours.get(hour) + 1);
     }
 
     private void setDataToView() {
         rbRatingBar.setRating(avgGrade);
-        tvRating.setText(""+totGrade+" "+ (totGrade == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
+        tvRating.setText("" + totGrade + " " + (totGrade == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
 
         tvQuantityToday.setText("" + quantityDay + " Dishes");
         tvQuantityMonthly.setText("" + quantityMonth + " Dishes");
         tvQuantityYearly.setText("" + quantityYear + " Dishes");
         tvQuantityTotal.setText("" + quantityTotal + " Dishes");
 
-        tvIncomeToday.setText(String.format(Locale.US,"%.02f", profitDay) + " €");
-        tvIncomeMonthly.setText(String.format(Locale.US,"%.02f", profitMonth) + " €");
-        tvIncomeYearly.setText(String.format(Locale.US,"%.02f", profitYear) + " €");
-        tvIncomeTotal.setText(String.format(Locale.US,"%.02f", profitTotal) + " €");
+        tvIncomeToday.setText(String.format(Locale.US, "%.02f", profitDay) + " €");
+        tvIncomeMonthly.setText(String.format(Locale.US, "%.02f", profitMonth) + " €");
+        tvIncomeYearly.setText(String.format(Locale.US, "%.02f", profitYear) + " €");
+        tvIncomeTotal.setText(String.format(Locale.US, "%.02f", profitTotal) + " €");
 
-        tvBestOrder.setText(String.format(Locale.US,"%.02f", bestIncomingOrder) + " €");
+        tvBestOrder.setText(String.format(Locale.US, "%.02f", bestIncomingOrder) + " €");
     }
+
     private void setVariableZero() {
         avgGrade = 0;
         totGrade = 0;
 
         profitDay = 0;
-        profitMonth = 0 ;
+        profitMonth = 0;
         profitYear = 0;
         profitTotal = 0;
         bestIncomingOrder = Float.MIN_VALUE;

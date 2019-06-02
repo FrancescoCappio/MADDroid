@@ -239,6 +239,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/restaurant_description"
+                android:maxLength="@integer/description_max_length"
                 android:inputType="textMultiLine"
                 android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>

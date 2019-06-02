@@ -135,6 +135,9 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
         return this.deliveryDate.compareTo(o.deliveryDate);
     }
 
+    public void setDeliveryCost(float deliveryCost) {
+        this.deliveryCost = deliveryCost;
+    }
 
     public float getDeliveryCost() {
         return deliveryCost;

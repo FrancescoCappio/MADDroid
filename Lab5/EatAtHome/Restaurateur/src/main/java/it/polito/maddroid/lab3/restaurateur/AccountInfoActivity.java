@@ -446,11 +446,21 @@ public class AccountInfoActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.action_confirm, (dialog, which) -> {
                     categoriesDialogOpen = false;
                     categoriesDialog = null;
+                    if(currentSelectedCategoriesId.contains("homemade"))
+                    {
+                        btTimeTable.setEnabled(false);
+                        timeTableRest = "";
+                        etAverageTime.setText("0");
+                        etAverageTime.setEnabled(false);
+
+                    }
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.action_cancel, (dialog, which) -> {
                     categoriesDialogOpen = false;
                     categoriesDialog = null;
+                    currentSelectedCategoriesId.clear();
+                    currentSelectedCategoriesId.addAll(previousSelectedCategoriesId);
                     dialog.dismiss();
                 }).create();
 
@@ -831,6 +841,15 @@ public class AccountInfoActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
+                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") )
+                        {
+                            // TODO
+                            Utility.showAlertToUser(this, R.string.error_time_table);
+                            timeTableRest = "";
+                            timetableDialog = null;
+                            dialog.dismiss();
+                            return;
+                        }
                         s = s + openFirst[i].getText() + "_";
                         s = s + closeFirst[i].getText() + ";";
 
@@ -840,6 +859,17 @@ public class AccountInfoActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
+
+                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") || openSecond[i].getText().equals("") || closeSecond[i].getText().equals("") )
+                        {
+                            // TODO
+
+                            Utility.showAlertToUser(this, R.string.error_time_table );
+                            timeTableRest = "";
+                            timetableDialog = null;
+                            dialog.dismiss();
+                            return;
+                        }
                         s = s + openFirst[i].getText() + "_";
                         s = s + closeFirst[i].getText() + ",";
                         s = s + openSecond[i].getText() + "_";
@@ -966,7 +996,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             return false;
         }
 
-        if (timeTableRest == null || timeTableRest.isEmpty()) {
+        if (timeTableRest == null || (timeTableRest.isEmpty() && !currentSelectedCategoriesId.contains("homemade"))) {
             Utility.showAlertToUser(this, R.string.no_timetable_alert);
             return false;
         }

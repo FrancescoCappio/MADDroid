@@ -44,6 +44,7 @@
     <string name="customer_not_assigned">Customer Id not find</string>
     <string name="restaurant_status">Pending Order</string>
     <string name="customer">Customer Name</string>
+    <string name="error_time_table">The inserted TimeTable is not valid</string>
 
 
     <string name="show_busy_hour">Show most busy hours</string>
