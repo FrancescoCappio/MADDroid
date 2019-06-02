@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Dish Name"
+            android:text="Restaurant Name"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -69,7 +69,7 @@
             android:layout_below="@+id/tv_restaurant_name"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="Dish Description long and long"
+            android:text="Restaurant Description long and long"
             android:textColor="@android:color/black"
             android:textSize="15sp" />
 
