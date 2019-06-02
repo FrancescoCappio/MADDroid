@@ -9,6 +9,8 @@ public class CustomerOrder {
     private String orderId;
     private String restaurantId;
     private String riderId;
+    private boolean riderRated = false;
+    private boolean restaurantRated = false;
     private EAHCONST.OrderStatus orderStatus;
     
     public CustomerOrder(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus) {
@@ -32,5 +34,21 @@ public class CustomerOrder {
     
     public EAHCONST.OrderStatus getOrderStatus() {
         return orderStatus;
+    }
+    
+    public void setRiderRated(boolean riderRated) {
+        this.riderRated = riderRated;
+    }
+    
+    public void setRestaurantRated(boolean restaurantRated) {
+        this.restaurantRated = restaurantRated;
+    }
+    
+    public boolean getRiderRated() {
+        return riderRated;
+    }
+    
+    public boolean getRestaurantRated() {
+        return restaurantRated;
     }
 }

@@ -187,12 +187,15 @@ public class EAHCONST {
     public final static String REST_ORDER_DELIVERY_ADDRESS = "delivery_address";
     public final static String REST_ORDER_DELIVERY_ADDRESS_NOTES = "delivery_address_notes";
     public final static String REST_ORDER_TIME_FOR_DELIVERY = "time_for_delivery";
+    public final static String REST_ORDER_RIDER_RATED = "rider_rated";
     
     // customers order subtree nodes fields
     public final static String CUST_ORDER_STATUS = "order_status";
     public final static String CUST_ORDER_RESTAURATEUR_ID = "restaurateur_id";
     public final static String CUST_ORDER_RIDER_ID = "rider_id";
     public final static String CUST_ORDER_DELIVERY_POS = "position";
+    public final static String CUST_ORDER_RIDER_RATED = "rider_rated";
+    public final static String CUST_ORDER_RESTAURANT_RATED = "restaurant_rated";
 
     // riders order subtree nodes fields
     public final static String RIDER_ORDER_STATUS = "order_status";

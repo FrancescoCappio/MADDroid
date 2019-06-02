@@ -85,7 +85,7 @@ public class CustomerOrdersListAdapter extends ListAdapter<Order, CustomerOrders
                     tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_red_alert));
                     break;
                 case COMPLETED:
-                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_white));
+                    tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_black));
                     break;
             }
             
