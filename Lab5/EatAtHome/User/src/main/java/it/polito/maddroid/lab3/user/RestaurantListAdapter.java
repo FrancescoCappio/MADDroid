@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -91,6 +92,8 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)
+                    .placeholder(R.drawable.ic_dish_black)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivRestaurantPhoto);
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClickListener(restaurant));
