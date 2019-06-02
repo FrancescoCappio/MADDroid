@@ -475,10 +475,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.timetable, null);
         TextView days[] = new TextView[7];
-        TextView openFirst[] = new TextView[7];
-        TextView openSecond[] = new TextView[7];
-        TextView closeFirst[] = new TextView[7];
-        TextView closeSecond[] = new TextView[7];
+        EditText openFirst[] = new EditText[7];
+        EditText openSecond[] = new EditText[7];
+        EditText closeFirst[] = new EditText[7];
+        EditText closeSecond[] = new EditText[7];
         Switch swDays[] = new Switch[7];
         Switch swDaysCont[] = new Switch[7];
 
@@ -534,6 +534,17 @@ public class AccountInfoActivity extends AppCompatActivity {
         closeFirst[6] = alertLayout.findViewById(R.id.tv_closeL_time6);
         openSecond[6] = alertLayout.findViewById(R.id.tv_openD_time6);
         closeSecond[6] = alertLayout.findViewById(R.id.tv_closeD_time6);
+        
+        for (int i = 0; i <= 6; ++i) {
+            openFirst[i].setFocusable(false);
+            openFirst[i].setClickable(true);
+            closeFirst[i].setFocusable(false);
+            closeFirst[i].setClickable(true);
+            openSecond[i].setFocusable(false);
+            openSecond[i].setClickable(true);
+            closeSecond[i].setFocusable(false);
+            closeSecond[i].setClickable(true);
+        }
 
         swDays[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
