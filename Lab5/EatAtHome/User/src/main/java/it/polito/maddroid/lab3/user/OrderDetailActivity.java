@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.user;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -50,6 +51,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     private static final String TAG = "OrderDetailActivity";
     
     public static final String ORDER_KEY = "ORDER_KEY";
+    
+    private static final int RATING_RIDER_CODE = 478;
+    private static final int RATING_RESTAURANT_CODE = 243;
+    
     
     private Order currentOrder;
     private int waitingCount;
@@ -205,14 +210,20 @@ public class OrderDetailActivity extends AppCompatActivity {
             Intent rateRiderIntent = new Intent(OrderDetailActivity.this, RatingActivity.class);
             rateRiderIntent.putExtra(RatingActivity.RATING_MODE_KEY, RatingActivity.RATING_MODE_RIDER);
             rateRiderIntent.putExtra(RatingActivity.RATED_UID_KEY, currentOrder.getRiderId());
-            startActivity(rateRiderIntent);
+            rateRiderIntent.putExtra(RatingActivity.RATER_TYPE_KEY, RatingActivity.RATER_TYPE_USER);
+            rateRiderIntent.putExtra(RatingActivity.RATER_UID_KEY, currentOrder.getCustomerId());
+            rateRiderIntent.putExtra(RatingActivity.RATING_ORDER_KEY, currentOrder.getOrderId());
+            startActivityForResult(rateRiderIntent, RATING_RIDER_CODE);
         });
         
         btRateRestaurant.setOnClickListener(v -> {
             Intent rateRiderIntent = new Intent(OrderDetailActivity.this, RatingActivity.class);
             rateRiderIntent.putExtra(RatingActivity.RATING_MODE_KEY, RatingActivity.RATING_MODE_RESTAURANT);
             rateRiderIntent.putExtra(RatingActivity.RATED_UID_KEY, currentOrder.getRestaurantId());
-            startActivity(rateRiderIntent);
+            rateRiderIntent.putExtra(RatingActivity.RATER_TYPE_KEY, RatingActivity.RATER_TYPE_USER);
+            rateRiderIntent.putExtra(RatingActivity.RATER_UID_KEY, currentOrder.getCustomerId());
+            rateRiderIntent.putExtra(RatingActivity.RATING_ORDER_KEY, currentOrder.getOrderId());
+            startActivityForResult(rateRiderIntent, RATING_RESTAURANT_CODE);
         });
 
         btTrackRider.setOnClickListener(v -> getDirectionToCustomer());
@@ -375,6 +386,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.COMPLETED) {
             btRateRider.setVisibility(View.VISIBLE);
             btRateRestaurant.setVisibility(View.VISIBLE);
+            
+            btRateRider.setEnabled(!currentOrder.getRiderRated());
+            btRateRestaurant.setEnabled(!currentOrder.getRestaurantRated());
         } else {
             btRateRider.setVisibility(View.GONE);
             btRateRestaurant.setVisibility(View.GONE);
@@ -479,5 +493,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         intent.putExtra(TrackingRiderActivity.ROUTE_KEY, (Serializable) restaurantToCustomerRoutes);
         intent.putExtra(OrderDetailActivity.ORDER_KEY, currentOrder);
         startActivity(intent);
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RATING_RIDER_CODE) {
+                currentOrder.setRiderRated(true);
+            } else if (requestCode == RATING_RESTAURANT_CODE) {
+                currentOrder.setRestaurantRated(true);
+            }
+            updateUIForOrderStatus();
+        }
     }
 }

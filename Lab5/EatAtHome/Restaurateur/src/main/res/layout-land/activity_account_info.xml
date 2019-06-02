@@ -227,6 +227,7 @@
                 android:id="@+id/et_description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:maxLength="@integer/description_max_length"
                 android:hint="@string/restaurant_description"
                 android:inputType="textMultiLine"
                 android:textColor="@drawable/et_color_selector"

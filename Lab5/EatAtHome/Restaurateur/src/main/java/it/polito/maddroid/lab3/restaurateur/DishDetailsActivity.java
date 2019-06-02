@@ -81,7 +81,7 @@ public class DishDetailsActivity extends AppCompatActivity {
 
     
     private Dish currentDish;
-    private int lastDishId = -1;
+    private int lastDishId = -2;
     private String userUID;
 
 
@@ -248,7 +248,7 @@ public class DishDetailsActivity extends AppCompatActivity {
                         return true;
                     }
                     
-                    if (lastDishId == -1) {
+                    if (lastDishId == -2) {
                         Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_not_ready_save);
                         setActivityLoading(false);
                         return true;
@@ -364,6 +364,9 @@ public class DishDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
+                
+                if (!dataSnapshot.hasChildren())
+                    lastDishId = -1;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                     String dishId = ds.getKey();

@@ -108,8 +108,18 @@ public class OrdersFragment extends Fragment {
                     String riderId = (String) ds.child(EAHCONST.CUST_ORDER_RIDER_ID).getValue();
                     String orderId = ds.getKey();
                     EAHCONST.OrderStatus orderStatus = ds.child(EAHCONST.CUST_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
-                    
+    
                     CustomerOrder co = new CustomerOrder(orderId, restaurantId, riderId, orderStatus);
+                    if (ds.child(EAHCONST.CUST_ORDER_RIDER_RATED).getValue() != null) {
+                        boolean riderRated = ds.child(EAHCONST.CUST_ORDER_RIDER_RATED).getValue(Boolean.class);
+                        co.setRiderRated(riderRated);
+                    }
+                    
+                    if (ds.child(EAHCONST.CUST_ORDER_RESTAURANT_RATED).getValue() != null) {
+                        boolean restaurantRated = ds.child(EAHCONST.CUST_ORDER_RESTAURANT_RATED).getValue(Boolean.class);
+                        co.setRestaurantRated(restaurantRated);
+                    }
+                    
                     customerOrders.add(co);
                 }
                 
@@ -154,6 +164,9 @@ public class OrdersFragment extends Fragment {
                     
                     Order order = new Order(co.getOrderId(), totalCost, co.getRiderId(), currentUser.getUid(), co.getRestaurantId(), deliveryTime, date, deliveryAddress, co.getOrderStatus());
                     order.setDishesMap(dishes);
+                    
+                    order.setRiderRated(co.getRiderRated());
+                    order.setRestaurantRated(co.getRestaurantRated());
                     
                     orders.add(order);
                     downloadRestaurantName(order.getRestaurantId());

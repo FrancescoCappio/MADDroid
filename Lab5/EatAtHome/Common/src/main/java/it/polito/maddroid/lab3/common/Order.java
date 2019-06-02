@@ -34,6 +34,9 @@ public class Order implements Serializable, Comparable<Order> {
 
     private String deliveryAddress;
     
+    private boolean riderRated = false;
+    private boolean restaurantRated = false;
+    
     private int timeForDelivery = -1;
 
     private Map<String,Integer> dishesMap;
@@ -114,6 +117,22 @@ public class Order implements Serializable, Comparable<Order> {
     
     public void setTimeForDelivery(int timeForDelivery) {
         this.timeForDelivery = timeForDelivery;
+    }
+    
+    public boolean getRiderRated() {
+        return riderRated;
+    }
+    
+    public void setRiderRated(boolean riderRated) {
+        this.riderRated = riderRated;
+    }
+    
+    public boolean getRestaurantRated() {
+        return restaurantRated;
+    }
+    
+    public void setRestaurantRated(boolean restaurantRated) {
+        this.restaurantRated = restaurantRated;
     }
     
     public String getOrderReadyTime() {

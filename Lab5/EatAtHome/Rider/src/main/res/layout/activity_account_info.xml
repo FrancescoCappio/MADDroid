@@ -240,6 +240,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/rider_description"
                 android:inputType="textMultiLine"
+                android:maxLength="@integer/description_max_length"
                 android:textColor="@drawable/et_color_selector"
                 android:singleLine="true"/>
 
