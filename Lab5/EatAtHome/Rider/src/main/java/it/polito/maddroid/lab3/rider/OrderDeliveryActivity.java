@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
 import it.polito.maddroid.lab3.common.Customer;
 import it.polito.maddroid.lab3.common.CustomerDetailActivity;
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -44,7 +45,7 @@ import java.util.Map;
 
 
 public class OrderDeliveryActivity extends AppCompatActivity {
-    
+
     private static final String TAG = "OrderDeliveryActivity";
     public static final String ORDER_DELIVERY_KEY = "ORDER_DELIVERY_KEY";
 
@@ -60,7 +61,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private String restaurantToCustomerDistance;
     private String restaurantToCustomerDuration;
     private float kmRestToCust;
-    
+
     private TextView tvDeliveryTime;
     private TextView tvCostDelivery;
     private TextView tvTotalCost;
@@ -81,7 +82,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private Button btDirectionToRestaurant;
     private Button btDirectionToCustomer;
     private Button btCustomerInfo;
-    
+
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference dbRef;
@@ -96,8 +97,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     //currentStep = 1 Pickup Products
     //currentStep = 2 Delivery
     //currentStep = 3 Completed
-    private List<String> seekBarStatus = Arrays.asList("Confirmed","Pickup products","In delivery","Completed");
-    
+    private List<String> seekBarStatus = Arrays.asList("Confirmed", "Pickup products", "In delivery", "Completed");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,7 +194,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             btDeliverFood.setEnabled(false);
             btGetFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
             btDeliverFood.setBackgroundColor(ContextCompat.getColor(this, R.color.eah_grey));
-            currentStep=3;
+            currentStep = 3;
         }
 
         if (viewLoaded)
@@ -277,10 +278,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.route_not_ready);
             return;
         }
-        
+
         Intent intent = new Intent(getApplicationContext(), RoutingActivity.class);
-        intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY,lastLocation);
-        intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY,restaurantLocation);
+        intent.putExtra(RoutingActivity.ORIGIN_LOCATION_KEY, lastLocation);
+        intent.putExtra(RoutingActivity.DESTINATION_LOCATION_KEY, restaurantLocation);
         intent.putExtra(RoutingActivity.ROUTE_KEY, (Serializable) riderToRestaurantRoutes);
 
         startActivity(intent);
@@ -312,7 +313,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentUser.getUid(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-    
+
+
         //update customer subtree
         String custOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_CUST_SUBTREE,
@@ -356,6 +358,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST_CUST), kmRestToCust);
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+
 
         //update customer subtree
         String custOrderPath = EAHCONST.generatePath(
@@ -363,7 +367,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getCustomerId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
-        
+
+        addRiderIncome();
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
@@ -375,7 +380,90 @@ public class OrderDeliveryActivity extends AppCompatActivity {
             Utility.showAlertToUser(this, R.string.alert_error_deliver_food);
         });
     }
-    
+
+    private void addRiderIncome() {
+        String year = currentOrder.getDeliveryDate().split("-")[2];
+        String month = currentOrder.getDeliveryDate().split("-")[1];
+        String day = currentOrder.getDeliveryDate().split("-")[0];
+
+        // TODO if is null aggiungi, se no sommi sul giorno tot, sommi sul mese tot, sommi sull'anno tot
+
+
+        String riderIncomePathDay = EAHCONST.generatePath(
+                EAHCONST.RIDERS_INCOME_SUB_TREE,
+                currentUser.getUid(),
+                year, month, day);
+
+        String riderIncomePathMonth = EAHCONST.generatePath(
+                EAHCONST.RIDERS_INCOME_SUB_TREE,
+                currentUser.getUid(),
+                year, month);
+
+        String riderIncomePath = EAHCONST.generatePath(
+                EAHCONST.RIDERS_INCOME_SUB_TREE,
+                currentUser.getUid(),
+                year);
+
+
+        dbRef.child(EAHCONST.RIDERS_INCOME_SUB_TREE).child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                setActivityLoading(true);
+                Map<String, Object> updateMap = new HashMap<>();
+
+                if (dataSnapshot.getValue() == null) {
+                    updateMap.put(EAHCONST.generatePath(riderIncomePathDay, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                    updateMap.put(EAHCONST.generatePath(riderIncomePathMonth, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                    updateMap.put(EAHCONST.generatePath(riderIncomePath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                } else {
+                    if (dataSnapshot.hasChild(year)) {
+                        float prevIncomeYear = dataSnapshot.child(year).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
+                        if (dataSnapshot.child(year).hasChild(month)) {
+                            float prevIncomeMonth = dataSnapshot.child(year).child(month).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
+                            if (dataSnapshot.child(year).child(month).hasChild(day)) {
+                                float prevIncomeDay = dataSnapshot.child(year).child(month).child(day).child(EAHCONST.RIDER_INCOME).getValue(Double.class).floatValue();
+                                updateMap.put(EAHCONST.generatePath(riderIncomePathDay, EAHCONST.RIDER_INCOME), prevIncomeDay + currentOrder.getDeliveryCost());
+                                updateMap.put(EAHCONST.generatePath(riderIncomePathMonth, EAHCONST.RIDER_INCOME), prevIncomeDay + prevIncomeMonth + currentOrder.getDeliveryCost());
+                                updateMap.put(EAHCONST.generatePath(riderIncomePath, EAHCONST.RIDER_INCOME), prevIncomeDay + prevIncomeYear + prevIncomeMonth + currentOrder.getDeliveryCost());
+                            } else {
+                                updateMap.put(EAHCONST.generatePath(riderIncomePathDay, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                                updateMap.put(EAHCONST.generatePath(riderIncomePathMonth, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost() + prevIncomeMonth);
+                                updateMap.put(EAHCONST.generatePath(riderIncomePath, EAHCONST.RIDER_INCOME), prevIncomeYear + prevIncomeMonth);
+
+                            }
+                        } else {
+                            updateMap.put(EAHCONST.generatePath(riderIncomePathDay, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                            updateMap.put(EAHCONST.generatePath(riderIncomePathMonth, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                            updateMap.put(EAHCONST.generatePath(riderIncomePath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost() + prevIncomeYear);
+                        }
+                    } else {
+
+                        updateMap.put(EAHCONST.generatePath(riderIncomePathDay, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                        updateMap.put(EAHCONST.generatePath(riderIncomePathMonth, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                        updateMap.put(EAHCONST.generatePath(riderIncomePath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+                    }
+
+                }
+
+
+                dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+                    setActivityLoading(false);
+                }).addOnFailureListener(e -> {
+                    setActivityLoading(false);
+                    Log.e(TAG, "ERROR: "+e.getMessage());
+                });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "ERROR: "+databaseError.getMessage());
+            }
+        });
+
+
+    }
+
     private synchronized void setActivityLoading(boolean loading) {
         // this method is necessary to show the user when the activity is doing a network operation
         // as downloading data or uploading data
@@ -460,7 +548,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private void getCustomerLocation() {
 
         String customerPath = EAHCONST.generatePath(
-                EAHCONST.ORDERS_REST_SUBTREE,currentOrder.getRestaurantId(),currentOrder.getOrderId());
+                EAHCONST.ORDERS_REST_SUBTREE, currentOrder.getRestaurantId(), currentOrder.getOrderId());
 
         DatabaseReference dbRef2 = dbRef.child(customerPath);
         GeoFire geoFireCustomer = new GeoFire(dbRef2);
@@ -475,6 +563,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     System.out.println(String.format("There is no location for key %s in GeoFire", key));
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.err.println("There was an error getting the GeoFire location: " + databaseError);
