@@ -391,7 +391,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     
     private void showPasswordInvalidError() {
-        String msg = "The password must be at least 6 chars long (maximum 20) and needs to have at least one digit, one lowercase and one uppercase char";
+        String msg = "The password must be at least 8 chars long (maximum 20) and needs to have at least one digit, one lowercase and one uppercase char";
         Snackbar.make(rlLoginTitle, msg, Snackbar.LENGTH_LONG).show();
     }
     

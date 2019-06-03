@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private int currentSelectedPosition; //0 = restaurant
     private RestaurantsFragment restaurantFragment;
+    private MainFragment mainFragment;
     private OrdersFragment ordersFragment;
 
     private FirebaseAuth mAuth;
@@ -228,9 +229,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (position) {
             case 0:
                 
-                if (!(fragment instanceof RestaurantsFragment)) {
-                    restaurantFragment = new RestaurantsFragment();
-                    fragment = restaurantFragment;
+                if (!(fragment instanceof MainFragment)) {
+                    mainFragment = new MainFragment();
+                    fragment = mainFragment;
                     changed = true;
                 }
     
@@ -247,16 +248,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragment = ordersFragment;
                     changed = true;
                 }
+
                 
                 navigationView.setCheckedItem(R.id.nav_orders);
     
                 getSupportActionBar().setTitle(R.string.orders);
 
                 break;
-            case 2:
-
-                break;
-
             default:
                 break;
         }

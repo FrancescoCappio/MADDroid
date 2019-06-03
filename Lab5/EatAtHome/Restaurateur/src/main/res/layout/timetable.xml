@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".AccountInfoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         >
 
         <TextView
@@ -17,49 +19,43 @@
             android:layout_height="match_parent"
             android:textSize="18sp"
             android:text="@string/day0"
+            android:layout_marginTop="5dp"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato0">
-
-        </TextView>
-
-
-        <Switch
-            android:id="@+id/sw_day_0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
-
-        <TextView
-            android:id="@+id/tv_continuato0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_0"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
-        <Switch
+
+        <CheckBox
+            android:id="@+id/sw_day_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+
+
+        <CheckBox
             android:id="@+id/sw_continued_day_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_0"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
 
             />
 
         <TextView
-            android:id="@+id/tv_openL_0"
+            android:id="@+id/tv_openD_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -67,13 +63,14 @@
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="5dp"
             android:maxLines="1"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_0"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time0"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time0"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,7 +81,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_0"
             app:layout_constraintStart_toEndOf="@id/tv_openL_0">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_0"
@@ -93,13 +90,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_0"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time0"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time0"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time0">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,22 +108,23 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_0"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_0">
 
-        </TextView>
+        </EditText>
 
         <TextView
-            android:id="@+id/tv_openD_0"
+            android:id="@+id/tv_openL_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_0"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time0"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time0"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -136,7 +135,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_openL_time0"
             app:layout_constraintStart_toEndOf="@id/tv_openD_0">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_0"
@@ -145,13 +144,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_0"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time0"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time0"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time0">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -162,17 +162,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time0"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_0">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_0"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time0"/>
 
         <TextView
             android:id="@+id/tv_day_1"
@@ -181,41 +181,34 @@
             android:textSize="18sp"
             android:text="@string/day1"
             android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/view_separator"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato1">
+            app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <Switch
+        <CheckBox
             android:id="@+id/sw_day_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
             app:layout_constraintTop_toBottomOf="@id/view_separator"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             />
 
-        <TextView
-            android:id="@+id/tv_continuato1"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:text="@string/no_stop_q"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_1">
-
-        </TextView>
-
-        <Switch
+        <CheckBox
             android:id="@+id/sw_continued_day_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_1"
+            android:layout_marginTop="5dp"
+            android:text="@string/no_stop_q"
+            app:layout_constraintTop_toBottomOf="@id/view_separator"
             app:layout_constraintEnd_toEndOf="parent"
 
             />
@@ -227,13 +220,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_1"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time1"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -244,7 +238,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_1"
             app:layout_constraintStart_toEndOf="@id/tv_openL_1">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_1"
@@ -253,12 +247,13 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_1"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time1"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time1">
 
         </TextView>
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -269,7 +264,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_1"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_1">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_1"
@@ -278,13 +273,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_1"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time1"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -292,10 +288,10 @@
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_1"
+            app:layout_constraintTop_toBottomOf="@id/tv_closeL_time1"
             app:layout_constraintStart_toEndOf="@id/tv_openD_1">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_1"
@@ -304,13 +300,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_1"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time1"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time1"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time1">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -321,17 +318,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time1"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_1">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_1"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time1"/>
 
         <TextView
             android:id="@+id/tv_day_2"
@@ -340,42 +337,36 @@
             android:layout_marginStart="@dimen/activity_margin"
             android:text="@string/day2"
             android:textSize="18sp"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_separator1"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato2" >
+            app:layout_constraintTop_toBottomOf="@id/view_separator1">
 
         </TextView>
 
 
-        <Switch
+        <CheckBox
             android:id="@+id/sw_day_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
             app:layout_constraintTop_toBottomOf="@id/view_separator1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             />
 
 
-        <TextView
-            android:id="@+id/tv_continuato2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_2"
-            app:layout_constraintStart_toStartOf="parent">
 
-        </TextView>
-
-        <Switch
+        <CheckBox
             android:id="@+id/sw_continued_day_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_2"
+            app:layout_constraintTop_toBottomOf="@id/view_separator1"
             app:layout_constraintEnd_toEndOf="parent"
 
             />
@@ -387,14 +378,15 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time2"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time2"
             app:layout_constraintStart_toStartOf="parent">
 
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -405,7 +397,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_2"
             app:layout_constraintStart_toEndOf="@id/tv_openL_2">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_2"
@@ -414,13 +406,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time2"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time2"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time2">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -431,7 +424,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_2"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_2">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_2"
@@ -440,13 +433,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time2"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time2"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -457,7 +451,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_openL_time2"
             app:layout_constraintStart_toEndOf="@id/tv_openD_2">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_2"
@@ -466,13 +460,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time2"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time2"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time2">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -483,17 +478,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time2"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_2">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_2"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time2"/>
 
         <TextView
             android:id="@+id/tv_day_3"
@@ -502,41 +497,35 @@
             android:textSize="18sp"
             android:text="@string/day3"
             android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/view_separator2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato3">
-
-        </TextView>
-
-
-        <Switch
-            android:id="@+id/sw_day_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/view_separator2"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
-
-        <TextView
-            android:id="@+id/tv_continuato3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_3"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
-        <Switch
+
+        <CheckBox
+            android:id="@+id/sw_day_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
+            app:layout_constraintTop_toBottomOf="@id/view_separator2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+
+
+        <CheckBox
             android:id="@+id/sw_continued_day_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_3"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@id/view_separator2"
             android:enabled="false"
             app:layout_constraintEnd_toEndOf="parent"
 
@@ -549,13 +538,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_3"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time3"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time3"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -566,7 +556,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_3"
             app:layout_constraintStart_toEndOf="@id/tv_openL_3">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_3"
@@ -575,12 +565,13 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_3"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time3"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time3"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time3">
 
         </TextView>
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -591,7 +582,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_3"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_3">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_3"
@@ -600,13 +591,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_3"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time3"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time3"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -614,10 +606,10 @@
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_3"
+            app:layout_constraintTop_toBottomOf="@id/tv_closeL_time3"
             app:layout_constraintStart_toEndOf="@id/tv_openD_3">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_3"
@@ -626,13 +618,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_3"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time3"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time3"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time3">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -643,17 +636,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time3"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_3">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator3"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_3"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time3"/>
 
         <TextView
             android:id="@+id/tv_day_4"
@@ -662,40 +655,35 @@
             android:textSize="18sp"
             android:text="@string/day4"
             android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/view_separator3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato4">
-
-        </TextView>
-
-
-        <Switch
-            android:id="@+id/sw_day_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/view_separator3"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
-        <TextView
-            android:id="@+id/tv_continuato4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_4"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
-        <Switch
+
+        <CheckBox
+            android:id="@+id/sw_day_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
+            app:layout_constraintTop_toBottomOf="@id/view_separator3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+
+
+        <CheckBox
             android:id="@+id/sw_continued_day_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_4"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@id/view_separator3"
             app:layout_constraintEnd_toEndOf="parent"
             android:enabled="false"
             />
@@ -707,13 +695,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_4"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time4"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time4"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -724,7 +713,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_4"
             app:layout_constraintStart_toEndOf="@id/tv_openL_4">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_4"
@@ -733,12 +722,13 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_4"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time4"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time4"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time4">
 
         </TextView>
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -749,7 +739,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_4"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_4">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_4"
@@ -758,13 +748,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_4"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time4"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time4"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -772,10 +763,10 @@
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_4"
+            app:layout_constraintTop_toBottomOf="@id/tv_closeL_time4"
             app:layout_constraintStart_toEndOf="@id/tv_openD_4">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_4"
@@ -784,13 +775,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_4"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time4"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time4"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time4">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -801,17 +793,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time4"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_4">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator4"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_4"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time4"/>
 
         <TextView
             android:id="@+id/tv_day_5"
@@ -820,42 +812,35 @@
             android:layout_marginStart="@dimen/activity_margin"
             android:text="@string/day5"
             android:textSize="18sp"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_separator4"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato5" >
+            app:layout_constraintTop_toBottomOf="@id/view_separator4" >
 
         </TextView>
 
 
-        <Switch
+        <CheckBox
             android:id="@+id/sw_day_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
             app:layout_constraintTop_toBottomOf="@id/view_separator4"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             />
 
 
-        <TextView
-            android:id="@+id/tv_continuato5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_5"
-            app:layout_constraintStart_toStartOf="parent">
-
-        </TextView>
-
-        <Switch
+        <CheckBox
             android:id="@+id/sw_continued_day_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_5"
+            app:layout_constraintTop_toBottomOf="@id/view_separator4"
             app:layout_constraintEnd_toEndOf="parent"
 
             />
@@ -867,13 +852,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_5"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time5"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time5"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -884,7 +870,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_5"
             app:layout_constraintStart_toEndOf="@id/tv_openL_5">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_5"
@@ -893,13 +879,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_5"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time5"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time5"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time5">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -910,7 +897,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_5"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_5">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_5"
@@ -919,13 +906,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_5"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time5"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time5"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -936,7 +924,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_openL_time5"
             app:layout_constraintStart_toEndOf="@id/tv_openD_5">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_5"
@@ -945,13 +933,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_5"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time5"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time5"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time5">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -962,17 +951,17 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time5"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_5">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator5"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_5"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time5"/>
 
         <TextView
             android:id="@+id/tv_day_6"
@@ -981,42 +970,34 @@
             android:textSize="18sp"
             android:text="@string/day6"
             android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/view_separator5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_continuato6">
-
-        </TextView>
-
-
-        <Switch
-            android:id="@+id/sw_day_6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/view_separator5"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
-
-        <TextView
-            android:id="@+id/tv_continuato6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/no_stop_q"
-            android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_day_6"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
-        <Switch
+
+        <CheckBox
+            android:id="@+id/sw_day_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginTop="5dp"
+            android:text="@string/open"
+            app:layout_constraintTop_toBottomOf="@id/view_separator5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <CheckBox
             android:id="@+id/sw_continued_day_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:layout_marginEnd="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_day_6"
+            android:text="@string/no_stop_q"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@id/view_separator5"
             app:layout_constraintEnd_toEndOf="parent"
 
             />
@@ -1028,13 +1009,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_6"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time6"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time6"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openL_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1045,7 +1027,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_6"
             app:layout_constraintStart_toEndOf="@id/tv_openL_6">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeL_6"
@@ -1054,12 +1036,13 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/sw_continued_day_6"
+            app:layout_constraintTop_toTopOf="@+id/tv_openL_time6"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time6"
             app:layout_constraintStart_toEndOf="@id/tv_openL_time6">
 
         </TextView>
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeL_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1070,7 +1053,7 @@
             app:layout_constraintTop_toBottomOf="@id/sw_continued_day_6"
             app:layout_constraintStart_toEndOf="@id/tv_closeL_6">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_openD_6"
@@ -1079,13 +1062,14 @@
             android:textSize="18sp"
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_6"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time6"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time6"
             app:layout_constraintStart_toStartOf="parent">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_openD_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1093,10 +1077,10 @@
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_openL_6"
+            app:layout_constraintTop_toBottomOf="@id/tv_closeL_time6"
             app:layout_constraintStart_toEndOf="@id/tv_openD_6">
 
-        </TextView>
+        </EditText>
 
         <TextView
             android:id="@+id/tv_closeD_6"
@@ -1105,13 +1089,14 @@
             android:textSize="18sp"
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeL_6"
+            app:layout_constraintTop_toTopOf="@+id/tv_openD_time6"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_openD_time6"
             app:layout_constraintStart_toEndOf="@id/tv_openD_time6">
 
         </TextView>
 
 
-        <TextView
+        <EditText
             android:id="@+id/tv_closeD_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -1122,7 +1107,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_closeL_time6"
             app:layout_constraintStart_toEndOf="@id/tv_closeD_6">
 
-        </TextView>
+        </EditText>
 
         <View
             android:id="@+id/view_separator6"
@@ -1132,7 +1117,7 @@
             android:layout_marginTop="@dimen/activity_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_closeD_6"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_closeD_time6"/>
 
 
 
