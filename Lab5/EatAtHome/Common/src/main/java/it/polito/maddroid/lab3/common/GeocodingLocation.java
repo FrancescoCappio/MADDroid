@@ -40,9 +40,9 @@ public class GeocodingLocation {
                     Log.e(TAG, "Unable to connect to Geocoder", e);
                 } finally {
                     Message message = Message.obtain();
+                    message.setTarget(handler);
                     if (addressList != null) {
                         
-                        message.setTarget(handler);
                         message.what = 1;
 
                         if (needDialog)

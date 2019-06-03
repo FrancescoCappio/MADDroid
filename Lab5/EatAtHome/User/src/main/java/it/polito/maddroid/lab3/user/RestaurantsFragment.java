@@ -70,7 +70,13 @@ public class RestaurantsFragment extends Fragment {
 
         return view;
     }
-
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "On resume");
+    }
+    
     private void downloadCategoriesInfo() {
         Query queryRef = dbRef
                 .child(EAHCONST.CATEGORIES_SUB_TREE)
