@@ -25,9 +25,12 @@
     <string name="setup_categories">Setup categories</string>
 
     <string name="time">hh:mm</string>
+    <string name="open">Open</string>
     <string name="open_time">Open at</string>
-    <string name="no_stop_q">Continued</string>
+    <string name="no_stop_q">No stop</string>
     <string name="close_time">Close at</string>
+
+    <string name="restaurant_timetable">Restaurant timetable</string>
 
     <string name="day0">Monday</string>
     <string name="day1">Tuesday</string>
