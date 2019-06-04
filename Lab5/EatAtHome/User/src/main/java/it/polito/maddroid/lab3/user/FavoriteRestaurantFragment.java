@@ -96,13 +96,9 @@ public class FavoriteRestaurantFragment extends Fragment {
             Intent i = new Intent(getContext(), RestaurantDetailActivity.class);
             i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
             startActivity(i);
-        });
-    
-        //TODO: solve tablet
-        if (Utility.isTablet(getContext()))
-            rvRestaurants.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.HORIZONTAL, false));
-        else
-            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        },RestaurantListAdapter.MODE_HORIZONTAL);
+        
+        rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
         rvRestaurants.setAdapter(adapter);
 
         return view;
