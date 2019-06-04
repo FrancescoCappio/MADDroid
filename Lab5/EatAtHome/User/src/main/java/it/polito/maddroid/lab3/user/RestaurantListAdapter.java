@@ -34,7 +34,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_list_item_2, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_list_item_3, parent, false);
     
         // create view holder and pass main view to it
         RestaurantListAdapter.MyViewHolder vh = new RestaurantListAdapter.MyViewHolder(v);
