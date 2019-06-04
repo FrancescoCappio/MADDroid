@@ -98,10 +98,11 @@ public class FavoriteRestaurantFragment extends Fragment {
             startActivity(i);
         });
     
+        //TODO: solve tablet
         if (Utility.isTablet(getContext()))
-            rvRestaurants.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            rvRestaurants.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.HORIZONTAL, false));
         else
-            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
         rvRestaurants.setAdapter(adapter);
 
         return view;

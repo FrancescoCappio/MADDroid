@@ -24,7 +24,7 @@
             <ImageView
                 android:id="@+id/iv_restaurant_photo"
                 android:layout_width="match_parent"
-                android:layout_height="152dp"
+                android:layout_height="150dp"
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/round_logo"/>

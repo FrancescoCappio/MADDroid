@@ -8,7 +8,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -92,6 +94,8 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)
+                    .apply(RequestOptions.centerCropTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.drawable.round_logo)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivRestaurantPhoto);

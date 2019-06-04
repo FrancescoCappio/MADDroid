@@ -8,13 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -130,14 +130,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         tvRating.setText(currentRestaurant.getReviewCount() + " " + (currentRestaurant.getReviewCount() == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
         ratingBar.setRating(currentRestaurant.getReviewAvg());
         
-        if (currentRestaurant.getTimeTableString() != null)
+        if (currentRestaurant.getTimeTableString() != null && !currentRestaurant.getTimeTableString().isEmpty())
             tvTimetable.setText(Utility.extractTimeTable(currentRestaurant.getTimeTableString()));
+        else
+            tvTimetable.setText(R.string.while_supplies_last);
     
         //download and set restaurant image
         StorageReference riversRef = mStorageRef.child("avatar_" + currentRestaurant.getRestaurantID() +".jpg");
     
         GlideApp.with(getApplicationContext())
                 .load(riversRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivPhoto);
     
         ActionBar actionBar = getSupportActionBar();

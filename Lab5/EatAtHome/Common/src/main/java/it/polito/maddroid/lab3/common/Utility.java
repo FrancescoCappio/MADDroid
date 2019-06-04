@@ -135,15 +135,13 @@ public class Utility {
         String[] splitted = s.split(";");
         
         for (String dayTimeTable : splitted) {
-            String day = dayTimeTable.split(",")[0];
-    
             String timetable;
-            if (day.equals(dayTimeTable)) {
-                day = dayTimeTable.split(" ")[0];
+            String day = dayTimeTable.split(",")[0];
+            if (dayTimeTable.contains("closed"))
                 timetable = "Closed";
-            } else
+            else {
                 timetable = dayTimeTable.substring(day.length() + 1);
-            
+            }
             if (map.containsKey(timetable)) {
                 map.put(timetable, map.get(timetable) + " " + day);
             } else {
