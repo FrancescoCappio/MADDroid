@@ -6,24 +6,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".OrderFragment">
 
-    <ProgressBar
-        android:id="@+id/pb_loading_order"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_orders"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:background="@color/eah_fair_grey"
-        android:dividerHeight="0.5dp"
-        tools:listitem="@layout/order_list_item"/>
+        <ProgressBar
+            android:id="@+id/pb_loading_order"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_orders"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+            android:background="@color/eah_fair_grey"
+            android:dividerHeight="0.5dp"
+            tools:listitem="@layout/order_list_item"/>
+
+        <TextView
+            android:id="@+id/tv_placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_no_orders_yet"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
 
 </FrameLayout>

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +40,7 @@ public class OrdersFragment extends Fragment {
     
     private static final String TAG = "OrdersFragment";
     
+    private TextView tvPlaceHolder;
     private RecyclerView rvOrders;
     private ProgressBar pbLoading;
     private DatabaseReference dbRef;
@@ -63,6 +65,7 @@ public class OrdersFragment extends Fragment {
         
         rvOrders = view.findViewById(R.id.rv_orders);
         pbLoading = view.findViewById(R.id.pb_loading);
+        tvPlaceHolder = view.findViewById(R.id.tv_placeholder);
     
         dbRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -194,6 +197,11 @@ public class OrdersFragment extends Fragment {
     
         Collections.sort(orders);
         adapter.submitList(orders);
+        
+        if (orders.isEmpty())
+            tvPlaceHolder.setVisibility(View.VISIBLE);
+        else
+            tvPlaceHolder.setVisibility(View.GONE);
         setFragmentLoading(false);
     }
     

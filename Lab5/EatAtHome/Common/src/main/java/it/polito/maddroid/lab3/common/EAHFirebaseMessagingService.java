@@ -49,13 +49,16 @@ public class EAHFirebaseMessagingService extends FirebaseMessagingService {
         
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         
-        createNotificationChannel();
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            createNotificationChannel();
     
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-    
-            sendNotification(remoteMessage.getNotification());
+            // Check if message contains a notification payload.
+            if (remoteMessage.getNotification() != null) {
+                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        
+                sendNotification(remoteMessage.getNotification());
+            }
         }
     }
     

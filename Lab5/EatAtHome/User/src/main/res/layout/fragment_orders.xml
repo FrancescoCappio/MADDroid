@@ -6,22 +6,37 @@
     android:background="@color/eah_background_fair"
     tools:context=".OrdersFragment">
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        />
+        android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_orders"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            />
 
-        tools:listitem="@layout/orders_list_item">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_orders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-    </androidx.recyclerview.widget.RecyclerView>
+            tools:listitem="@layout/orders_list_item">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/tv_placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_no_orders_yet"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
 
 </FrameLayout>
