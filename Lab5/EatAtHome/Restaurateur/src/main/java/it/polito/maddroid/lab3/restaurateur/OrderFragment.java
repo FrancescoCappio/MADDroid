@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -37,6 +38,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class OrderFragment extends Fragment {
     private RecyclerView rvOrder;
+    private TextView tvPlaceHolder;
 
     private static final String TAG = "OrderFragment";
 
@@ -70,6 +72,7 @@ public class OrderFragment extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference();
 
         rvOrder = view.findViewById(R.id.rv_orders);
+        tvPlaceHolder = view.findViewById(R.id.tv_placeholder);
 
         rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -183,6 +186,11 @@ public class OrderFragment extends Fragment {
     
         Collections.sort(orders);
         adapter.submitList(orders);
+    
+        if (orders.isEmpty())
+            tvPlaceHolder.setVisibility(View.VISIBLE);
+        else
+            tvPlaceHolder.setVisibility(View.GONE);
     }
 
 

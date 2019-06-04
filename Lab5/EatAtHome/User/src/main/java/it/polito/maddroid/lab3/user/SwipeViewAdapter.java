@@ -2,9 +2,9 @@ package it.polito.maddroid.lab3.user;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentPagerAdapter;
 
-public class SwipeViewAdapter extends FragmentStatePagerAdapter {
+public class SwipeViewAdapter extends FragmentPagerAdapter {
     private Fragment[] childFragments;
 
     public SwipeViewAdapter(FragmentManager fm) {
@@ -25,7 +25,7 @@ public class SwipeViewAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return childFragments.length;
     }
-
+    
     @Override
     public CharSequence getPageTitle(int position) {
         String title = "";

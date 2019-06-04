@@ -8,7 +8,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -34,7 +36,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_list_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_list_item_3, parent, false);
     
         // create view holder and pass main view to it
         RestaurantListAdapter.MyViewHolder vh = new RestaurantListAdapter.MyViewHolder(v);
@@ -92,7 +94,9 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)
-                    .placeholder(R.drawable.ic_dish_black)
+                    .apply(RequestOptions.centerCropTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.drawable.round_logo)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivRestaurantPhoto);
             

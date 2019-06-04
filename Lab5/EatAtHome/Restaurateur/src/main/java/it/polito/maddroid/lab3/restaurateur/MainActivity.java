@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         StorageReference riversRef = storageReference.child("avatar_" + currentUser.getUid() +".jpg");
         GlideApp.with(getApplicationContext())
                 .load(riversRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivAvatar);
 
         prevPosition = 0;

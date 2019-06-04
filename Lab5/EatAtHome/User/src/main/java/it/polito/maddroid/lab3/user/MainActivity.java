@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "Fragments count: " + fragments.size());
 
         for (Fragment fr : fragments) {
-            if ((fr instanceof RestaurantsFragment) || (fr instanceof  OrdersFragment)) {
+            if ((fr instanceof MainFragment) || (fr instanceof  OrdersFragment)) {
                 fragment = fr;
                 break;
             }

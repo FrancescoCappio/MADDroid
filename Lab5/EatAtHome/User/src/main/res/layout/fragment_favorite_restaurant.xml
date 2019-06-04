@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FavoriteRestaurantFragment">
+    tools:context=".FavoriteRestaurantFragment"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,7 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/pb_loading"
-            tools:listitem="@layout/restaurant_list_item">
+            tools:listitem="@layout/restaurant_list_item"
+            android:background="@color/eah_fair_grey">
 
         </androidx.recyclerview.widget.RecyclerView>
 

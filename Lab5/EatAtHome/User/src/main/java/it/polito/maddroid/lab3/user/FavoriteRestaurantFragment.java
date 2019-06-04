@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,8 @@ import java.util.TreeMap;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
+import it.polito.maddroid.lab3.common.Utility;
+
 
 public class FavoriteRestaurantFragment extends Fragment {
 
@@ -94,8 +97,12 @@ public class FavoriteRestaurantFragment extends Fragment {
             i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
             startActivity(i);
         });
-
-        rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+    
+        //TODO: solve tablet
+        if (Utility.isTablet(getContext()))
+            rvRestaurants.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.HORIZONTAL, false));
+        else
+            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
         rvRestaurants.setAdapter(adapter);
 
         return view;

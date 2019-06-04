@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -20,6 +21,8 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -132,15 +135,13 @@ public class Utility {
         String[] splitted = s.split(";");
         
         for (String dayTimeTable : splitted) {
-            String day = dayTimeTable.split(",")[0];
-    
             String timetable;
-            if (day.equals(dayTimeTable)) {
-                day = dayTimeTable.split(" ")[0];
+            String day = dayTimeTable.split(",")[0];
+            if (dayTimeTable.contains("closed"))
                 timetable = "Closed";
-            } else
+            else {
                 timetable = dayTimeTable.substring(day.length() + 1);
-            
+            }
             if (map.containsKey(timetable)) {
                 map.put(timetable, map.get(timetable) + " " + day);
             } else {
@@ -376,6 +377,23 @@ public class Utility {
         }
         
         return days + context.getString(R.string.days_short) + " " + remainHours + context.getString(R.string.hours_short) + " " + remainMinutes + context.getString(R.string.minutes_short);
+    }
+    
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+    
+    public static boolean isTablet(Context context) {
+        boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4);
+        boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+        return (xlarge || large);
     }
 }
 

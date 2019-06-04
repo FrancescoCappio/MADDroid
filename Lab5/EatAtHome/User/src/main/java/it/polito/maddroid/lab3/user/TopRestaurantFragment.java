@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ import java.util.List;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
+import it.polito.maddroid.lab3.common.Utility;
 
 
 public class TopRestaurantFragment extends Fragment {
@@ -81,7 +83,10 @@ public class TopRestaurantFragment extends Fragment {
             startActivity(i);
         });
 
-        rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (Utility.isTablet(getContext()))
+            rvRestaurants.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        else
+            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         rvRestaurants.setAdapter(adapter);
 
 

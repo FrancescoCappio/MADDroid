@@ -743,7 +743,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
             chosenDeliveryTime = etTimeDialog.getText().toString();
             chosenDeliveryDate = etDateDialog.getText().toString();
             
-            if (currentRestaurant.getTimeTableString() != null) {
+            if (currentRestaurant.getTimeTableString() != null && !currentRestaurant.getTimeTableString().isEmpty()) {
                 if (!Utility.checkRestaurantOpen(currentRestaurant.getTimeTableString(), chosenDeliveryDate, chosenDeliveryTime)) {
                     Utility.showAlertToUser(CompleteOrderActivity.this, R.string.alert_restaurant_closed);
                     return;
