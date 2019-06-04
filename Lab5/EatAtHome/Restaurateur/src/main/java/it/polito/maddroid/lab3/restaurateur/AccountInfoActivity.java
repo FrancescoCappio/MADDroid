@@ -209,7 +209,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         if (savedInstanceState == null)
             manageLaunchIntent();
-    
+
         //do not show the keyboard on activity open
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -217,7 +217,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(possiblePosition != null)
+        if (possiblePosition != null)
             possiblePosition.dismiss();
 
         outState.putString(NAME_KEY, etName.getText().toString());
@@ -228,10 +228,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         outState.putString(ADDRESS_KEY, etAddress.getText().toString());
         outState.putString(TIMETABLEINFO, timeTableRest);
         outState.putStringArrayList(CATEGORIES_BEFO, (ArrayList<String>) previousSelectedCategoriesId);
-        if(multiChoiceItems != null)
+        if (multiChoiceItems != null)
             outState.putSerializable(POSITIONS, (Serializable) multiChoiceItems);
         outState.putStringArrayList(CATEGORIES_AFTE, (ArrayList<String>) currentSelectedCategoriesId);
-        outState.putInt(CHOICE,choice);
+        outState.putInt(CHOICE, choice);
         outState.putBoolean(MANDATORY_INFO_KEY, mandatoryAccountInfo);
         outState.putBoolean(EDIT_MODE_KEY, editMode);
         outState.putSerializable(ADDRESSES_LIST, (Serializable) addressList);
@@ -260,7 +260,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         previousSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_BEFO);
         currentSelectedCategoriesId = savedInstanceState.getStringArrayList(CATEGORIES_AFTE);
-        multiChoiceItems  = (String[]) savedInstanceState.getSerializable(POSITIONS);
+        multiChoiceItems = (String[]) savedInstanceState.getSerializable(POSITIONS);
         choice = savedInstanceState.getInt(CHOICE);
         addressList = (List<Address>) savedInstanceState.getSerializable(ADDRESSES_LIST);
         timeTableRest = savedInstanceState.getString(TIMETABLEINFO);
@@ -286,7 +286,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             launchTimetableDialog();
         if (categoriesDialogOpen)
             launchCategoriesDialog();
-        if  (positionDialogOpen) {
+        if (positionDialogOpen) {
             showPositionDialog(multiChoiceItems, choice);
         }
     }
@@ -341,7 +341,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             categoriesDialog.dismiss();
         }
 
-        if(possiblePosition != null) {
+        if (possiblePosition != null) {
             possiblePosition.dismiss();
         }
     }
@@ -447,13 +447,16 @@ public class AccountInfoActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.action_confirm, (dialog, which) -> {
                     categoriesDialogOpen = false;
                     categoriesDialog = null;
-                    if(currentSelectedCategoriesId.contains("homemade"))
-                    {
+                    if (currentSelectedCategoriesId.contains("homemade")) {
                         btTimeTable.setEnabled(false);
                         timeTableRest = "";
                         etAverageTime.setText("0");
                         etAverageTime.setEnabled(false);
 
+                    } else {
+                        btTimeTable.setEnabled(true);
+                        etAverageTime.setText("");
+                        etAverageTime.setEnabled(true);
                     }
                     dialog.dismiss();
                 })
@@ -473,6 +476,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         timetableDialogOpen = true;
 
+
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.timetable, null);
         TextView days[] = new TextView[7];
@@ -482,10 +486,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         EditText closeSecond[] = new EditText[7];
         CheckBox swDays[] = new CheckBox[7];
         CheckBox swDaysCont[] = new CheckBox[7];
-        
+
         TextView tvOpenSec[] = new TextView[7];
         TextView tvCloseSec[] = new TextView[7];
-        
+
         tvOpenSec[0] = alertLayout.findViewById(R.id.tv_openD_0);
         tvOpenSec[1] = alertLayout.findViewById(R.id.tv_openD_1);
         tvOpenSec[2] = alertLayout.findViewById(R.id.tv_openD_2);
@@ -553,7 +557,8 @@ public class AccountInfoActivity extends AppCompatActivity {
         closeFirst[6] = alertLayout.findViewById(R.id.tv_closeL_time6);
         openSecond[6] = alertLayout.findViewById(R.id.tv_openD_time6);
         closeSecond[6] = alertLayout.findViewById(R.id.tv_closeD_time6);
-        
+
+
         for (int i = 0; i <= 6; ++i) {
             openFirst[i].setFocusable(false);
             openFirst[i].setClickable(true);
@@ -622,7 +627,6 @@ public class AccountInfoActivity extends AppCompatActivity {
                 closeSecond[2].setEnabled(true);
                 swDaysCont[2].setEnabled(true);
             } else {
-                //TODO resettare il tempo? o lasciarlo cosi?
                 openFirst[2].setEnabled(false);
                 openSecond[2].setEnabled(false);
                 closeFirst[2].setEnabled(false);
@@ -741,7 +745,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                 closeSecond[0].setVisibility(View.GONE);
                 tvOpenSec[0].setVisibility(View.GONE);
                 tvCloseSec[0].setVisibility(View.GONE);
-                
+
             } else {
                 openSecond[0].setEnabled(true);
                 closeSecond[0].setEnabled(true);
@@ -860,6 +864,41 @@ public class AccountInfoActivity extends AppCompatActivity {
             }
         });
 
+        if ((timeTableRest != null)&&(!timeTableRest.isEmpty())) {
+            String day[] = timeTableRest.split(";");
+            String times[];
+            String hour[];
+            for (int i = 0; i < day.length; ++i) {
+                if (!day[i].contains("closed")) {
+
+                    swDays[i].setChecked(true);
+                    times = day[i].split(",");
+                    if (times.length == 3) {
+                        for (int j = 1; j < times.length; ++j) {
+                            hour = times[j].split("_");
+                            swDaysCont[i].setChecked(false);
+                            if (j == 1) {
+                                openFirst[i].setText(hour[0]);
+                                closeFirst[i].setText(hour[1]);
+                            } else {
+                                openSecond[i].setText(hour[0]);
+                                closeSecond[i].setText(hour[1]);
+                            }
+
+                        }
+                    } else {
+                        for (int j = 1; j < times.length; ++j) {
+                            hour = times[j].split("_");
+                            swDaysCont[i].setChecked(false);
+                            openFirst[i].setText(hour[0]);
+                            closeFirst[i].setText(hour[1]);
+                        }
+                    }
+                }
+            }
+        }
+
+
         //TODO: strings for this dialog!!
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle(R.string.restaurant_timetable);
@@ -886,8 +925,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), " the closing time MUST be after Opening time", Toast.LENGTH_SHORT).show();
                             return;
                         }*/
-                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") )
-                        {
+                        if (openFirst[i].getText().equals("") || closeFirst[i].getText().equals("")) {
                             // TODO
                             Utility.showAlertToUser(this, R.string.error_time_table);
                             timeTableRest = "";
@@ -905,11 +943,10 @@ public class AccountInfoActivity extends AppCompatActivity {
                             return;
                         }*/
 
-                        if(openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") || openSecond[i].getText().equals("") || closeSecond[i].getText().equals("") )
-                        {
+                        if (openFirst[i].getText().equals("") || closeFirst[i].getText().equals("") || openSecond[i].getText().equals("") || closeSecond[i].getText().equals("")) {
                             // TODO
 
-                            Utility.showAlertToUser(this, R.string.error_time_table );
+                            Utility.showAlertToUser(this, R.string.error_time_table);
                             timeTableRest = "";
                             timetableDialog = null;
                             dialog.dismiss();
@@ -931,12 +968,13 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         });
         timetableDialog = alert.create();
-        
+
         for (int i = 0; i < 7; ++i) {
             swDaysCont[i].setChecked(true);
         }
         timetableDialog.show();
     }
+
 
     private void logoutAction() {
         mAuth.signOut();
@@ -973,6 +1011,14 @@ public class AccountInfoActivity extends AppCompatActivity {
             fabPhoto.hide();
 
         ivPhoto.setEnabled(enabled);
+
+        if (currentSelectedCategoriesId.contains("homemade")) {
+            btTimeTable.setEnabled(false);
+            timeTableRest = "";
+            etAverageTime.setText("0");
+            etAverageTime.setEnabled(false);
+
+        }
     }
 
     @Override
@@ -988,13 +1034,10 @@ public class AccountInfoActivity extends AppCompatActivity {
 
             case R.id.menu_confirm:
                 String restaurantAddress = etAddress.getText().toString();
-                if(restaurantAddress.isEmpty())
-                {
+                if (restaurantAddress.isEmpty()) {
                     Utility.showAlertToUser(this, R.string.fields_empty_alert);
                     return true;
-                }
-                else
-                {
+                } else {
                     GeocodingLocation locationAddress = new GeocodingLocation();
                     setActivityLoading(true);
                     locationAddress.getAddressFromLocation(restaurantAddress, getApplicationContext(), new GeocoderHandler());
@@ -1019,7 +1062,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         String restaurantEmail = etMail.getText().toString();
         String restaurantDescription = etDescription.getText().toString();
         String averageTime = etAverageTime.getText().toString();
-        
+
         // now we check if at leat one category has been selected
         boolean categorySelected = !currentSelectedCategoriesId.isEmpty();
 
@@ -1075,7 +1118,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
         if (photoChanged)
             uploadAvatar(userId);
-        
+
         int avgTime;
         try {
             avgTime = Integer.parseInt(averageTime);
@@ -1108,7 +1151,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             sb.append(id).append(";");
 
         updateMap.put(EAHCONST.generatePath(EAHCONST.RESTAURANTS_SUB_TREE, userId, EAHCONST.RESTAURANT_CATEGORIES), sb.toString());
-        
+
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
 
             Log.d(TAG, "Success registering user info");
@@ -1195,9 +1238,10 @@ public class AccountInfoActivity extends AppCompatActivity {
                     for (String id : categoriesRest.split(";")) {
                         currentSelectedCategoriesId.add(id);
                         previousSelectedCategoriesId.add(id);
+
                     }
                 }
-                
+
                 if (dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue() != null) {
                     int averageOrderTime = dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue(Long.class).intValue();
                     etAverageTime.setText(String.valueOf(averageOrderTime));
@@ -1419,7 +1463,6 @@ public class AccountInfoActivity extends AppCompatActivity {
 
                     tmpList.add(new RestaurantCategory(catId, catName));
                 }
-
                 categories = tmpList;
             }
 
@@ -1448,7 +1491,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     Bundle bundle = message.getData();
                     locationAddress = bundle.getString("address");
                     etAddress.setText("");
-                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found );
+                    Utility.showAlertToUser(AccountInfoActivity.this, R.string.address_not_found);
                     etAddress.setHint(R.string.address_not_found);
                     launchConfirm();
                     break;
@@ -1457,7 +1500,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     addressList = (List<Address>) bundle.getSerializable("address");
                     Log.d("accountInfo latlong", addressList.get(0).getLatitude() + " " + addressList.get(0).getLongitude());
                     address = addressList.get(0);
-                    etAddress.setText(address.getThoroughfare()+" "+address.getSubThoroughfare()+", "+address.getLocality());
+                    etAddress.setText(address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality());
                     launchConfirm();
                     break;
                 case 2:
@@ -1520,7 +1563,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
 
-    private void launchConfirm(){
+    private void launchConfirm() {
         if (manageUserConfirm()) {
             editMode = false;
             setEditEnabled(false);

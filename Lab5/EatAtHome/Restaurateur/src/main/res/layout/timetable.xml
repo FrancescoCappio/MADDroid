@@ -17,12 +17,12 @@
             android:id="@+id/tv_day_0"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="18sp"
-            android:text="@string/day0"
-            android:layout_marginTop="5dp"
             android:layout_marginStart="@dimen/activity_margin"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_marginTop="5dp"
+            android:text="@string/day0"
+            
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
         </TextView>
 
@@ -58,7 +58,7 @@
             android:id="@+id/tv_openD_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginEnd="5dp"
@@ -74,7 +74,7 @@
             android:id="@+id/tv_openL_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -87,7 +87,7 @@
             android:id="@+id/tv_closeL_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time0"
@@ -101,7 +101,7 @@
             android:id="@+id/tv_closeL_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -114,9 +114,8 @@
             android:id="@+id/tv_openL_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
+            android:text="@string/open_time"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time0"
             app:layout_constraintBottom_toBottomOf="@+id/tv_openL_time0"
             app:layout_constraintStart_toStartOf="parent">
@@ -128,7 +127,7 @@
             android:id="@+id/tv_openD_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -141,7 +140,7 @@
             android:id="@+id/tv_closeD_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time0"
@@ -155,7 +154,7 @@
             android:id="@+id/tv_closeD_time0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -178,7 +177,7 @@
             android:id="@+id/tv_day_1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            
             android:text="@string/day1"
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginTop="5dp"
@@ -217,7 +216,7 @@
             android:id="@+id/tv_openL_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time1"
@@ -231,7 +230,7 @@
             android:id="@+id/tv_openL_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -244,7 +243,7 @@
             android:id="@+id/tv_closeL_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time1"
@@ -257,7 +256,7 @@
             android:id="@+id/tv_closeL_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -270,7 +269,7 @@
             android:id="@+id/tv_openD_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time1"
@@ -284,7 +283,7 @@
             android:id="@+id/tv_openD_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -297,7 +296,7 @@
             android:id="@+id/tv_closeD_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time1"
@@ -311,7 +310,7 @@
             android:id="@+id/tv_closeD_time1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -336,7 +335,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/activity_margin"
             android:text="@string/day2"
-            android:textSize="18sp"
+            
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_separator1">
@@ -375,7 +374,7 @@
             android:id="@+id/tv_openL_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time2"
@@ -390,7 +389,7 @@
             android:id="@+id/tv_openL_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -403,7 +402,7 @@
             android:id="@+id/tv_closeL_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time2"
@@ -417,7 +416,7 @@
             android:id="@+id/tv_closeL_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -430,7 +429,7 @@
             android:id="@+id/tv_openD_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time2"
@@ -444,7 +443,7 @@
             android:id="@+id/tv_openD_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -457,7 +456,7 @@
             android:id="@+id/tv_closeD_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time2"
@@ -471,7 +470,7 @@
             android:id="@+id/tv_closeD_time2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -494,7 +493,7 @@
             android:id="@+id/tv_day_3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            
             android:text="@string/day3"
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginTop="5dp"
@@ -535,7 +534,7 @@
             android:id="@+id/tv_openL_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time3"
@@ -549,7 +548,7 @@
             android:id="@+id/tv_openL_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -562,7 +561,7 @@
             android:id="@+id/tv_closeL_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time3"
@@ -575,7 +574,7 @@
             android:id="@+id/tv_closeL_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -588,7 +587,7 @@
             android:id="@+id/tv_openD_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time3"
@@ -602,7 +601,7 @@
             android:id="@+id/tv_openD_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -615,7 +614,7 @@
             android:id="@+id/tv_closeD_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time3"
@@ -629,7 +628,7 @@
             android:id="@+id/tv_closeD_time3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -652,7 +651,7 @@
             android:id="@+id/tv_day_4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            
             android:text="@string/day4"
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginTop="5dp"
@@ -692,7 +691,7 @@
             android:id="@+id/tv_openL_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time4"
@@ -706,7 +705,7 @@
             android:id="@+id/tv_openL_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -719,7 +718,7 @@
             android:id="@+id/tv_closeL_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time4"
@@ -732,7 +731,7 @@
             android:id="@+id/tv_closeL_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -745,7 +744,7 @@
             android:id="@+id/tv_openD_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time4"
@@ -759,7 +758,7 @@
             android:id="@+id/tv_openD_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -772,7 +771,7 @@
             android:id="@+id/tv_closeD_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time4"
@@ -786,7 +785,7 @@
             android:id="@+id/tv_closeD_time4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -811,7 +810,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/activity_margin"
             android:text="@string/day5"
-            android:textSize="18sp"
+            
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_separator4" >
@@ -849,7 +848,7 @@
             android:id="@+id/tv_openL_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time5"
@@ -863,7 +862,7 @@
             android:id="@+id/tv_openL_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -876,7 +875,7 @@
             android:id="@+id/tv_closeL_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time5"
@@ -890,7 +889,7 @@
             android:id="@+id/tv_closeL_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -903,7 +902,7 @@
             android:id="@+id/tv_openD_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time5"
@@ -917,7 +916,7 @@
             android:id="@+id/tv_openD_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -930,7 +929,7 @@
             android:id="@+id/tv_closeD_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time5"
@@ -944,7 +943,7 @@
             android:id="@+id/tv_closeD_time5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:layout_marginStart="@dimen/activity_margin"
             android:enabled="false"
@@ -967,7 +966,7 @@
             android:id="@+id/tv_day_6"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            
             android:text="@string/day6"
             android:layout_marginStart="@dimen/activity_margin"
             android:layout_marginTop="5dp"
@@ -1006,7 +1005,7 @@
             android:id="@+id/tv_openL_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time6"
@@ -1020,7 +1019,7 @@
             android:id="@+id/tv_openL_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -1033,7 +1032,7 @@
             android:id="@+id/tv_closeL_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openL_time6"
@@ -1046,7 +1045,7 @@
             android:id="@+id/tv_closeL_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -1059,7 +1058,7 @@
             android:id="@+id/tv_openD_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/open_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time6"
@@ -1073,7 +1072,7 @@
             android:id="@+id/tv_openD_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
@@ -1086,7 +1085,7 @@
             android:id="@+id/tv_closeD_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:text="@string/close_time"
             android:layout_marginStart="@dimen/activity_margin"
             app:layout_constraintTop_toTopOf="@+id/tv_openD_time6"
@@ -1100,7 +1099,7 @@
             android:id="@+id/tv_closeD_time6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            
             android:hint="@string/time"
             android:enabled="false"
             android:layout_marginStart="@dimen/activity_margin"
