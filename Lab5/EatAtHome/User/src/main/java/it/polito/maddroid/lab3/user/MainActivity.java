@@ -193,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.nav_app_info) {
             AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
-            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
-            dialogInfo.setTitle("MAD lab3");
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr\n - Mohadeseh Alipour");
+            dialogInfo.setTitle("MAD project");
     
             dialogInfo.setCancelable(true);
             dialogInfo.create().show();

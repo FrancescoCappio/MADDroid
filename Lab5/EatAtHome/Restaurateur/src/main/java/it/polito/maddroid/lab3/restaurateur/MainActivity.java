@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     private int currentSelectedPosition;
+    private int prevPosition;
     private MenuFragment menuFragment;
     private OrderFragment orderFragment;
     private MostPopularDishesFragment mostPopularDishesFragment;
@@ -107,7 +110,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GlideApp.with(getApplicationContext())
                 .load(riversRef)
                 .into(ivAvatar);
-        
+
+        prevPosition = 0;
         selectItem(0);
     
         EAHFirebaseMessagingService.setActivityToLaunch(MainActivity.class);
@@ -229,8 +233,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.nav_app_info) {
             AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
-            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
-            dialogInfo.setTitle("MAD lab3");
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr\n - Mohadeseh Alipour");
+            dialogInfo.setTitle("MAD project");
     
             dialogInfo.setCancelable(true);
             dialogInfo.create().show();
@@ -244,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void selectItem(int position) {
 
         Fragment fragment = null;
+        prevPosition = currentSelectedPosition;
 
         // before creating a new fragment we should check if the already displayed one is the same we want to open
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -259,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
+        //ActionBar actionBar = getSupportActionBar();
         currentSelectedPosition = position;
-        navigationView.setCheckedItem(position);
 
         boolean changed = false;
         switch (position) {
@@ -290,14 +295,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case 2:
-                Intent intentStatsRider = new Intent(this, RestaurateurStatisticsActivity.class);
+                Intent intentStatsRest = new Intent(this, RestaurateurStatisticsActivity.class);
                 navigationView.post(new Runnable() {
                     @Override
                     public void run() {
-                        navigationView.setCheckedItem(R.id.nav_statistics);
+                        selectItem(prevPosition);
                     }
                 });
-                startActivity(intentStatsRider);
+                startActivity(intentStatsRest);
 
                 break;
             case 3:
@@ -384,4 +389,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
         selectItem(currentSelectedPosition);
     }
+
+
 }

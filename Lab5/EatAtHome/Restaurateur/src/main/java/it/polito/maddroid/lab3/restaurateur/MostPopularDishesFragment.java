@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,11 +34,13 @@ import java.util.List;
 import it.polito.maddroid.lab3.common.Dish;
 import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
+import it.polito.maddroid.lab3.common.Utility;
 
 
 public class MostPopularDishesFragment extends Fragment {
 
     private RecyclerView rvMostPopularView;
+    private TextView tvNoDishesPlaceHolder;
 
     private static final String TAG = "MostPopularDishFragment";
 
@@ -70,13 +73,13 @@ public class MostPopularDishesFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
 
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_most_popular_dishes, container, false);
+        View view = inflater.inflate(R.layout.fragment_most_popular_dishes, container, false);
         pbLoading = view.findViewById(R.id.pb_loading);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
 
         rvMostPopularView = view.findViewById(R.id.rv_most_popular_dishes);
-
+        tvNoDishesPlaceHolder = view.findViewById(R.id.tv_no_dish);
         rvMostPopularView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         downloadDishesInfo();
@@ -86,14 +89,14 @@ public class MostPopularDishesFragment extends Fragment {
             i.putExtra(DishDetailsActivity.PAGE_TYPE_KEY, DishDetailsActivity.MODE_SHOW);
             i.putExtra(DishDetailsActivity.DISH_KEY, dish);
             startActivityForResult(i, MainActivity.DISH_DETAIL_CODE);
-        },currentUser.getUid(), MenuListAdapter.MODE_MOST_POPULAR_DISHES_LIST);
+        }, currentUser.getUid(), MenuListAdapter.MODE_MOST_POPULAR_DISHES_LIST);
 
         rvMostPopularView.setAdapter(adapter);
 
         return view;
     }
 
-    public  void downloadDishesInfo() {
+    public void downloadDishesInfo() {
         setActivityLoading(true);
         dishes = new ArrayList<>();
         Query queryRef = dbRef
@@ -105,20 +108,28 @@ public class MostPopularDishesFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange Called");
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.child(EAHCONST.DISH_COUNT).getValue() != null) {
+                        String dishId = ds.getKey();
 
-                    String dishId = ds.getKey();
-                    String dishName = (String) ds.child(EAHCONST.DISH_NAME).getValue();
-                    float dishPrice = Float.parseFloat( ds.child(EAHCONST.DISH_PRICE).getValue().toString());
-                    String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
-                    int dishCount = Integer.parseInt(ds.child(EAHCONST.DISH_COUNT).getValue().toString());
+                        String dishName = (String) ds.child(EAHCONST.DISH_NAME).getValue();
+                        float dishPrice = Float.parseFloat(ds.child(EAHCONST.DISH_PRICE).getValue().toString());
+                        String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
+                        int dishCount = Integer.parseInt(ds.child(EAHCONST.DISH_COUNT).getValue().toString());
 
-                    Dish dish = new Dish(Integer.parseInt(dishId), dishName, dishPrice, dishDescription);
-                    dish.setQuantity(dishCount);
-                    dishes.add(dish);
+                        Dish dish = new Dish(Integer.parseInt(dishId), dishName, dishPrice, dishDescription);
+                        dish.setQuantity(dishCount);
+                        dishes.add(dish);
+                        Collections.reverse(dishes);
+                        setupAdapter();
+                        setActivityLoading(false);
+                    } else {
+                        Log.d(TAG, "There are no popular dishes for this restaurateur");
+                        manageVisibility();
+
+                        return;
+
+                    }
                 }
-                Collections.reverse(dishes);
-                setupAdapter();
-                setActivityLoading(false);
             }
 
             @Override
@@ -132,8 +143,9 @@ public class MostPopularDishesFragment extends Fragment {
     private void setupAdapter() {
         adapter.submitList(dishes);
     }
+
     private synchronized void setActivityLoading(boolean loading) {
-        if(pbLoading == null)
+        if (pbLoading == null)
             return;
         //pbLoading = view.findViewById(R.id.pb_loading1);
         if (loading) {
@@ -146,4 +158,16 @@ public class MostPopularDishesFragment extends Fragment {
                 pbLoading.setVisibility(View.INVISIBLE);
         }
     }
+
+    private void manageVisibility() {
+
+        if (dishes.size() == 0) {
+            tvNoDishesPlaceHolder.setVisibility(View.VISIBLE);
+
+        } else {
+            tvNoDishesPlaceHolder.setVisibility(View.GONE);
+        }
+        setActivityLoading(false);
+    }
+
 }

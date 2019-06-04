@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static int LOCATION_PERMISSION_CODE = 123;
     
     private static String STATE_SELECTED_POSITION = "state_selected_position";
-    
+    private static String STATE_PREV_POSITION = "state_prev_position";
+
     private SharedPreferences sharedPreferences;
     public static final String SHARED_PREFS = "EATAATHOME_RIDER_SHARED_PREFS";
     public static final String RIDER_ON_DUTY_KEY = "RIDER_ON_DUTY_KEY";
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Bundle orderHistoryBundle;
     
     private int currentSelectedPosition;
+
+    private int previousPos;
     
     private Intent myServiceIntent;
 
@@ -135,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         storageReference = FirebaseStorage.getInstance().getReference();
+        previousPos = 0;
         
         if (currentUser == null) {
             // this is probably an error, the user should be logged in to see this activity
@@ -360,8 +364,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.nav_app_info) {
             AlertDialog.Builder dialogInfo = new AlertDialog.Builder(this);
-            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr");
-            dialogInfo.setTitle("MAD lab3");
+            dialogInfo.setMessage("Developers: \n - Francesco Cappio Borlino\n - David Liffredo\n - Iman Ebrahimi Mehr\n - Mohadeseh Alipour");
+            dialogInfo.setTitle("MAD project");
     
             dialogInfo.setCancelable(true);
             dialogInfo.create().show();
@@ -378,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void selectItem(int position) {
 
         Fragment fragment = null;
+        previousPos = currentSelectedPosition;
 
         // before creating a new fragment we should check if the already displayed one is the same we want to open
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -436,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 navigationView.post(new Runnable() {
                     @Override
                     public void run() {
-                        navigationView.setCheckedItem(R.id.nav_current_deliveries);
+                        selectItem(previousPos);
                     }
                 });
                 startActivity(intentStatsRider);
@@ -485,12 +490,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
+        outState.putInt(STATE_PREV_POSITION, previousPos);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+        previousPos = savedInstanceState.getInt(STATE_PREV_POSITION);
         selectItem(currentSelectedPosition);
     }
     
