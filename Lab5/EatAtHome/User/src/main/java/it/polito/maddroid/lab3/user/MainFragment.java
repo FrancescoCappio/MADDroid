@@ -43,12 +43,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "OnResume: ");
-        Log.d(TAG, "OnResume. isAdded " + isAdded());
-        Log.d(TAG, "OnResume. isDetached " + isDetached());
-        Log.d(TAG, "OnResume. isHidden " + isHidden());
-        Log.d(TAG, "OnResume. isVisible " + isVisible());
-        Log.d(TAG, "OnResume. isStateSaved " + isStateSaved());
     }
     
     @Override

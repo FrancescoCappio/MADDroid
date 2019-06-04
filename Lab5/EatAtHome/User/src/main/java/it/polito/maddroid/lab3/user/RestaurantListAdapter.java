@@ -92,7 +92,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
             GlideApp.with(ivRestaurantPhoto.getContext())
                     .load(riversRef)
-                    .placeholder(R.drawable.ic_dish_black)
+                    .placeholder(R.drawable.round_logo)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(ivRestaurantPhoto);
             

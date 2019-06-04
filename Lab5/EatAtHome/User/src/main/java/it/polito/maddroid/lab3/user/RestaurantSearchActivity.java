@@ -4,6 +4,7 @@ package it.polito.maddroid.lab3.user;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.EAHCONST;
@@ -93,7 +94,10 @@ public class RestaurantSearchActivity extends AppCompatActivity {
             startActivity(i);
             finish();
         });
-        rvRestaurants.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        if (Utility.isTablet(getApplicationContext()))
+            rvRestaurants.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+        else
+            rvRestaurants.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rvRestaurants.setAdapter(adapter);
         
         setupClickListeners();
