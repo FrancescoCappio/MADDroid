@@ -154,6 +154,7 @@ public class EAHCONST {
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
     public final static String CUSTOMER_POSITION = "position";
+    public final static String CUSTOMER_FAVORITE_RESTAURANT = "favorite_restaurant";
 
     // riders subtree nodes fields
     public final static String RIDER_NAME = "name";

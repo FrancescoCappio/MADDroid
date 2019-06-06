@@ -58,5 +58,7 @@
     <string name="alert_error_get_address">There was an error while requesting your address</string>
 
     <string name="no_order">There is no order</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
 
 </resources>

@@ -3,12 +3,14 @@ package it.polito.maddroid.lab3.user;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,14 +32,17 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import it.polito.maddroid.lab3.common.Dish;
@@ -76,12 +83,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private TextView tvTotalCost;
     private TextView tvRating;
     private RatingBar ratingBar;
+    private ImageView ivFavorite;
     
     private MenuItem menuOrder;
     private boolean appBarExpanded;
-    
+
+    // Firebase attributes
     private DatabaseReference dbRef;
     private StorageReference mStorageRef;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private String userUID;
     
     // String keys to store instances info
     private static final String NAME_KEY = "NAME_KEY";
@@ -101,6 +113,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         
         dbRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        userUID = currentUser.getUid();
         
         dishes = new ArrayList<>();
     
@@ -168,6 +183,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     
         // download list of categories this restaurant belongs to
         downloadCategoriesInfo();
+
+        checkFavorite();
         
     }
     
@@ -228,6 +245,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         appBarLayout = findViewById(R.id.app_bar);
         tvRating = findViewById(R.id.tv_rating);
         ratingBar = findViewById(R.id.rating_bar);
+        ivFavorite = findViewById(R.id.bt_favorite);
         
     }
     
@@ -271,8 +289,59 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         cvTotalCost.setOnClickListener(v -> actionCompleteOrder());
         
         tvRating.setOnClickListener(v -> openReviewsActivity());
+
+        ivFavorite.setOnClickListener(v -> setFavoriteAction());
     }
-    
+
+    private void setFavoriteAction() {
+        String ivFavoriteTag = (String) ivFavorite.getTag();
+        String updatePath = EAHCONST.generatePath
+                (EAHCONST.CUSTOMERS_SUB_TREE, userUID, EAHCONST.CUSTOMER_FAVORITE_RESTAURANT, currentRestaurant.getRestaurantID());
+
+        if (ivFavoriteTag == getString(R.string.no) ){
+            Map<String, Object> updateMap = new HashMap<>();
+            updateMap.put(updatePath, currentRestaurant.getRestaurantID());
+            dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+                Log.d(TAG, "Success adding to favorite List");
+            });
+            setFavoriteIcon(true);
+        } else {
+            dbRef.child(updatePath).removeValue().addOnSuccessListener(aVoid ->{
+                Log.d(TAG, "Success removing to favorite List");
+            });
+            setFavoriteIcon(false);
+        }
+    }
+
+    private void setFavoriteIcon(boolean bool){
+        if(bool){
+            ivFavorite.setImageResource(R.drawable.ic_favorite_24dp);
+            ivFavorite.setTag(getString(R.string.yes));
+        }
+        else{
+            ivFavorite.setImageResource(R.drawable.ic_not_favorite_24dp);
+            ivFavorite.setTag(getString(R.string.no));
+        }
+    }
+
+    private void checkFavorite(){
+        Query queryRef = dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(userUID).child(EAHCONST.CUSTOMER_FAVORITE_RESTAURANT);
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(currentRestaurant.getRestaurantID()))
+                    setFavoriteIcon(true);
+                else
+                    setFavoriteIcon(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+            }
+        });
+    }
+
     private void openReviewsActivity() {
         
         if (currentRestaurant.getReviewCount() == 0) {
