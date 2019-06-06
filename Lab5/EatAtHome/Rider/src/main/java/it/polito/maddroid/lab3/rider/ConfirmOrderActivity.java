@@ -222,6 +222,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         setActivityLoading(true);
         
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.CONFIRMED;
+
+        String randomNumber = randomAlphaNumeric(5);
         
         Map<String,Object> updateMap = new HashMap<>();
         // now from point of view of rider
@@ -233,10 +235,12 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST), kmRider);
         updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_DATE), currentDelivery.getDeliveryDate());
 
+
         String restaurantOrderPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE,
                 currentDelivery.getRestaurantId(),
                 currentDelivery.getOrderId());
+        updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_CONTROL_STRING), randomNumber);
         updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_RIDER_ID), riderUID);
     
         String customerOrderPath = EAHCONST.generatePath(
@@ -245,7 +249,6 @@ public class ConfirmOrderActivity extends AppCompatActivity {
                 currentDelivery.getOrderId());
         updateMap.put(EAHCONST.generatePath(customerOrderPath, EAHCONST.CUST_ORDER_RIDER_ID), riderUID);
 
-        
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
@@ -407,8 +410,40 @@ public class ConfirmOrderActivity extends AppCompatActivity {
             costTotal = (float) (costTotal + (0.50 * kmRider));
 
         currentDelivery.setDeliveryCost(costTotal);
+        Map<String,Object> updateMap = new HashMap<>();
+        EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.COMPLETED;
+        String riderOrderPath = EAHCONST.generatePath(
+                EAHCONST.ORDERS_RIDER_SUBTREE,
+                currentUser.getUid(),
+                currentDelivery.getOrderId());
+
+        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), currentDelivery.getDeliveryCost());
+
+
+        dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+            setActivityLoading(false);
+        }).addOnFailureListener(e -> {
+            setActivityLoading(false);
+            Log.e(TAG, "ERROR: "+e.getMessage());
+        });
     }
 
 
+
+    public static String randomAlphaNumeric(int count) {
+
+        StringBuilder builder = new StringBuilder();
+
+        while (count-- != 0) {
+
+            int character = (int)(Math.random()*EAHCONST.ALPHA_NUMERIC_STRING.length());
+
+            builder.append(EAHCONST.ALPHA_NUMERIC_STRING.charAt(character));
+
+        }
+
+        return builder.toString();
+
+    }
 
 }

@@ -3,6 +3,7 @@ package it.polito.maddroid.lab3.rider;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -16,10 +17,12 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -76,7 +79,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private TextView tvRestaurantToCustomerDistTime;
     private TextView tvDeliveryAddressNotes;
     private TextView tvDeliveryDate;
-    
+    private EditText etControlString;
+
     private Button btGetFood;
     private Button btDeliverFood;
     private Button btDirectionToRestaurant;
@@ -93,11 +97,15 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     private int currentStep = 0;
     private boolean viewLoaded = false;
 
+    private AlertDialog controlConfirm;
+
     //currentStep = 0 Confirmed
     //currentStep = 1 Pickup Products
     //currentStep = 2 Delivery
     //currentStep = 3 Completed
     private List<String> seekBarStatus = Arrays.asList("Confirmed", "Pickup products", "In delivery", "Completed");
+    private boolean controlDialogOpen;
+    private String open_control= "open_control";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -301,11 +309,10 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
 
     private void getFoodAction() {
-        
         setActivityLoading(true);
-        
+
         Map<String,Object> updateMap = new HashMap<>();
-        
+
         //update Rider SubTree
         EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.ONGOING;
         String riderOrderPath = EAHCONST.generatePath(
@@ -321,7 +328,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getCustomerId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
-    
+
         //update Restaurant SubTree
         orderStatus = EAHCONST.OrderStatus.COMPLETED;
         String restaurantOrderPath = EAHCONST.generatePath(
@@ -329,15 +336,15 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 currentOrder.getRestaurantId(),
                 currentOrder.getOrderId());
         updateMap.put(EAHCONST.generatePath(restaurantOrderPath, EAHCONST.REST_ORDER_STATUS), orderStatus);
-        
-        
+
+
         // perform the update
         dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
             setActivityLoading(false);
             currentOrder.setOrderStatus(EAHCONST.OrderStatus.ONGOING);
             setupButtonsEnable();
             Utility.showAlertToUser(this, R.string.get_food_note);
-            
+
         }).addOnFailureListener(e -> {
             setActivityLoading(false);
             Utility.showAlertToUser(this, R.string.alert_error_get_food);
@@ -346,39 +353,85 @@ public class OrderDeliveryActivity extends AppCompatActivity {
     }
     
     private void deliverFoodAction() {
-        
-        setActivityLoading(true);
-        
-        Map<String,Object> updateMap = new HashMap<>();
-        
-        EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.COMPLETED;
-        String riderOrderPath = EAHCONST.generatePath(
-                EAHCONST.ORDERS_RIDER_SUBTREE,
-                currentUser.getUid(),
-                currentOrder.getOrderId());
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST_CUST), kmRestToCust);
-        updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
 
+        //dialog
 
-        //update customer subtree
-        String custOrderPath = EAHCONST.generatePath(
-                EAHCONST.ORDERS_CUST_SUBTREE,
-                currentOrder.getCustomerId(),
-                currentOrder.getOrderId());
-        updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
+        controlDialogOpen = true;
+        LayoutInflater inflater = getLayoutInflater();
+        View controlLayout = inflater.inflate(R.layout.confirm_delivery, null);
+        etControlString = controlLayout.findViewById(R.id.et_confirm);
 
-        addRiderIncome();
-        // perform the update
-        dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
-            setActivityLoading(false);
-            currentOrder.setOrderStatus(EAHCONST.OrderStatus.COMPLETED);
-            setupButtonsEnable();
-            Utility.showAlertToUser(this, R.string.deliver_food_note);
-        }).addOnFailureListener(e -> {
-            setActivityLoading(false);
-            Utility.showAlertToUser(this, R.string.alert_error_deliver_food);
+        AlertDialog.Builder alertControl = new AlertDialog.Builder(this);
+        alertControl.setTitle("Confirm your delivery");
+        // this is set the view from XML inside AlertDialog
+        alertControl.setView(controlLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+        alertControl.setCancelable(false);
+        alertControl.setNegativeButton("Cancel", (dialog, which) -> {
+            controlDialogOpen = false;
+            controlConfirm = null;
+            dialog.dismiss();
         });
+
+        alertControl.setPositiveButton("Done", (dialog, which) -> {
+            controlDialogOpen = true;
+            String s = etControlString.getText().toString();
+            if (s.equals(currentOrder.getStringControl()))
+            {
+                setActivityLoading(true);
+
+                Map<String,Object> updateMap = new HashMap<>();
+
+                EAHCONST.OrderStatus orderStatus = EAHCONST.OrderStatus.COMPLETED;
+                String riderOrderPath = EAHCONST.generatePath(
+                        EAHCONST.ORDERS_RIDER_SUBTREE,
+                        currentUser.getUid(),
+                        currentOrder.getOrderId());
+                updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_ORDER_STATUS), orderStatus);
+                updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_KM_REST_CUST), kmRestToCust);
+                updateMap.put(EAHCONST.generatePath(riderOrderPath, EAHCONST.RIDER_INCOME), currentOrder.getDeliveryCost());
+
+
+                //update customer subtree
+                String custOrderPath = EAHCONST.generatePath(
+                        EAHCONST.ORDERS_CUST_SUBTREE,
+                        currentOrder.getCustomerId(),
+                        currentOrder.getOrderId());
+                updateMap.put(EAHCONST.generatePath(custOrderPath, EAHCONST.CUST_ORDER_STATUS), orderStatus);
+
+                addRiderIncome();
+                // perform the update
+                dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+                    setActivityLoading(false);
+                    currentOrder.setOrderStatus(EAHCONST.OrderStatus.COMPLETED);
+                    setupButtonsEnable();
+                    Utility.showAlertToUser(this, R.string.deliver_food_note);
+                }).addOnFailureListener(e -> {
+                    setActivityLoading(false);
+                    Utility.showAlertToUser(this, R.string.alert_error_deliver_food);
+                });
+
+            }
+            else{
+                Utility.showAlertToUser(this, "ERROR: WRONG CODE");
+                controlDialogOpen = false;
+                controlConfirm = null;
+                dialog.dismiss();
+                return;
+            }
+
+            controlDialogOpen = false;
+            controlConfirm = null;
+            dialog.dismiss();
+
+        });
+
+        controlConfirm = alertControl.create();
+        controlConfirm.show();
+
+        //controlDialogOpen = false;
+
+
     }
 
     private void addRiderIncome() {
@@ -502,6 +555,7 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                 String phoneNumber = dataSnapshot.child(EAHCONST.CUSTOMER_PHONE).getValue(String.class);
                 String email = dataSnapshot.child(EAHCONST.CUSTOMER_EMAIL).getValue(String.class);
                 String description = dataSnapshot.child(EAHCONST.CUSTOMER_DESCRIPTION).getValue(String.class);
+
                 
                 tvCustomerName.setText(name);
                 
@@ -549,6 +603,20 @@ public class OrderDeliveryActivity extends AppCompatActivity {
 
         String customerPath = EAHCONST.generatePath(
                 EAHCONST.ORDERS_REST_SUBTREE, currentOrder.getRestaurantId(), currentOrder.getOrderId());
+
+        dbRef.child(customerPath).child(EAHCONST.REST_ORDER_CONTROL_STRING).addListenerForSingleValueEvent(new ValueEventListener() {
+           @Override
+           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               if(dataSnapshot.getValue() != null)
+               {
+                   currentOrder.setControlString(dataSnapshot.getValue(String.class));
+               }
+           }
+           @Override
+           public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                   }
+               });
 
         DatabaseReference dbRef2 = dbRef.child(customerPath);
         GeoFire geoFireCustomer = new GeoFire(dbRef2);
@@ -608,6 +676,30 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     Log.e(TAG, "Exception in routing: " + e.getMessage());
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(open_control, controlDialogOpen);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        controlDialogOpen = savedInstanceState.getBoolean(open_control);
+        if(controlDialogOpen)
+            deliverFoodAction();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(controlConfirm != null)
+        {
+            controlConfirm.dismiss();
         }
     }
 }

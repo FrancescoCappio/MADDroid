@@ -75,6 +75,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private TextView tvRestaurantName;
     private TextView tvRiderName;
     private TextView tvDeliveryAddress;
+    private TextView tvStringControl;
     private RecyclerView rvDishes;
     private Button btRateRider;
     private Button btRateRestaurant;
@@ -124,6 +125,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvOrderDate.setText(currentOrder.getDate());
         tvDeliveryTime.setText(currentOrder.getDeliveryTime());
         tvDeliveryAddress.setText(currentOrder.getDeliveryAddress());
+        tvStringControl.setText(currentOrder.getDeliveryStringControl());
         tvDeliveryCost.setText(String.format(Locale.US,"%.02f", EAHCONST.DELIVERY_COST) + " €");
         tvTotalCost.setText(currentOrder.getTotalCost());
         tvRestaurantName.setText(currentOrder.getRestaurantName());
@@ -197,6 +199,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvTotalCost = findViewById(R.id.tv_payment_total);
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
+        tvStringControl = findViewById(R.id.tv_control_string);
         rvDishes = findViewById(R.id.rv_order_dishes);
         btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
         btRateRider = findViewById(R.id.bt_rate_rider);

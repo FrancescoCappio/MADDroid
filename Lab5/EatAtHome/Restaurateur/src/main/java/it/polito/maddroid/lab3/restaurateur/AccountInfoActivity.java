@@ -864,6 +864,10 @@ public class AccountInfoActivity extends AppCompatActivity {
             }
         });
 
+        for (int i = 0; i < 7; ++i) {
+            swDaysCont[i].setChecked(true);
+        }
+
         if ((timeTableRest != null)&&(!timeTableRest.isEmpty())) {
             String day[] = timeTableRest.split(";");
             String times[];
@@ -874,9 +878,10 @@ public class AccountInfoActivity extends AppCompatActivity {
                     swDays[i].setChecked(true);
                     times = day[i].split(",");
                     if (times.length == 3) {
+                        swDaysCont[i].setChecked(false);
                         for (int j = 1; j < times.length; ++j) {
                             hour = times[j].split("_");
-                            swDaysCont[i].setChecked(false);
+
                             if (j == 1) {
                                 openFirst[i].setText(hour[0]);
                                 closeFirst[i].setText(hour[1]);
@@ -889,7 +894,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                     } else {
                         for (int j = 1; j < times.length; ++j) {
                             hour = times[j].split("_");
-                            swDaysCont[i].setChecked(false);
+                            swDaysCont[i].setChecked(true);
                             openFirst[i].setText(hour[0]);
                             closeFirst[i].setText(hour[1]);
                         }
@@ -969,9 +974,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         });
         timetableDialog = alert.create();
 
-        for (int i = 0; i < 7; ++i) {
-            swDaysCont[i].setChecked(true);
-        }
+
         timetableDialog.show();
     }
 
