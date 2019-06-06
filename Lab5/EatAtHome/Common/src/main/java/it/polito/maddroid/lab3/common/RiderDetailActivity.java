@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -33,6 +34,10 @@ public class RiderDetailActivity extends AppCompatActivity {
     private TextView tvEmail;
     private TextView tvDescription;
     private ImageView ivAvatar;
+    private RatingBar ratingBar;
+    private TextView tvRating;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,8 @@ public class RiderDetailActivity extends AppCompatActivity {
         tvDescription = findViewById(R.id.tv_description);
         tvEmail = findViewById(R.id.tv_email);
         tvPhoneNumber = findViewById(R.id.tv_phone_number);
+        tvRating = findViewById(R.id.tv_ratings);
+        ratingBar = findViewById(R.id.rating_bar);
 
         ivAvatar = findViewById(R.id.iv_avatar);
     }
@@ -79,6 +86,9 @@ public class RiderDetailActivity extends AppCompatActivity {
         tvPhoneNumber.setText(currentRider.getPhoneNumber());
         tvEmail.setText(currentRider.getEmail());
         tvDescription.setText(currentRider.getDescription());
+        ratingBar.setRating(currentRider.getAverageReview());
+        tvRating.setText("" + currentRider.getTotalReviewsCount() + " "
+                + (currentRider.getTotalReviewsCount() == 1 ? getString(R.string.reviews) : getString(R.string.reviews)));
 
         downloadAvatar(currentRider.getId());
     }
@@ -99,6 +109,20 @@ public class RiderDetailActivity extends AppCompatActivity {
             }
 
         });
+
+        tvRating.setOnClickListener(v -> openReviewsActivity());
+    }
+
+    private void openReviewsActivity() {
+        if (currentRider.getTotalReviewsCount() == 0) {
+            Utility.showAlertToUser(this, R.string.alert_no_reviews);
+            return;
+        }
+
+        Intent ratingIntent = new Intent(RiderDetailActivity.this, ReviewsActivity.class);
+        ratingIntent.putExtra(ReviewsActivity.RATING_MODE_KEY, ReviewsActivity.RATING_MODE_RIDER);
+        ratingIntent.putExtra(ReviewsActivity.RATED_UID_KEY, currentRider.getId());
+        startActivity(ratingIntent);
     }
 
     @Override

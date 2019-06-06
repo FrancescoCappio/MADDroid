@@ -4,22 +4,32 @@ package it.polito.maddroid.lab3.common;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.Locale;
-
+import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 
 public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyViewHolder> {
     
     private ItemClickListener clickListener;
+    private static StorageReference storageReference;
     
     protected RidersListAdapter(@NonNull DiffUtil.ItemCallback<Rider> diffCallback, ItemClickListener clickListener) {
         super(diffCallback);
+
+        storageReference = FirebaseStorage.getInstance().getReference();
         this.clickListener = clickListener;
     }
     
@@ -47,12 +57,17 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
         private View itemView;
         private TextView tvRiderName;
         private TextView tvRiderDistance;
+        private ImageView ivRiverAvatar;
+        private RatingBar ratingBar;
         
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            
+
+
             tvRiderName = itemView.findViewById(R.id.tv_rider_name);
             tvRiderDistance = itemView.findViewById(R.id.tv_rider_distance);
+            ivRiverAvatar = itemView.findViewById(R.id.iv_rider_avatar);
+            ratingBar = itemView.findViewById(R.id.rating_bar);
             this.itemView = itemView;
             
         }
@@ -61,6 +76,16 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
             
             tvRiderName.setText(rider.getName());
             tvRiderDistance.setText(String.format(Locale.US, "%.02f",rider.getDistance()) + " Km");
+            ratingBar.setRating(rider.getAverageReview());
+
+            StorageReference riversRef = storageReference.child("avatar_" + rider.getId() +".jpg");
+            GlideApp.with(ivRiverAvatar.getContext())
+                    .load(riversRef)
+                    .placeholder(R.drawable.placeholder_avatar)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(ivRiverAvatar);
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClick(rider));
         }

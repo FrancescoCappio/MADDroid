@@ -12,6 +12,8 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.RatingActivity;
+import it.polito.maddroid.lab3.common.Rider;
+import it.polito.maddroid.lab3.common.RiderDetailActivity;
 import it.polito.maddroid.lab3.common.RoutingUtility;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -81,6 +83,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private Button btTrackRider;
     
     private List<Dish> dishList;
+    private Rider rider;
 
     private StepView stepView;
     private boolean viewLoaded = false;
@@ -227,6 +230,16 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
 
         btTrackRider.setOnClickListener(v -> getDirectionToCustomer());
+
+        tvRiderName.setOnClickListener(v ->{
+            if (rider == null ){
+                Utility.showAlertToUser(this, R.string.rider_not_assigned);
+                return;
+            }
+            Intent intent = new Intent(getApplicationContext(), RiderDetailActivity.class);
+            intent.putExtra(RiderDetailActivity.RIDER_KEY,rider);
+            startActivity(intent);
+        });
     }
     
     private synchronized void setActivityLoading(boolean loading) {
@@ -253,16 +266,29 @@ public class OrderDetailActivity extends AppCompatActivity {
         
         if (riderId == null || riderId.isEmpty()) {
             tvRiderName.setText(R.string.rider_not_assigned);
+            tvRiderName.setClickable(false);
             return;
         }
         
         setActivityLoading(true);
     
-        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).child(EAHCONST.RIDER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    tvRiderName.setText((CharSequence) dataSnapshot.getValue());
+                    tvRiderName.setClickable(true);
+                    String riderName = (String) dataSnapshot.child(EAHCONST.RIDER_NAME).getValue();
+                    String riderEmail = (String) dataSnapshot.child(EAHCONST.RIDER_EMAIL).getValue();
+                    String riderPhone = (String) dataSnapshot.child(EAHCONST.RIDER_PHONE).getValue();
+                    String riderDescription = (String) dataSnapshot.child(EAHCONST.RIDER_DESCRIPTION).getValue();
+                    long totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
+                    float avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
+
+                    rider = new Rider(riderId, riderName, riderEmail, riderDescription, riderPhone, 0);
+                    rider.setTotalReviewsCount(totGrade);
+                    rider.setAverageReview(avgGrade);
+
+                    tvRiderName.setText(riderName);
                 } else {
                     Utility.showAlertToUser(OrderDetailActivity.this, R.string.alert_error_downloading_info);
                     Log.e(TAG, "Cannot obtain rider's name");

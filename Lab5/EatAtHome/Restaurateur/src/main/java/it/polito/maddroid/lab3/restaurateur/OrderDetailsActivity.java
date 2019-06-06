@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +46,7 @@ import it.polito.maddroid.lab3.common.DishDiffUtilCallBack;
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Order;
 import it.polito.maddroid.lab3.common.Rider;
+import it.polito.maddroid.lab3.common.RiderDetailActivity;
 import it.polito.maddroid.lab3.common.Utility;
 
 public class OrderDetailsActivity extends AppCompatActivity {
@@ -79,6 +81,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
 
     private List<Dish> dishList;
+    private Rider rider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,6 +248,16 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 setActivityLoading(false);
             });
         });
+
+        tvRider.setOnClickListener(c -> {
+            if (rider == null ){
+                Utility.showAlertToUser(this, R.string.rider_not_assigned);
+                return;
+            }
+            Intent intent = new Intent(getApplicationContext(), RiderDetailActivity.class);
+            intent.putExtra(RiderDetailActivity.RIDER_KEY,rider);
+            startActivity(intent);
+        });
     }
     
     private void assignOrderToRider(String riderId) {
@@ -295,21 +308,57 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         if (riderId == null || riderId.isEmpty()) {
             tvRider.setText(R.string.rider_not_assigned);
-            return;
-        }
-        
-        if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.WAITING_RIDER) {
-            tvRider.setText(R.string.waiting_rider_confirm);
+            tvRider.setClickable(false);
             return;
         }
 
         setActivityLoading(true);
+        dbRef.child(EAHCONST.ORDERS_RIDER_SUBTREE).child(riderId).child(currentOrder.getOrderId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).child(EAHCONST.RIDER_NAME).addValueEventListener(new ValueEventListener() {
+                EAHCONST.OrderStatus orderStatus = dataSnapshot.child(EAHCONST.RIDER_ORDER_STATUS).getValue(EAHCONST.OrderStatus.class);
+                if(orderStatus == EAHCONST.OrderStatus.PENDING){
+                    tvRider.setText(R.string.waiting_rider_confirm);
+                    tvRider.setClickable(false);
+                    setActivityLoading(false);
+                    return;
+                }
+                else {
+                    getRiderData(riderId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
+            }
+        });
+
+
+    }
+
+    public void getRiderData(String riderId){
+
+
+        dbRef.child(EAHCONST.RIDERS_SUB_TREE).child(riderId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    tvRider.setText((CharSequence) dataSnapshot.getValue());
+                    tvRider.setClickable(true);
+                    String riderName = (String) dataSnapshot.child(EAHCONST.RIDER_NAME).getValue();
+                    String riderEmail = (String) dataSnapshot.child(EAHCONST.RIDER_EMAIL).getValue();
+                    String riderPhone = (String) dataSnapshot.child(EAHCONST.RIDER_PHONE).getValue();
+                    String riderDescription = (String) dataSnapshot.child(EAHCONST.RIDER_DESCRIPTION).getValue();
+                    long totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
+                    float avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
+
+                    rider = new Rider(riderId, riderName, riderEmail, riderDescription, riderPhone, 0);
+                    rider.setTotalReviewsCount(totGrade);
+                    rider.setAverageReview(avgGrade);
+
+                    tvRider.setText(riderName);
                 } else {
                     Utility.showAlertToUser(OrderDetailsActivity.this, R.string.alert_error_downloading_info);
                     Log.e(TAG, "Cannot obtain rider's name");
@@ -322,6 +371,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 setActivityLoading(false);
             }
         });
+
     }
     
     private synchronized void setActivityLoading(boolean loading) {

@@ -11,6 +11,8 @@ public class Rider implements Serializable, Comparable<Rider> {
     private String email;
     private String description;
     private String phoneNumber;
+    private long totalReviewsCount;
+    private float averageReview;
     private float distance;
     
     public Rider(String id) {
@@ -80,5 +82,21 @@ public class Rider implements Serializable, Comparable<Rider> {
         if (getDistance() <= o.getDistance())
             return -1;
         return 1;
+    }
+
+    public long getTotalReviewsCount() {
+        return totalReviewsCount;
+    }
+
+    public void setTotalReviewsCount(long totalReviewsCount) {
+        this.totalReviewsCount = totalReviewsCount;
+    }
+
+    public float getAverageReview() {
+        return averageReview;
+    }
+
+    public void setAverageReview(float averageReview) {
+        this.averageReview = averageReview;
     }
 }

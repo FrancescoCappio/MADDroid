@@ -172,5 +172,38 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
 
+        <TextView
+            android:id="@+id/tv_avg_grade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/avarage_grade"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_description" />
+
+        <RatingBar
+            android:id="@+id/rating_bar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2sp"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:clickable="false"
+            app:layout_constraintStart_toEndOf="@id/tv_phone_number_title"
+            app:layout_constraintTop_toBottomOf= "@id/tv_description" />
+
+        <TextView
+            android:id="@+id/tv_ratings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:hint="Avarage Grade"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf= "@id/tv_description" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
