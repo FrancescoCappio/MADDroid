@@ -11,7 +11,7 @@
         android:layout_marginStart="5dp"
         android:scaleType="centerCrop"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_restaurant_menu_black_24dp"/>
+        android:src="@drawable/placeholder_avatar"/>
 
 
     <LinearLayout
@@ -65,6 +65,6 @@
         android:layout_height="0.5dp"
         android:background="@color/eah_black"
         android:layout_marginTop="@dimen/activity_margin"
-        android:layout_below="@+id/tv_rider_name"
+        android:layout_below="@+id/iv_rider_avatar"
         />
 </RelativeLayout>

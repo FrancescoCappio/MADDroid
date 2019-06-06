@@ -368,6 +368,8 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 
                 String riderName = dataSnapshot.child(EAHCONST.RIDER_NAME).getValue(String.class);
                 String riderEmail = dataSnapshot.child(EAHCONST.RIDER_EMAIL).getValue(String.class);
+                long totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
+                float avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
     
                 Location me   = new Location("");
                 Location dest = new Location("");
@@ -384,6 +386,8 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 dist = dist/1000;
                 
                 Rider rider = new Rider(riderId, riderName, riderEmail, dist);
+                rider.setTotalReviewsCount(totGrade);
+                rider.setAverageReview(avgGrade);
     
                 if (riders.isEmpty())
                     riders = new ArrayList<>();
