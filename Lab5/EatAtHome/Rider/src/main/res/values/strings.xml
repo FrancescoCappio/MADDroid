@@ -47,6 +47,6 @@
     <string name="cannot_find_gmaps_alert">Cannot find google maps on your device</string>
 
     <string name="see_order_details">See order details</string>
-    <string name="customer_code">Insert here delivery code below:</string>
+    <string name="customer_code">Ask the customer for the delivery code and insert it here:</string>
 
 </resources>

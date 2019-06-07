@@ -362,18 +362,18 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         etControlString = controlLayout.findViewById(R.id.et_confirm);
 
         AlertDialog.Builder alertControl = new AlertDialog.Builder(this);
-        alertControl.setTitle("Confirm your delivery");
+        alertControl.setTitle(R.string.confirm_delivery);
         // this is set the view from XML inside AlertDialog
         alertControl.setView(controlLayout);
         // disallow cancel of AlertDialog on click of back button and outside touch
         alertControl.setCancelable(false);
-        alertControl.setNegativeButton("Cancel", (dialog, which) -> {
+        alertControl.setNegativeButton(R.string.action_cancel, (dialog, which) -> {
             controlDialogOpen = false;
             controlConfirm = null;
             dialog.dismiss();
         });
 
-        alertControl.setPositiveButton("Done", (dialog, which) -> {
+        alertControl.setPositiveButton(R.string.ok, (dialog, which) -> {
             controlDialogOpen = true;
             String s = etControlString.getText().toString();
             if (s.equals(currentOrder.getStringControl()))
@@ -411,9 +411,8 @@ public class OrderDeliveryActivity extends AppCompatActivity {
                     Utility.showAlertToUser(this, R.string.alert_error_deliver_food);
                 });
 
-            }
-            else{
-                Utility.showAlertToUser(this, "ERROR: WRONG CODE");
+            } else{
+                Utility.showAlertToUser(this, R.string.wrong_code);
                 controlDialogOpen = false;
                 controlConfirm = null;
                 dialog.dismiss();
@@ -440,7 +439,6 @@ public class OrderDeliveryActivity extends AppCompatActivity {
         String day = currentOrder.getDeliveryDate().split("-")[0];
 
         // TODO if is null aggiungi, se no sommi sul giorno tot, sommi sul mese tot, sommi sull'anno tot
-
 
         String riderIncomePathDay = EAHCONST.generatePath(
                 EAHCONST.RIDERS_INCOME_SUB_TREE,

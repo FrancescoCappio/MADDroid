@@ -76,6 +76,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private TextView tvRiderName;
     private TextView tvDeliveryAddress;
     private TextView tvStringControl;
+    private TextView tvStringControlTitle;
     private RecyclerView rvDishes;
     private Button btRateRider;
     private Button btRateRestaurant;
@@ -200,6 +201,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvDeliveryCost = findViewById(R.id.tv_delivery_cost);
         tvDeliveryAddress = findViewById(R.id.tv_delivery_address);
         tvStringControl = findViewById(R.id.tv_control_string);
+        tvStringControlTitle = findViewById(R.id.tv_control_string_title);
         rvDishes = findViewById(R.id.rv_order_dishes);
         btRateRestaurant = findViewById(R.id.bt_rate_restaurant);
         btRateRider = findViewById(R.id.bt_rate_rider);
@@ -404,10 +406,15 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         if (currentOrder.getOrderStatus() == EAHCONST.OrderStatus.ONGOING) {
             btTrackRider.setVisibility(View.VISIBLE);
+            tvStringControl.setVisibility(View.VISIBLE);
+            tvStringControlTitle.setVisibility(View.VISIBLE);
             getRestaurantLocations();
         }
-        else
+        else {
             btTrackRider.setVisibility(View.GONE);
+            tvStringControl.setVisibility(View.GONE);
+            tvStringControlTitle.setVisibility(View.GONE);
+        }
     
         if (viewLoaded)
             setSteps(getCurrentStep(currentOrder.getOrderStatus()));
