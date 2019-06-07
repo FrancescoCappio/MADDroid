@@ -118,18 +118,20 @@ public class MostPopularDishesFragment extends Fragment {
 
                         Dish dish = new Dish(Integer.parseInt(dishId), dishName, dishPrice, dishDescription);
                         dish.setQuantity(dishCount);
-                        dishes.add(dish);
+                        if(dishCount != 0)
+                            dishes.add(dish);
                         Collections.reverse(dishes);
-                        setupAdapter();
-                        setActivityLoading(false);
+                        manageVisibility();
                     } else {
                         Log.d(TAG, "There are no popular dishes for this restaurateur");
                         manageVisibility();
-
-                        return;
-
                     }
+
+
                 }
+
+                setupAdapter();
+                return;
             }
 
             @Override

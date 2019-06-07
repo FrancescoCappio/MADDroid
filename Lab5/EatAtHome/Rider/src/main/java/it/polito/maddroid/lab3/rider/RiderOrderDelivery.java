@@ -19,6 +19,7 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
     private float deliveryCost;
     private String totalCost;
     private String deliveryDate;
+    private String stringControl;
 
     public RiderOrderDelivery(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus, float deliveryCost) {
         this.orderId = orderId;
@@ -38,6 +39,10 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
 
     public String getCustomerId() {
         return customerId;
+    }
+
+    public String getStringControl() {
+        return this.stringControl;
     }
 
     public EAHCONST.OrderStatus getOrderStatus() {
@@ -145,5 +150,9 @@ public class RiderOrderDelivery implements Serializable, Comparable<RiderOrderDe
 
     public void setOrderStatus(EAHCONST.OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void setControlString(String stringControl) {
+        this.stringControl = stringControl;
     }
 }
