@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
 import it.polito.maddroid.lab3.common.Utility;
 
@@ -114,6 +115,9 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             
             tvRating.setText(rating);
             ratingBar.setRating(restaurant.getReviewAvg());
+            
+            int height = ivRestaurantPhoto.getHeight();
+            int width = ivRestaurantPhoto.getWidth();
     
     
             GlideApp.with(ivRestaurantPhoto.getContext())
@@ -122,6 +126,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.drawable.round_logo)
                     .transition(DrawableTransitionOptions.withCrossFade())
+                    .override(EAHCONST.DEFAULT_IMAGE_SIZE, EAHCONST.DEFAULT_IMAGE_SIZE)
                     .into(ivRestaurantPhoto);
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClickListener(restaurant));
