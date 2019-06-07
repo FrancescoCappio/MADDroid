@@ -5,8 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
         android:id="@+id/iv_rider_avatar"
-        android:layout_width="@dimen/menu_image_size"
-        android:layout_height="@dimen/menu_image_size"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginTop="2dp"
         android:layout_marginStart="5dp"
         android:scaleType="centerCrop"

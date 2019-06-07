@@ -372,9 +372,12 @@ public class ChooseRiderActivity extends AppCompatActivity {
                 
                 String riderName = dataSnapshot.child(EAHCONST.RIDER_NAME).getValue(String.class);
                 String riderEmail = dataSnapshot.child(EAHCONST.RIDER_EMAIL).getValue(String.class);
-                long totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
-                float avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
-    
+                long totGrade = 0;
+                float avgGrade = 0;
+                if (dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue() != null) {
+                    totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
+                    avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
+                }
                 Location me   = new Location("");
                 Location dest = new Location("");
     

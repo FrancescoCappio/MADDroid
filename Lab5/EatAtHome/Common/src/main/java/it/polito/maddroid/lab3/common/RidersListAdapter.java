@@ -60,7 +60,7 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
         private View itemView;
         private TextView tvRiderName;
         private TextView tvRiderDistance;
-        private ImageView ivRiverAvatar;
+        private ImageView ivRiderAvatar;
         private RatingBar ratingBar;
         private Context context;
         private String riderId;
@@ -71,7 +71,7 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
             context = itemView.getContext();
             tvRiderName = itemView.findViewById(R.id.tv_rider_name);
             tvRiderDistance = itemView.findViewById(R.id.tv_rider_distance);
-            ivRiverAvatar = itemView.findViewById(R.id.iv_rider_avatar);
+            ivRiderAvatar = itemView.findViewById(R.id.iv_rider_avatar);
             ratingBar = itemView.findViewById(R.id.rating_bar);
             this.itemView = itemView;
             
@@ -114,7 +114,7 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
                     .load(img)
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(ivRiverAvatar);
+                    .into(ivRiderAvatar);
         }
         private File getAvatarTmpFile() {
             // Determine Uri of camera image to save.
