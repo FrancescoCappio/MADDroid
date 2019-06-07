@@ -82,13 +82,13 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
             String [] suddivido = order.getTotalCost().split(" ");
             float costo = Float.parseFloat(suddivido[0]);
             tvOrderTotPrice.setText(String.format(Locale.US,"%.02f", costo) + " €");
+            
             tvOrderTime.setText(order.getOrderReadyTime());
+            
             tvOrderStatus.setText(order.getOrderStatus().toString());
             itemView.setOnClickListener(v -> itemClickListener.clickListener(order));
             switch ( order.getOrderStatus()) {
                 case PENDING:
-//                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
-//                    cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.eah_fair_grey));
                     tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_orange_alert));
                     break;
                 case DECLINED:
@@ -99,7 +99,6 @@ public class OrderListAdapter extends ListAdapter<Order, OrderListAdapter.MyView
                     tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_green_alert));
                     break;
                 default:
-//                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_fair_grey));
                     tvOrderStatus.setTextColor(ContextCompat.getColor(itemView.getContext(),R.color.eah_black));
                     break;
             }

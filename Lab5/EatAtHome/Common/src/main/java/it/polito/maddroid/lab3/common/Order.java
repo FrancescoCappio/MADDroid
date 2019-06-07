@@ -1,6 +1,7 @@
 package it.polito.maddroid.lab3.common;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Map;
 
 public class Order implements Serializable, Comparable<Order> {
@@ -144,14 +145,20 @@ public class Order implements Serializable, Comparable<Order> {
         
         if (minute > timeForDelivery) {
             int res = minute - timeForDelivery;
-            return hour + ":" + res;
+            
+            String sHour = String.format(Locale.US, "%02d", hour);
+            String sMin = String.format(Locale.US, "%02d", res);
+            return sHour + ":" + sMin;
         } else {
             int totMinutes = hour*60 + minute;
             int time = totMinutes - timeForDelivery;
             
             hour = time/60;
             int remain = time - hour*60;
-            return hour + ":" + remain;
+    
+            String sHour = String.format(Locale.US, "%02d", hour);
+            String sMin = String.format(Locale.US, "%02d", remain);
+            return sHour + ":" + sMin;
         }
     }
     

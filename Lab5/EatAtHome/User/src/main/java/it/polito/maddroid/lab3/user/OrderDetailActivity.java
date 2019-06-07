@@ -379,6 +379,26 @@ public class OrderDetailActivity extends AppCompatActivity {
         }
         return false;
     }
+    
+    private void getOrderVerificationCode() {
+        
+        setActivityLoading(true);
+        dbRef.child(EAHCONST.ORDERS_REST_SUBTREE).child(currentOrder.getRestaurantId()).child(currentOrder.getOrderId()).child(EAHCONST.REST_ORDER_CONTROL_STRING).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    currentOrder.setDeliveryStringControl(dataSnapshot.getValue(String.class));
+                }
+                setActivityLoading(false);
+            }
+    
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
+            }
+        });
+    }
 
     private void getUpdatedOrderStatus() {
         setActivityLoading(true);
@@ -441,6 +461,10 @@ public class OrderDetailActivity extends AppCompatActivity {
             tvStringControl.setVisibility(View.VISIBLE);
             tvStringControlTitle.setVisibility(View.VISIBLE);
             getRestaurantLocations();
+            
+            if (currentOrder.getDeliveryStringControl() == null || currentOrder.getDeliveryStringControl().isEmpty()) {
+                getOrderVerificationCode();
+            }
         }
         else {
             btTrackRider.setVisibility(View.GONE);
@@ -451,7 +475,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         if (viewLoaded)
             setSteps(getCurrentStep(currentOrder.getOrderStatus()));
     }
-
 
     private void getRestaurantLocations() {
 

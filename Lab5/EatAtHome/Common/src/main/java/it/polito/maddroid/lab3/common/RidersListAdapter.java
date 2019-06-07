@@ -88,39 +88,48 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClick(rider));
         }
-
+    
         private void downloadAvatar(String UID) {
-            File localFile = getAvatarTmpFile();
+            File localFile = getAvatarFile();
+            
+            if (localFile.exists()) {
+                updateAvatarImage();
+                return;
+            }
+            
             StorageReference riversRef = FirebaseStorage.getInstance().getReference().child("avatar_" + UID +".jpg");
-
+        
             riversRef.getFile(localFile)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        Log.d(TAG, "Avatar downloaded successfully");
-                        updateAvatarImage();
-                    }).addOnFailureListener(exception -> {
-                Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
-            });
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Avatar downloaded successfully");
+                    updateAvatarImage();
+                }).addOnFailureListener(exception -> {
+                    Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
+                });
         }
 
         private void updateAvatarImage() {
-            File img = getAvatarTmpFile();
+            File img = getAvatarFile();
 
             if (!img.exists() || !img.isFile()) {
                 Log.d(TAG, "Cannot load unexisting file as avatar");
                 return;
             }
-
-            Glide.with(context)
-                    .load(img)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(ivRiderAvatar);
+            
+            try {
+    
+                Glide.with(context).load(img).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(ivRiderAvatar);
+    
+            } catch (Exception ex) {
+                Log.e(TAG, "Exception: " + ex.getMessage());
+            }
         }
-        private File getAvatarTmpFile() {
+        
+        private File getAvatarFile() {
             // Determine Uri of camera image to save.
             final File root = new File(context.getFilesDir() + File.separator + "images" + File.separator);
             root.mkdirs();
-            final String fname = "Customer_avatar_tmp_" + riderId + ".jpg";
+            final String fname = "Rider_avatar_tmp_" + riderId + ".jpg";
             return new File(root, fname);
         }
     }

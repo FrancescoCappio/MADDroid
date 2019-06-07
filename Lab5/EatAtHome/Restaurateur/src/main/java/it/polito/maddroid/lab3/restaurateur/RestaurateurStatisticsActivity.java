@@ -205,7 +205,8 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
             }
         });
 
@@ -226,7 +227,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
                     cal.setTime(new Date());
                     String date = new String();
                     cal.add(Calendar.DATE, (-i));
-                    if(cal.get(Calendar.DATE) > 10)
+                    if(cal.get(Calendar.DATE) >= 10)
                         date = "" + cal.get(Calendar.DATE) + "-" ;
                     else
                         date = "0" + cal.get(Calendar.DATE) + "-" ;
@@ -249,15 +250,16 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
                     }
                     incomeDays.add(30 - i, income);
                 }
+                
                 setActivityLoading(false);
                 intentRestaurantDay.putExtra(EAHCONST.ARRAY_INCOME_KEY, incomeDays);
                 startActivity(intentRestaurantDay);
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
             }
         });
     }
@@ -277,7 +279,7 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
                     cal.setTime(new Date());
                     cal.add(Calendar.DATE, (-i));
                     String date = new String() ;
-                    if(cal.get(Calendar.DATE) > 10)
+                    if(cal.get(Calendar.DATE) >= 10)
                         date = "" + cal.get(Calendar.DATE) + "-" ;
                     else
                         date = "0" + cal.get(Calendar.DATE) + "-" ;
@@ -308,7 +310,8 @@ public class RestaurateurStatisticsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+                setActivityLoading(false);
             }
         });
 
