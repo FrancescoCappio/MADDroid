@@ -89,8 +89,8 @@ public class RestaurantSearchActivity extends AppCompatActivity {
         // setup list
         adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
             // open restaurant detail activity and close current activity
-            Intent i = new Intent(getApplicationContext(), RestaurantDetailActivity.class);
-            i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
+            Intent i = new Intent(getApplicationContext(), RestaurantDetailActivity2.class);
+            i.putExtra(RestaurantDetailActivity2.RESTAURANT_KEY, restaurant);
             startActivity(i);
             finish();
         });

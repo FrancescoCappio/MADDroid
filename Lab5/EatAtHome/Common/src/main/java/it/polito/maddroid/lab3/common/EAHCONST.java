@@ -25,6 +25,8 @@ public class EAHCONST {
     
     public static final float DELIVERY_COST = 2.00f;
     
+    public static final int DEFAULT_IMAGE_SIZE = 1000;
+    
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
         CUSTOMER,

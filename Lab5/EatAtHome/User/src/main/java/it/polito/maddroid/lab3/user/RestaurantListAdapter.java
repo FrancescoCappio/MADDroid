@@ -18,7 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
+import it.polito.maddroid.lab3.common.Utility;
 
 
 public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantListAdapter.MyViewHolder> {
@@ -26,10 +28,20 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     private static StorageReference storageReference;
     private ItemClickListener clickListener;
     
+    public static final String MODE_HORIZONTAL = "MODE_HORIZONTAL";
+    private String currentMode = "";
+    
     protected RestaurantListAdapter(@NonNull DiffUtil.ItemCallback<Restaurant> diffCallback, ItemClickListener clickListener) {
         super(diffCallback);
         storageReference = FirebaseStorage.getInstance().getReference();
         this.clickListener = clickListener;
+    }
+    
+    protected RestaurantListAdapter(@NonNull DiffUtil.ItemCallback<Restaurant> diffCallback, ItemClickListener clickListener, String mode) {
+        super(diffCallback);
+        storageReference = FirebaseStorage.getInstance().getReference();
+        this.clickListener = clickListener;
+        this.currentMode = mode;
     }
     
     @NonNull
@@ -45,7 +57,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
     
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.setupRestaurant(getItem(position), clickListener);
+        holder.setupRestaurant(getItem(position), clickListener, currentMode);
     }
     
     public interface ItemClickListener {
@@ -65,6 +77,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             super(itemView);
     
             this.itemView = itemView;
+            
             tvRestaurantName = itemView.findViewById(R.id.tv_restaurant_name);
             tvRestaurantDescription = itemView.findViewById(R.id.tv_restaurant_description);
             ivRestaurantPhoto = itemView.findViewById(R.id.iv_restaurant_photo);
@@ -72,9 +85,21 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             ratingBar = itemView.findViewById(R.id.rating_bar);
         }
         
-        public void setupRestaurant(Restaurant restaurant, ItemClickListener itemClickListener) {
+        public void setupRestaurant(Restaurant restaurant, ItemClickListener itemClickListener, String currentMode) {
             tvRestaurantName.setText(restaurant.getName());
             tvRestaurantDescription.setText(restaurant.getDescription());
+            
+            if (currentMode.equals(MODE_HORIZONTAL)) {
+                ViewGroup.LayoutParams params = itemView.getLayoutParams();
+                if (Utility.isTablet(itemView.getContext())) {
+                    
+                    params.width = Utility.getPixelsFromDP(itemView.getContext(), 450);
+                } else
+                
+//                    params.width = Utility.getPixelsFromDP(itemView.getContext(), 300);
+                    params.width = (int) ((0.8) * itemView.getContext().getResources().getDisplayMetrics().widthPixels);
+                this.itemView.setLayoutParams(params);
+            }
     
             StorageReference riversRef = storageReference.child("avatar_" + restaurant.getRestaurantID() +".jpg");
     
@@ -90,6 +115,9 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
             
             tvRating.setText(rating);
             ratingBar.setRating(restaurant.getReviewAvg());
+            
+            int height = ivRestaurantPhoto.getHeight();
+            int width = ivRestaurantPhoto.getWidth();
     
     
             GlideApp.with(ivRestaurantPhoto.getContext())
@@ -98,6 +126,7 @@ public class RestaurantListAdapter extends ListAdapter<Restaurant, RestaurantLis
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.drawable.round_logo)
                     .transition(DrawableTransitionOptions.withCrossFade())
+                    .override(EAHCONST.DEFAULT_IMAGE_SIZE, EAHCONST.DEFAULT_IMAGE_SIZE)
                     .into(ivRestaurantPhoto);
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClickListener(restaurant));
