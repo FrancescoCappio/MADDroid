@@ -190,6 +190,9 @@
     <string name="poor">Poor</string>
     <string name="terrible">Terrible</string>
 
+    <string name="favorite_title">Your favorite restaurants:</string>
+    <string name="most_ordered_from">Restaurants from which you have ordered most often:</string>
+
     <string name="added_favorite">Added to your favorite list</string>
     <string name="removed_favorite">Removed from your favorite list</string>
 

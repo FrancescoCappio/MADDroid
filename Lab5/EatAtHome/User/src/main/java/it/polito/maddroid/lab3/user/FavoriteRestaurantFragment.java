@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,39 +26,40 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import it.polito.maddroid.lab3.common.EAHCONST;
 import it.polito.maddroid.lab3.common.Restaurant;
-import it.polito.maddroid.lab3.common.Utility;
 
 
 public class FavoriteRestaurantFragment extends Fragment {
 
     private static final String TAG = "TopRestaurantFragment";
 
-    private List<Restaurant> restaurants;
-    RestaurantListAdapter adapter;
+    private List<Restaurant> mostOrderedRestaurants;
+    private List<Restaurant> favoriteRestaurants;
+    RestaurantListAdapter mostOrderedAdapter;
+    RestaurantListAdapter favoriteAdapter;
 
     private DatabaseReference dbRef;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
 
-    private TextView tvNoOrdersPlaceHolder;
+    private TextView tvMostOrderedTitle;
     private ProgressBar pbLoading;
-    private RecyclerView rvRestaurants;
+    private RecyclerView rvFavoriteRestaurants;
+    private RecyclerView rvMostOrderedRestaurants;
+    
+    private List<String> favoriteIds;
     private HashMap<String,Integer> restaurantsCount;
 
     private int waitingCount = 0;
-
-
+    
     public FavoriteRestaurantFragment() {
         // Required empty public constructor
     }
@@ -76,30 +76,43 @@ public class FavoriteRestaurantFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_favorite_restaurant, container, false);
 
-
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
-
-        rvRestaurants = view.findViewById(R.id.rv_favorite_restaurant);
-        tvNoOrdersPlaceHolder = view.findViewById(R.id.tv_no_order);
+    
+        rvFavoriteRestaurants = view.findViewById(R.id.rv_favorite_restaurant);
+        rvMostOrderedRestaurants = view.findViewById(R.id.rv_most_ordered_restaurant);
+        tvMostOrderedTitle = view.findViewById(R.id.tv_most_ordered_restaurants_title);
         pbLoading = view.findViewById(R.id.pb_loading);
 
-        restaurants = new ArrayList<>();
+        mostOrderedRestaurants = new ArrayList<>();
         restaurantsCount = new HashMap<>();
 
         downloadRestaurantsCount();
 
-        // setup list
-        adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
+        // setup list of most ordered
+        mostOrderedAdapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
             // open restaurant detail activity and close current activity
             Intent i = new Intent(getContext(), RestaurantDetailActivity2.class);
             i.putExtra(RestaurantDetailActivity2.RESTAURANT_KEY, restaurant);
             startActivity(i);
         },RestaurantListAdapter.MODE_HORIZONTAL);
         
-        rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
-        rvRestaurants.setAdapter(adapter);
+        rvMostOrderedRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        rvMostOrderedRestaurants.setAdapter(mostOrderedAdapter);
+    
+        // setup list of favorites
+        favoriteAdapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
+            // open restaurant detail activity and close current activity
+            Intent i = new Intent(getContext(), RestaurantDetailActivity2.class);
+            i.putExtra(RestaurantDetailActivity2.RESTAURANT_KEY, restaurant);
+            startActivity(i);
+        },RestaurantListAdapter.MODE_HORIZONTAL);
+    
+        rvFavoriteRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL, false));
+        rvFavoriteRestaurants.setAdapter(favoriteAdapter);
+        
+        downloadFavoriteRestaurantsIds();
 
         return view;
     }
@@ -125,13 +138,13 @@ public class FavoriteRestaurantFragment extends Fragment {
                             restaurantsCount.put(restaurantId, 1);
                     }
                 }
+                
                 if(restaurantsCount.size() == 0 ) {
                     setActivityLoading(false);
                     manageVisibility();
-                }
-                else{
+                } else{
                     restaurantsCount = sortByComparator(restaurantsCount);
-                    downloadRestaurantsInfo();
+                    downloadMostOrderedRestaurantsInfo();
                 }
             }
 
@@ -142,8 +155,32 @@ public class FavoriteRestaurantFragment extends Fragment {
             }
         });
     }
+    
+    private void downloadFavoriteRestaurantsIds() {
+        setActivityLoading(true);
+        
+        dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(currentUser.getUid()).child(EAHCONST.CUSTOMER_FAVORITE_RESTAURANT).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                favoriteIds = new ArrayList<>();
+                
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String id = ds.getKey();
+                    favoriteIds.add(id);
+                }
+                
+                downloadFavoriteRestaurantsInfo();
+            }
+    
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called: " + databaseError.getMessage());
+                setActivityLoading(false);
+            }
+        });
+    }
 
-    private void downloadRestaurantsInfo() {
+    private void downloadMostOrderedRestaurantsInfo() {
 
         for(Map.Entry<String,Integer> entry : restaurantsCount.entrySet()){
 
@@ -154,7 +191,7 @@ public class FavoriteRestaurantFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d(TAG, "onDataChange Called");
-                    if (dataSnapshot != null ){
+                    if (dataSnapshot.getValue() != null ){
                         // do something with the individual restaurant
                         String restaurantId = dataSnapshot.getKey();
                         String name = (String) dataSnapshot.child(EAHCONST.RESTAURANT_NAME).getValue();
@@ -186,14 +223,78 @@ public class FavoriteRestaurantFragment extends Fragment {
                             EAHCONST.GeoLocation geoLocation = new EAHCONST.GeoLocation(lat, longit);
                             r.setGeoLocation(geoLocation);
                         }
-                        restaurants.add(r);
+                        mostOrderedRestaurants.add(r);
 
-                        if (restaurantsCount.size() == restaurants.size()) {
+                        if (restaurantsCount.size() == mostOrderedRestaurants.size()) {
                             manageVisibility();
-                            adapter.submitList(restaurants);
+                            mostOrderedAdapter.submitList(mostOrderedRestaurants);
                             setActivityLoading(false);
                         }
 
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "onCancelled called");
+                    setActivityLoading(false);
+                }
+            });
+        }
+    }
+    
+    private void downloadFavoriteRestaurantsInfo() {
+        
+        if (favoriteIds.isEmpty()) {
+            setActivityLoading(false);
+            return;
+        }
+        
+        favoriteRestaurants = new ArrayList<>();
+        
+        for(String id : favoriteIds){
+
+            dbRef.child(EAHCONST.RESTAURANTS_SUB_TREE).child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onDataChange Called");
+                    if (dataSnapshot.getValue() != null){
+                        // do something with the individual restaurant
+                        String restaurantId = dataSnapshot.getKey();
+                        String name = (String) dataSnapshot.child(EAHCONST.RESTAURANT_NAME).getValue();
+                        String description = (String) dataSnapshot.child(EAHCONST.RESTAURANT_DESCRIPTION).getValue();
+                        String address = (String) dataSnapshot.child(EAHCONST.RESTAURANT_ADDRESS).getValue();
+                        String phone = (String) dataSnapshot.child(EAHCONST.RESTAURANT_PHONE).getValue();
+                        String email = (String) dataSnapshot.child(EAHCONST.RESTAURANT_EMAIL).getValue();
+                        String categoriesIds = (String) dataSnapshot.child(EAHCONST.RESTAURANT_CATEGORIES).getValue();
+                        String timetable = (String) dataSnapshot.child(EAHCONST.RESTAURANT_TIMETABLE).getValue();
+                        
+                        Restaurant r = new Restaurant(restaurantId, name, description, address, phone, email, categoriesIds, timetable);
+                        
+                        if (dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue() != null &&
+                                dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue() != null) {
+                            Long reviewCount = dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_COUNT).getValue(Long.class);
+                            Double reviewAvg = dataSnapshot.child(EAHCONST.RESTAURANT_REVIEW_AVG).getValue(Double.class);
+                            
+                            r.setReviewAvg(reviewAvg.floatValue());
+                            r.setReviewCount(reviewCount.intValue());
+                        }
+                        if (dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue() != null) {
+                            int avgOrderTime = dataSnapshot.child(EAHCONST.RESTAURANT_AVG_ORDER_TIME).getValue(Long.class).intValue();
+                            r.setAvgOrderTime(avgOrderTime);
+                        }
+                        
+                        if (dataSnapshot.child(EAHCONST.RESTAURANT_POSITION).getValue() != null) {
+                            double lat = dataSnapshot.child(EAHCONST.RESTAURANT_POSITION).child("l").child("0").getValue(Double.class);
+                            double longit = dataSnapshot.child(EAHCONST.RESTAURANT_POSITION).child("l").child("1").getValue(Double.class);
+                            EAHCONST.GeoLocation geoLocation = new EAHCONST.GeoLocation(lat, longit);
+                            r.setGeoLocation(geoLocation);
+                        }
+                        favoriteRestaurants.add(r);
+                    }
+                    
+                    if (favoriteRestaurants.size() == favoriteIds.size()) {
+                        favoriteAdapter.submitList(favoriteRestaurants);
+                        setActivityLoading(false);
                     }
                 }
                 @Override
@@ -208,15 +309,9 @@ public class FavoriteRestaurantFragment extends Fragment {
     private static HashMap<String, Integer> sortByComparator(HashMap<String, Integer> unsortMap)
     {
 
-        List<HashMap.Entry<String, Integer>> list = new LinkedList<HashMap.Entry<String, Integer>>(unsortMap.entrySet());
+        List<HashMap.Entry<String, Integer>> list = new LinkedList<>(unsortMap.entrySet());
 
-        Collections.sort(list, new Comparator<HashMap.Entry<String, Integer>>()
-        {
-            public int compare(HashMap.Entry<String, Integer> o1, HashMap.Entry<String, Integer> o2)
-            {
-                    return o2.getValue().compareTo(o1.getValue());
-            }
-        });
+        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
         // to show just 5 Favorite restaurant
         if(list.size() > 5)
@@ -233,14 +328,12 @@ public class FavoriteRestaurantFragment extends Fragment {
 
     private void manageVisibility() {
 
-        if (restaurants.size() == 0) {
-            tvNoOrdersPlaceHolder.setVisibility(View.VISIBLE);
-            tvNoOrdersPlaceHolder.setText(R.string.no_order);
-            rvRestaurants.setVisibility(View.GONE);
+        if (mostOrderedRestaurants.size() == 0) {
+            rvMostOrderedRestaurants.setVisibility(View.GONE);
+            tvMostOrderedTitle.setVisibility(View.GONE);
         } else {
-
-            tvNoOrdersPlaceHolder.setVisibility(View.GONE);
-            rvRestaurants.setVisibility(View.VISIBLE);
+            rvMostOrderedRestaurants.setVisibility(View.VISIBLE);
+            tvMostOrderedTitle.setVisibility(View.VISIBLE);
         }
     }
 
