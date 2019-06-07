@@ -286,9 +286,15 @@ public class OrderDetailActivity extends AppCompatActivity {
                     String riderEmail = (String) dataSnapshot.child(EAHCONST.RIDER_EMAIL).getValue();
                     String riderPhone = (String) dataSnapshot.child(EAHCONST.RIDER_PHONE).getValue();
                     String riderDescription = (String) dataSnapshot.child(EAHCONST.RIDER_DESCRIPTION).getValue();
-                    long totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
-                    float avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
-
+                    
+                    long totGrade = 0;
+                    float avgGrade = 0f;
+                    
+                    if (dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue() != null) {
+                        totGrade = (long) dataSnapshot.child(EAHCONST.RIDER_REVIEW_COUNT).getValue();
+                        avgGrade = dataSnapshot.child(EAHCONST.RIDER_REVIEW_AVG).getValue(Double.class).floatValue();
+                    }
+                    
                     rider = new Rider(riderId, riderName, riderEmail, riderDescription, riderPhone, 0);
                     rider.setTotalReviewsCount(totGrade);
                     rider.setAverageReview(avgGrade);
