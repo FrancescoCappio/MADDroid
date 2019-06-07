@@ -570,10 +570,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             String date = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DATE).getValue();
                             String deliveryAddress = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS).getValue();
                             String deliveryAddressNotes = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS_NOTES).getValue();
-                            
+                            String stringControl = (String) dataSnapshot.child(EAHCONST.REST_ORDER_CONTROL_STRING).getValue();
+
+
                             co.setDeliveryAddress(deliveryAddress);
                             co.setTotalCost(totalCost);
                             co.setDeliveryTime(deliveryTime);
+                            co.setControlString(stringControl);
                             co.setDeliveryDate(date);
                             co.setDeliveryAddressNotes(deliveryAddressNotes);
                             

@@ -78,8 +78,8 @@ public class TopRestaurantFragment extends Fragment {
         // setup list
         adapter = new RestaurantListAdapter(new RestaurantDiffUtilCallback(), restaurant -> {
             // open restaurant detail activity and close current activity
-            Intent i = new Intent(getContext(), RestaurantDetailActivity.class);
-            i.putExtra(RestaurantDetailActivity.RESTAURANT_KEY, restaurant);
+            Intent i = new Intent(getContext(), RestaurantDetailActivity2.class);
+            i.putExtra(RestaurantDetailActivity2.RESTAURANT_KEY, restaurant);
             startActivity(i);
         });
 

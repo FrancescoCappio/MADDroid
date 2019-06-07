@@ -13,7 +13,7 @@ public class EAHCONST {
     public static String LAUNCH_APP_RESTAURATEUR = "LAUNCH_APP_RESTAURATEUR";
     public static String LAUNCH_APP_USER = "LAUNCH_APP_USER";
     public static String LAUNCH_APP_RIDER = "LAUNCH_APP_RIDER";
-    
+    public static String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static String LAUNCH_ACTIVITY_KEY = "LAUNCH_ACTIVITY_KEY";
     
     public static String NOTIFICATION_KEY = "NOTIFICATION_KEY";
@@ -24,6 +24,8 @@ public class EAHCONST {
     public static String RESTAURANT_CATEGORY_EXTRA = "RESTAURANT_CATEGORY_EXTRA";
     
     public static final float DELIVERY_COST = 2.00f;
+    
+    public static final int DEFAULT_IMAGE_SIZE = 1000;
     
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
@@ -183,6 +185,7 @@ public class EAHCONST {
     public final static String REST_ORDER_DELIVERY_TIME = "delivery_time";
     public final static String REST_ORDER_CUSTOMER_ID = "customer_id";
     public final static String REST_ORDER_RIDER_ID = "riderId";
+    public final static String REST_ORDER_CONTROL_STRING = "string_order";
     public final static String REST_ORDER_DISHES_SUBTREE = "dishes";
     public final static String REST_ORDER_TOTAL_COST = "total_cost";
     public final static String REST_ORDER_DELIVERY_ADDRESS = "delivery_address";

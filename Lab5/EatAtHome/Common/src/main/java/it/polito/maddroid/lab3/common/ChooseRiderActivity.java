@@ -282,6 +282,10 @@ public class ChooseRiderActivity extends AppCompatActivity {
         if (geoQuery != null) {
             geoQuery.removeAllListeners();
         }
+    
+        if (currentRestaurantLocation == null) {
+            return;
+        }
         
         setActivityLoading(true);
         

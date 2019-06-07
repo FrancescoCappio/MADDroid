@@ -157,7 +157,12 @@ public class OrdersFragment extends Fragment {
                     String deliveryTime = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DELIVERY_TIME).getValue();
                     String date = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DATE).getValue();
                     String deliveryAddress = (String) dataSnapshot.child(EAHCONST.REST_ORDER_DELIVERY_ADDRESS).getValue();
-                    
+
+                    if(dataSnapshot.child(EAHCONST.REST_ORDER_CONTROL_STRING).getValue() != null)
+                    {
+                        co.setControlString(dataSnapshot.child(EAHCONST.REST_ORDER_CONTROL_STRING).getValue(String.class));
+                    }
+
                     Map<String, Integer> dishes = new HashMap<>();
                     for (DataSnapshot dishesSnap : dataSnapshot.child(EAHCONST.REST_ORDER_DISHES_SUBTREE).getChildren()) {
                         String id = dishesSnap.getKey();
@@ -170,6 +175,7 @@ public class OrdersFragment extends Fragment {
                     
                     order.setRiderRated(co.getRiderRated());
                     order.setRestaurantRated(co.getRestaurantRated());
+                    order.setDeliveryStringControl(co.getStringControl());
                     
                     orders.add(order);
                     downloadRestaurantName(order.getRestaurantId());

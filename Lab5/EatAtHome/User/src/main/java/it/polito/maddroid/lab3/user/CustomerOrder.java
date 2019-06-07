@@ -12,7 +12,8 @@ public class CustomerOrder {
     private boolean riderRated = false;
     private boolean restaurantRated = false;
     private EAHCONST.OrderStatus orderStatus;
-    
+    private String stringControl;
+
     public CustomerOrder(String orderId, String restaurantId, String riderId, EAHCONST.OrderStatus orderStatus) {
         this.orderId = orderId;
         this.restaurantId = restaurantId;
@@ -50,5 +51,13 @@ public class CustomerOrder {
     
     public boolean getRestaurantRated() {
         return restaurantRated;
+    }
+
+    public String getStringControl() {
+        return this.stringControl;
+    }
+
+    public void setControlString(String s) {
+        this.stringControl = s;
     }
 }

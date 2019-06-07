@@ -119,6 +119,7 @@
 
     <string name="order_delivery">Order delivery</string>
     <string name="confirm_order">Confirm order</string>
+    <string name="confirm_delivery">Confirm this delivery</string>
     <string name="decline_order">Decline order</string>
     <string name="order_total_cost">Total cost</string>
     <string name="your_earning">Your earning</string>
@@ -152,6 +153,7 @@
     <string name="reviews">reviews</string>
     <string name="review">review</string>
 
+    <string name="wrong_code">Wrong code</string>
     <string name="alert_restaurant_location">Cannot download restaurant location</string>
 
     <string name="route_not_ready">Please wait, the route is not ready</string>
@@ -187,6 +189,9 @@
     <string name="average">Average</string>
     <string name="poor">Poor</string>
     <string name="terrible">Terrible</string>
+
+    <string name="added_favorite">Added to your favorite list</string>
+    <string name="removed_favorite">Removed from your favorite list</string>
 
     <string name="days_long">days</string>
     <string name="day_long">day</string>

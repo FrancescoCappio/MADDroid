@@ -38,8 +38,8 @@
     <string name="alert_order_no_address">Please select a delivery address</string>
     <string name="alert_order_no_address_notes">We need some additional info on the address. I.E: name on the entryphone</string>
     <string name="alert_order_no_rider">Cannot find a rider</string>
-    
-    <string name="while_supplies_last">While supplies last</string>
+
+    <string name="while_supplies_last">Always open (while supplies last)</string>
 
     <string name="alert_error_ordering">There was an error while requesting your order</string>
     <string name="alert_computing_distance">There was an error while computing the distance between the restaurant and the delivery address</string>
@@ -48,6 +48,7 @@
 
     <string name="action_refresh">Refresh</string>
     <string name="track_rider">Track rider</string>
+    <string name="control_string">Delivery Code</string>
     <string name="title_activity_tracking_rider">Map</string>
 
     <string name="current_address">Current address</string>
@@ -60,5 +61,8 @@
     <string name="no_order">There is no order</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -20,18 +20,14 @@ public class Order implements Serializable, Comparable<Order> {
     private String orderId;
 
     private String totalCost;
-
+    private String DeliveryStringControl;
     private String riderId;
     private String customerId;
     private String restaurantId;
-
     private String restaurantName;
     private String customerName;
-
     private String deliveryTime;
-
     private String date;
-
     private String deliveryAddress;
     
     private boolean riderRated = false;
@@ -110,7 +106,9 @@ public class Order implements Serializable, Comparable<Order> {
     public void setCustomerName(String s) {
         this.customerName = s;
     }
-    
+
+    public void setDeliveryStringControl(String s){ this.DeliveryStringControl = s; }
+
     public int getTimeForDelivery() {
         return timeForDelivery;
     }
@@ -193,5 +191,9 @@ public class Order implements Serializable, Comparable<Order> {
         }
         
         return this.date.compareTo(o.date);
+    }
+
+    public String getDeliveryStringControl() {
+        return  this.DeliveryStringControl;
     }
 }
