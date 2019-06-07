@@ -39,7 +39,7 @@
     <string name="alert_order_no_address_notes">We need some additional info on the address. I.E: name on the entryphone</string>
     <string name="alert_order_no_rider">Cannot find a rider</string>
 
-    <string name="while_supplies_last">While supplies last</string>
+    <string name="while_supplies_last">Always open (while supplies last)</string>
 
     <string name="alert_error_ordering">There was an error while requesting your order</string>
     <string name="alert_computing_distance">There was an error while computing the distance between the restaurant and the delivery address</string>
