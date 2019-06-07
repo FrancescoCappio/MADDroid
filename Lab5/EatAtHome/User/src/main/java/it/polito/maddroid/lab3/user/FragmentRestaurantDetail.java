@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +36,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,6 +63,7 @@ public class FragmentRestaurantDetail extends Fragment {
     private TextView tvRating;
     private RatingBar ratingBar;
     private ProgressBar pbLoading;
+    private ImageView ivFavorite;
     
     private int waitingCount;
     
@@ -123,6 +128,8 @@ public class FragmentRestaurantDetail extends Fragment {
         allCategories = new ArrayList<>();
         
         downloadCategoriesInfo();
+    
+        checkFavorite();
         
         return view;
     }
@@ -145,6 +152,8 @@ public class FragmentRestaurantDetail extends Fragment {
         
         
         tvRating.setOnClickListener(v -> openReviewsActivity());
+    
+        ivFavorite.setOnClickListener(v -> setFavoriteAction());
     }
     
     private void openReviewsActivity() {
@@ -174,6 +183,7 @@ public class FragmentRestaurantDetail extends Fragment {
         tvRating = view.findViewById(R.id.tv_rating);
         ratingBar = view.findViewById(R.id.rating_bar);
         pbLoading = view.findViewById(R.id.pb_loading);
+        ivFavorite = view.findViewById(R.id.iv_favorite);
     }
     
     private void downloadCategoriesInfo() {
@@ -226,6 +236,70 @@ public class FragmentRestaurantDetail extends Fragment {
             waitingCount--;
             if (waitingCount == 0)
                 pbLoading.setVisibility(View.INVISIBLE);
+        }
+    }
+    
+    private void checkFavorite(){
+        Query queryRef = dbRef.child(EAHCONST.CUSTOMERS_SUB_TREE).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(EAHCONST.CUSTOMER_FAVORITE_RESTAURANT);
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(currentRestaurant.getRestaurantID()))
+                    setFavoriteIcon(true);
+                else
+                    setFavoriteIcon(false);
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled called");
+            }
+        });
+    }
+    
+    private void setFavoriteIcon(boolean bool){
+        if(bool){
+            ivFavorite.setImageResource(R.drawable.ic_favorite_24dp);
+            ivFavorite.setTag(getString(R.string.yes));
+        }
+        else{
+            ivFavorite.setImageResource(R.drawable.ic_not_favorite_24dp);
+            ivFavorite.setTag(getString(R.string.no));
+        }
+    }
+    
+    private void setFavoriteAction() {
+        String ivFavoriteTag = (String) ivFavorite.getTag();
+        String updatePath = EAHCONST.generatePath
+                (EAHCONST.CUSTOMERS_SUB_TREE, FirebaseAuth.getInstance().getCurrentUser().getUid(), EAHCONST.CUSTOMER_FAVORITE_RESTAURANT, currentRestaurant.getRestaurantID());
+        
+        setActivityLoading(true);
+        
+        if (ivFavoriteTag.equals(getString(R.string.no))){
+            Map<String, Object> updateMap = new HashMap<>();
+            updateMap.put(updatePath, currentRestaurant.getRestaurantID());
+            dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {
+                Log.d(TAG, "Success adding to favorite List");
+                setFavoriteIcon(true);
+                Utility.showAlertToUser(getActivity(), R.string.added_favorite);
+                setActivityLoading(false);
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error while adding favorite");
+                Utility.showAlertToUser(getActivity(), R.string.not_ready_alert);
+                setActivityLoading(false);
+            });
+            
+        } else {
+            dbRef.child(updatePath).removeValue().addOnSuccessListener(aVoid ->{
+                Log.d(TAG, "Success removing to favorite List");
+                setFavoriteIcon(false);
+                Utility.showAlertToUser(getActivity(), R.string.removed_favorite);
+                setActivityLoading(false);
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error while removing favorite");
+                Utility.showAlertToUser(getActivity(), R.string.not_ready_alert);
+                setActivityLoading(false);
+            });
         }
     }
 }

@@ -298,7 +298,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         String updatePath = EAHCONST.generatePath
                 (EAHCONST.CUSTOMERS_SUB_TREE, userUID, EAHCONST.CUSTOMER_FAVORITE_RESTAURANT, currentRestaurant.getRestaurantID());
 
-        if (ivFavoriteTag == getString(R.string.no) ){
+        if (ivFavoriteTag.equals(getString(R.string.no))){
             Map<String, Object> updateMap = new HashMap<>();
             updateMap.put(updatePath, currentRestaurant.getRestaurantID());
             dbRef.updateChildren(updateMap).addOnSuccessListener(aVoid -> {

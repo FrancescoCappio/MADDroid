@@ -10,16 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible"
-
-            />
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -38,6 +28,33 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
+
+                <ProgressBar
+                    android:id="@+id/pb_loading"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="invisible"
+
+                    app:layout_constraintTop_toBottomOf="@+id/iv_restaurant_photo"
+
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_favorite"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:background="@android:color/transparent"
+
+                    android:src="@drawable/ic_not_favorite_24dp"
+                    android:tag="@string/no"
+
+                    app:layout_constraintEnd_toEndOf="@id/iv_restaurant_photo"
+                    app:layout_constraintTop_toTopOf="@id/iv_restaurant_photo"
+                    tools:ignore="MissingConstraints" />
 
                 <RatingBar
                     android:id="@+id/rating_bar"
