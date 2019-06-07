@@ -1,25 +1,38 @@
 package it.polito.maddroid.lab3.common;
 
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.Locale;
-
+import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 
 public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyViewHolder> {
+
+    public static final String TAG = "RidersListAdapter";
     
     private ItemClickListener clickListener;
+
     
     protected RidersListAdapter(@NonNull DiffUtil.ItemCallback<Rider> diffCallback, ItemClickListener clickListener) {
         super(diffCallback);
+
         this.clickListener = clickListener;
     }
     
@@ -28,7 +41,7 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.riders_list_item, parent, false);
-    
+
         // create view holder and pass main view to it
         return new MyViewHolder(v);
     }
@@ -47,12 +60,19 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
         private View itemView;
         private TextView tvRiderName;
         private TextView tvRiderDistance;
-        
+        private ImageView ivRiderAvatar;
+        private RatingBar ratingBar;
+        private Context context;
+        private String riderId;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            
+
+            context = itemView.getContext();
             tvRiderName = itemView.findViewById(R.id.tv_rider_name);
             tvRiderDistance = itemView.findViewById(R.id.tv_rider_distance);
+            ivRiderAvatar = itemView.findViewById(R.id.iv_rider_avatar);
+            ratingBar = itemView.findViewById(R.id.rating_bar);
             this.itemView = itemView;
             
         }
@@ -61,8 +81,47 @@ public class RidersListAdapter extends ListAdapter<Rider, RidersListAdapter.MyVi
             
             tvRiderName.setText(rider.getName());
             tvRiderDistance.setText(String.format(Locale.US, "%.02f",rider.getDistance()) + " Km");
+            ratingBar.setRating(rider.getAverageReview());
+
+            riderId = rider.getId();
+            downloadAvatar(riderId);
             
             itemView.setOnClickListener(v -> itemClickListener.onItemClick(rider));
+        }
+
+        private void downloadAvatar(String UID) {
+            File localFile = getAvatarTmpFile();
+            StorageReference riversRef = FirebaseStorage.getInstance().getReference().child("avatar_" + UID +".jpg");
+
+            riversRef.getFile(localFile)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Log.d(TAG, "Avatar downloaded successfully");
+                        updateAvatarImage();
+                    }).addOnFailureListener(exception -> {
+                Log.e(TAG, "Error while downloading avatar image: " + exception.getMessage());
+            });
+        }
+
+        private void updateAvatarImage() {
+            File img = getAvatarTmpFile();
+
+            if (!img.exists() || !img.isFile()) {
+                Log.d(TAG, "Cannot load unexisting file as avatar");
+                return;
+            }
+
+            Glide.with(context)
+                    .load(img)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(ivRiderAvatar);
+        }
+        private File getAvatarTmpFile() {
+            // Determine Uri of camera image to save.
+            final File root = new File(context.getFilesDir() + File.separator + "images" + File.separator);
+            root.mkdirs();
+            final String fname = "Customer_avatar_tmp_" + riderId + ".jpg";
+            return new File(root, fname);
         }
     }
 }
