@@ -25,6 +25,8 @@ public class EAHCONST {
     
     public static final float DELIVERY_COST = 2.00f;
     
+    public static final int DEFAULT_IMAGE_SIZE = 1000;
+    
     // CONSTS RELATED TO FIREBASE ONLINE DATABASE
     public enum USER_TYPE {
         CUSTOMER,
@@ -154,6 +156,7 @@ public class EAHCONST {
     public final static String CUSTOMER_PHONE = "phone";
     public final static String CUSTOMER_EMAIL = "email";
     public final static String CUSTOMER_POSITION = "position";
+    public final static String CUSTOMER_FAVORITE_RESTAURANT = "favorite_restaurant";
 
     // riders subtree nodes fields
     public final static String RIDER_NAME = "name";

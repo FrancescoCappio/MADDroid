@@ -188,6 +188,9 @@
     <string name="poor">Poor</string>
     <string name="terrible">Terrible</string>
 
+    <string name="added_favorite">Added to your favorite list</string>
+    <string name="removed_favorite">Removed from your favorite list</string>
+
     <string name="days_long">days</string>
     <string name="day_long">day</string>
     <string name="days_short">d</string>

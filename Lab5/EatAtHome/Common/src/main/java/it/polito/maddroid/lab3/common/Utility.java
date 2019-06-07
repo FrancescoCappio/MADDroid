@@ -133,15 +133,17 @@ public class Utility {
     
         Map<String,String> map = new HashMap<>();
         String[] splitted = s.split(";");
-        
+    
         for (String dayTimeTable : splitted) {
-            String timetable;
             String day = dayTimeTable.split(",")[0];
-            if (dayTimeTable.contains("closed"))
+        
+            String timetable;
+            if (day.equals(dayTimeTable)) {
+                day = dayTimeTable.split(" ")[0];
                 timetable = "Closed";
-            else {
+            } else
                 timetable = dayTimeTable.substring(day.length() + 1);
-            }
+        
             if (map.containsKey(timetable)) {
                 map.put(timetable, map.get(timetable) + " " + day);
             } else {

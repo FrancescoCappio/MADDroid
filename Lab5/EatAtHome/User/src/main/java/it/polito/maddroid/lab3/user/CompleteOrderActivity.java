@@ -125,6 +125,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
     private Button btGetAddress;
     private EditText etTimeDialog;
     private EditText etDateDialog;
+    private TextView tvTimetable;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -247,6 +248,11 @@ public class CompleteOrderActivity extends AppCompatActivity {
     
         });
     
+        if (currentRestaurant.getTimeTableString() != null && !currentRestaurant.getTimeTableString().isEmpty())
+            tvTimetable.setText(Utility.extractTimeTable(currentRestaurant.getTimeTableString()));
+        else
+            tvTimetable.setText(R.string.while_supplies_last);
+    
         // do not open keyboard on activity open
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -319,6 +325,7 @@ public class CompleteOrderActivity extends AppCompatActivity {
         etAddressNotes = findViewById(R.id.et_delivery_address_notes);
         cbAccountAddress = findViewById(R.id.cb_address);
         btGetAddress = findViewById(R.id.bt_get_address);
+        tvTimetable = findViewById(R.id.tv_timetable);
 
     }
     

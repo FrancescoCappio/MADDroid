@@ -233,6 +233,8 @@ public class DishDetailsActivity extends AppCompatActivity {
                 float price;
                 
                 try {
+                    if (sPrice.contains("€"))
+                        sPrice = sPrice.split(" ")[0];
                     price = Float.parseFloat(sPrice);
                 } catch (NumberFormatException ex) {
                     Utility.showAlertToUser(DishDetailsActivity.this, R.string.alert_price_not_valid);
