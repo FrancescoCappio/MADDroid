@@ -120,7 +120,6 @@ public class MostPopularDishesFragment extends Fragment {
                         dish.setQuantity(dishCount);
                         if(dishCount != 0)
                             dishes.add(dish);
-                        Collections.reverse(dishes);
                         manageVisibility();
                     } else {
                         Log.d(TAG, "There are no popular dishes for this restaurateur");
@@ -130,6 +129,7 @@ public class MostPopularDishesFragment extends Fragment {
 
                 }
 
+                Collections.reverse(dishes);
                 setupAdapter();
                 return;
             }
