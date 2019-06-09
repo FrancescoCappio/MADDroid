@@ -51,6 +51,7 @@ public class FavoriteRestaurantFragment extends Fragment {
 
 
     private TextView tvMostOrderedTitle;
+    private TextView tvFavoriteTitle;
     private ProgressBar pbLoading;
     private RecyclerView rvFavoriteRestaurants;
     private RecyclerView rvMostOrderedRestaurants;
@@ -83,6 +84,7 @@ public class FavoriteRestaurantFragment extends Fragment {
         rvFavoriteRestaurants = view.findViewById(R.id.rv_favorite_restaurant);
         rvMostOrderedRestaurants = view.findViewById(R.id.rv_most_ordered_restaurant);
         tvMostOrderedTitle = view.findViewById(R.id.tv_most_ordered_restaurants_title);
+        tvFavoriteTitle = view.findViewById(R.id.tv_favorite_restaurants_title);
         pbLoading = view.findViewById(R.id.pb_loading);
 
         mostOrderedRestaurants = new ArrayList<>();
@@ -141,7 +143,7 @@ public class FavoriteRestaurantFragment extends Fragment {
                 
                 if(restaurantsCount.size() == 0 ) {
                     setActivityLoading(false);
-                    manageVisibility();
+                    manageTopRestaurantsVisibility();
                 } else{
                     restaurantsCount = sortByComparator(restaurantsCount);
                     downloadMostOrderedRestaurantsInfo();
@@ -226,7 +228,7 @@ public class FavoriteRestaurantFragment extends Fragment {
                         mostOrderedRestaurants.add(r);
 
                         if (restaurantsCount.size() == mostOrderedRestaurants.size()) {
-                            manageVisibility();
+                            manageTopRestaurantsVisibility();
                             mostOrderedAdapter.submitList(mostOrderedRestaurants);
                             setActivityLoading(false);
                         }
@@ -243,13 +245,14 @@ public class FavoriteRestaurantFragment extends Fragment {
     }
     
     private void downloadFavoriteRestaurantsInfo() {
+    
+        favoriteRestaurants = new ArrayList<>();
         
         if (favoriteIds.isEmpty()) {
             setActivityLoading(false);
+            manageFavoriteRestaurantsVisibility();
             return;
         }
-        
-        favoriteRestaurants = new ArrayList<>();
         
         for(String id : favoriteIds){
 
@@ -296,6 +299,7 @@ public class FavoriteRestaurantFragment extends Fragment {
                         favoriteAdapter.submitList(favoriteRestaurants);
                         setActivityLoading(false);
                     }
+                    manageFavoriteRestaurantsVisibility();
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -326,14 +330,25 @@ public class FavoriteRestaurantFragment extends Fragment {
         return sortedMap;
     }
 
-    private void manageVisibility() {
+    private void manageTopRestaurantsVisibility() {
 
         if (mostOrderedRestaurants.size() == 0) {
             rvMostOrderedRestaurants.setVisibility(View.GONE);
-            tvMostOrderedTitle.setVisibility(View.GONE);
+            tvMostOrderedTitle.setText(R.string.no_top_restaurants);
         } else {
             rvMostOrderedRestaurants.setVisibility(View.VISIBLE);
-            tvMostOrderedTitle.setVisibility(View.VISIBLE);
+            tvMostOrderedTitle.setText(R.string.most_ordered_from);
+        }
+    }
+    
+    private void manageFavoriteRestaurantsVisibility() {
+        
+        if (favoriteRestaurants.size() == 0) {
+            rvFavoriteRestaurants.setVisibility(View.GONE);
+            tvFavoriteTitle.setText(R.string.no_favorite_restaurants);
+        } else {
+            rvFavoriteRestaurants.setVisibility(View.VISIBLE);
+            tvFavoriteTitle.setText(R.string.favorite_title);
         }
     }
 
