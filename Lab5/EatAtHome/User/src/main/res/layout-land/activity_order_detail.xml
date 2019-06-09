@@ -277,7 +277,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:text="@string/rate_rider"
-                android:background="@color/eah_blue"
+                android:background="@drawable/bt_color_selector"
                 android:textColor="@color/eah_white"
 
                 android:paddingStart="8dp"
@@ -294,7 +294,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:text="@string/rate_restaurant"
-                android:background="@color/eah_blue"
+                android:background="@drawable/bt_color_selector"
                 android:textColor="@color/eah_white"
 
                 android:paddingStart="8dp"
