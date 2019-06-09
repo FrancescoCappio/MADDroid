@@ -206,6 +206,8 @@
     <string name="minute_long">minute</string>
     <string name="minutes_short">m</string>
 
+    <string name="top_requested">Top requested</string>
+
     <string name="alert_no_score">Please add a score to your review</string>
     <string name="alert_no_comment">Please add a comment to your review</string>
     <string name="delivery_time_title">Choose delivery time</string>

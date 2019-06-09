@@ -72,6 +72,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         
         private TextView tvDishName;
+        private TextView tvTopRequested;
         private TextView tvDishDescription;
         private TextView tvDishQuantity;
         private TextView tvDishTotalCost;
@@ -87,6 +88,7 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
             tvDishDescription = itemView.findViewById(R.id.tv_dish_description);
             tvDishQuantity = itemView.findViewById(R.id.tv_quantity_dishes);
             tvDishTotalCost = itemView.findViewById(R.id.tv_current_dish_cost);
+            tvTopRequested = itemView.findViewById(R.id.tv_top_requested);
             
             ivDishPhoto = itemView.findViewById(R.id.iv_dish_photo);
             ibAddDish = itemView.findViewById(R.id.ib_add_Dish);
@@ -126,6 +128,12 @@ public class DishOrderListAdapter extends ListAdapter<Dish, DishOrderListAdapter
                     listener.notifyDataUpdated();
                 }
             });
+            
+            if (dish.getTopRequested()) {
+                tvTopRequested.setVisibility(View.VISIBLE);
+            } else {
+                tvTopRequested.setVisibility(View.GONE);
+            }
             
         }
         

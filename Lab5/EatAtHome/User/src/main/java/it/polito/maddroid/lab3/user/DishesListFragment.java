@@ -28,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -146,10 +148,25 @@ public class DishesListFragment extends Fragment {
                     }
                     String dishDescription = (String) ds.child(EAHCONST.DISH_DESCRIPTION).getValue();
                     
+                    int count = 0;
+                    if (ds.child(EAHCONST.DISH_COUNT).getValue() != null) {
+                        count = ds.child(EAHCONST.DISH_COUNT).getValue(Long.class).intValue();
+                    }
+                    
                     Dish dish = new Dish(Integer.parseInt(dishId),dishName,price,dishDescription);
+                    
+                    dish.setDishCount(count);
                     
                     dishes.add(dish);
                     
+                }
+    
+                Collections.sort(dishes, (o1, o2) -> o2.getDishCount() - o1.getDishCount());
+                
+                if (dishes.size() > 5) {
+                    for (int i = 0; i < 5; ++i) {
+                        dishes.get(i).setTopRequested(true);
+                    }
                 }
                 adapter.submitList(dishes);
                 setActivityLoading(false);

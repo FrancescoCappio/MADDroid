@@ -11,6 +11,9 @@ public class Dish implements Serializable {
     private String description;
     private float price;
     private int quantity;
+    private int dishCount;
+    
+    private boolean topRequested = false;
     
     // necessary to mark the dish to be updated
     private boolean update;
@@ -46,5 +49,21 @@ public class Dish implements Serializable {
     
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+    
+    public int getDishCount() {
+        return dishCount;
+    }
+    
+    public void setDishCount(int dishCount) {
+        this.dishCount = dishCount;
+    }
+    
+    public boolean getTopRequested() {
+        return topRequested;
+    }
+    
+    public void setTopRequested(boolean topRequested) {
+        this.topRequested = topRequested;
     }
 }
