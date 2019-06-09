@@ -196,6 +196,7 @@ public class AccountInfoActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 //emulate back pressed
+                Utility.hideKeyboard(this);
                 onBackPressed();
                 break;
 

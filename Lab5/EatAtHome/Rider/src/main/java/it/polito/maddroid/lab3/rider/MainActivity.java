@@ -202,11 +202,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             riderOnDuty = start;
             if (riderOnDuty) {
-                actionBar.setTitle(R.string.rider_on_duty);
+                if (currentSelectedPosition == 0)
+                    actionBar.setTitle(R.string.rider_on_duty);
                 startLocationService();
             }
             else {
-                actionBar.setTitle(R.string.rider_not_on_duty);
+                if (currentSelectedPosition == 0)
+                    actionBar.setTitle(R.string.rider_not_on_duty);
                 stopLocationService();
             }
             editor.putBoolean(RIDER_ON_DUTY_KEY, riderOnDuty);

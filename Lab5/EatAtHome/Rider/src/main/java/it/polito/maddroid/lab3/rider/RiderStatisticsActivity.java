@@ -82,8 +82,8 @@ public class RiderStatisticsActivity extends AppCompatActivity {
     public static final String DAY_KEY = "DAY_KEY";
     public static final String MONTH_KEY = "MONTH_KEY";
     public static final String YEAR_KEY = "YEAR_KEY";
-    public static final String PROFIT_YEAR_KEY = "YEAR_KEY";
-    public static final String KM_YEAR_KEY = "YEAR_KEY";
+    public static final String PROFIT_YEAR_KEY = "PROFIT_YEAR_KEY";
+    public static final String KM_YEAR_KEY = "KM_YEAR_KEY";
     public static final String COUNT_GRADE_KEY = "COUNT_GRADE_KEY";
     public static final String PROFIT_TODAY_KEY = "PROFIT_TODAY_KEY";
     public static final String PROFIT_MONTH_KEY = "PROFIT_MONTH_KEY";
@@ -491,9 +491,11 @@ public class RiderStatisticsActivity extends AppCompatActivity {
         outState.putFloat(KM_TODAY_KEY, kmDay);
         outState.putFloat(KM_MONTH_KEY, kmMonth);
         outState.putFloat(KM_TOTAL_KEY, allKm);
+        outState.putFloat(KM_YEAR_KEY, kmYear);
         outState.putFloat(PROFIT_TODAY_KEY, profitDay);
         outState.putFloat(PROFIT_MONTH_KEY, profitMonth);
         outState.putFloat(PROFIT_TOTAL_KEY, profitTotal);
+        outState.putFloat(PROFIT_YEAR_KEY, profitYear);
         outState.putFloat(AVG_GRADE_KEY, avgGrade);
         outState.putLong(COUNT_GRADE_KEY, totGrade);
     }
