@@ -14,4 +14,4 @@ Repository Structure:
    - Rider;
    - Restaurator;
  - ...
- - Project (Eat@Home)
+ - Project (Eat@Home) -> Lab5
